@@ -1,0 +1,129 @@
+#!/bin/bash
+
+VERSION="@PACKAGE_VERSION@"
+APP_NAME="@PACKAGE_NAME@"
+
+if [ $# -ne 1 ]; then
+    echo "usage: $0 <install-dir>"
+    exit 1
+fi
+
+INSTALL_DIR=${1%/}
+SRC_DIR="src"
+CFG_DIR="cfg"
+LIB_DIR="lib"
+LOG_DIR="log"
+BIN_DIR="app"
+SBIN_DIR="scripts"
+APP_DIR_LIST="$CFG_DIR $LIB_DIR $LOG_DIR $BIN_DIR $SBIN_DIR"
+
+REQUEST_BIN="fun2_request"
+RESPONSE_BIN="fun2_response"
+NOTIFICATION_BIN="fun2_notification"
+TRANSACTION_BIN="fun2_transaction"
+BROADCAST_BIN="fun2_broadcast"
+GEOPROBE_BIN="fun2_geoprobe"
+ODS_BIN="fun2_ods"
+APP_BIN_LIST="$REQUEST_BIN $RESPONSE_BIN $NOTIFICATION_BIN $TRANSACTION_BIN $BROADCAST_BIN $GEOPROBE_BIN $ODS_BIN"
+
+APP_SBIN="$SBIN_DIR/*"
+FUN2RC_LIB="fun2rc/lib/*"
+
+echo "Compiling $APP_NAME..."
+./compile.sh
+if [ $? != 0 ]; then
+    exit 1
+fi
+echo "Done compiling $APP_NAME."
+
+echo "Installing $APP_NAME..."
+
+## do all the checking here...
+
+if [ ! -d "$INSTALL_DIR" ]; then
+    echo "Directory \"$INSTALL_DIR\" does not exists!"
+    while true; do
+        echo -n "Create directory \"$INSTALL_DIR\"? [y|n]: "
+        read ans
+        case $ans in
+            y|Y)
+                \mkdir "$INSTALL_DIR"
+                break
+                ;;
+            n|N)
+                echo "Incomplete installation of $APP_NAME!"
+                exit 1
+                ;;
+            *)
+                ;;
+        esac
+    done
+fi
+
+if [ ! -d "$INSTALL_DIR" ]; then
+    echo "Error installing $APP_NAME."
+    echo "Unable to create directory \"$INSTALL_DIR\"!"
+    exit 1
+fi
+
+for APP_BIN in $APP_BIN_LIST; do
+    if [ ! -f "$SRC_DIR/$APP_BIN" ]; then
+        echo "Error installing $APP_NAME."
+        echo "$SRC_DIR/$APP_BIN does not exists!"
+        exit 1
+    fi
+done
+
+for file in $FUN2RC_LIB; do
+    if [ "$file" = "$FUN2RC_LIB" ]; then
+        echo "Error installing $APP_NAME."
+        echo "$FUN2RC_LIB does not exists!"
+        exit 1
+    fi
+done
+
+## do the actual install here...
+#-----------------------------------------------------
+#for APP_DIR in $APP_DIR_LIST; do
+#    if [ ! -d "$INSTALL_DIR/$APP_DIR" ]; then
+#        \mkdir "$INSTALL_DIR/$APP_DIR"
+#    fi
+#done
+
+## create directory manually instead...
+if [ ! -d "$INSTALL_DIR/$CFG_DIR" ]; then
+    \mkdir "$INSTALL_DIR/$CFG_DIR"
+fi
+if [ ! -d "$INSTALL_DIR/$SBIN_DIR" ]; then
+    \mkdir "$INSTALL_DIR/$SBIN_DIR"
+fi
+if [ ! -d "$INSTALL_DIR/$BIN_DIR" ]; then
+    \mkdir "$INSTALL_DIR/$BIN_DIR"
+fi
+if [ ! -d "$INSTALL_DIR/$BIN_DIR/$LIB_DIR" ]; then
+    \mkdir "$INSTALL_DIR/$BIN_DIR/$LIB_DIR"
+fi
+#-----------------------------------------------------
+
+\cp -fP $APP_SBIN "$INSTALL_DIR/$SBIN_DIR/"
+\cp -fP $FUN2RC_LIB "$INSTALL_DIR/$BIN_DIR/$LIB_DIR/"
+
+for APP_BIN in $APP_BIN_LIST; do
+    if [[ ! -f "$INSTALL_DIR/$CFG_DIR/$APP_BIN.cfg" && -f "$CFG_DIR/$APP_BIN.cfg" ]]; then
+        \cp -fP "$CFG_DIR/$APP_BIN.cfg" "$INSTALL_DIR/$CFG_DIR/$APP_BIN.cfg"
+    fi
+done
+
+for APP_BIN in $APP_BIN_LIST; do
+    \cp -fP "$SRC_DIR/$APP_BIN" "$INSTALL_DIR/$BIN_DIR/$APP_BIN-$VERSION"
+done
+
+cd "$INSTALL_DIR/$BIN_DIR"
+for APP_BIN in $APP_BIN_LIST; do
+    \ln -fs "$APP_BIN-$VERSION" "$APP_BIN"
+done
+
+echo "Done installing $APP_NAME."
+
+exit 0
+

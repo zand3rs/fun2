@@ -1,0 +1,90 @@
+/******************************************************************************/
+
+#ifndef _FUN2RC_HLR_HPP_
+#define _FUN2RC_HLR_HPP_
+
+#include <netdb.h>
+#include "fun2rc.hpp"
+
+/*============================================================================*/
+#include "oradbsimple.hpp"
+
+class HLR : public Fun2RC {
+
+#define __class__  "HLR"
+
+    private:
+        static const int buffer_size=1024*16;
+        char* buffer;
+        char username[64];
+        char password[64];
+        char host[64];
+        char normal_sset[64];
+        char ir_sset[64];
+        char _imsi[64];
+        int port;
+        int timeout;
+        int m_serverSocket;
+        int login();
+        int connectSocket();
+        int sendData(char *data);
+        int readStream(char *buf, int buf_sz);
+        int readStream2(char *buf, int buf_sz);
+        struct hostent m_Host;      // Host
+        struct hostent *m_pHost;      // Host
+        struct sockaddr_in serverSocket;
+        int callForwardingUnconditionalErased(const char *msisdn);
+        int callForwardingBusyErased(const char *msisdn);
+        int callForwardingNotReachableErased(const char *msisdn);
+        int callForwardingNoReplyErased(const char *msisdn);
+        int callForwardingUnconditionalDeactivated(const char *msisdn);
+        int callForwardingBusyDeactivated(const char *msisdn);
+        int callForwardingNotReachableDeactivated(const char *msisdn);
+        int callForwardingNoReplyDeactivated(const char *msisdn);
+        int setServiceIndex(const char *msisdn,const char *sset);
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedT11();
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB16();
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB1F();
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedT11();
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB16();
+        int setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB1F();
+        int defineSuplementaryServicesDeactivated(const char *msisdn);
+        int defineSuplementaryServicesActivated(const char *msisdn);
+        int setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB16();
+        int setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB1F();
+        int setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB1F();
+        int setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16();
+        int setActivateSAM();
+        int setDeactivateSAM();
+        int setActivateDisableGPRS();
+        int setDeactivateEnableGPRS();
+
+        int getRealIMSI(const char *msisdn);
+
+    public:
+        HLR() : buffer(NULL) {};
+        ~HLR() {};
+
+        virtual int initialize();
+        virtual int deinitialize();
+
+        virtual int activate(const char *msisdn);
+        virtual int deactivate(const char *msisdn);
+
+        virtual int getIMSI(const char *msisdn, char *imsi, int imsi_size);
+};
+
+/*============================================================================*/
+// the class factories
+
+extern "C" Fun2RC* fun2rc_new() {
+    return new HLR;
+}
+
+extern "C" void fun2rc_del(Fun2RC* p) {
+    delete p;
+}
+
+#endif
+
+/******************************************************************************/

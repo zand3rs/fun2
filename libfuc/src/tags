@@ -1,0 +1,326 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+BIN	../src/Makefile	/^BIN        = test$/;"	m
+BINDIR	../Makefile	/^BINDIR    = bin$/;"	m
+BINO	../src/Makefile	/^BINO =$/;"	m
+BINPATH	../src/Makefile	/^BINPATH    = ..\/bin$/;"	m
+C2q	../include/c2q.h	/^typedef struct C2q {$/;"	s
+C2q_node	../include/c2q.h	/^typedef struct C2q_node {$/;"	s
+C2q_node_t	../include/c2q.h	/^} C2q_node_t;$/;"	t
+C2q_t	../include/c2q.h	/^} C2q_t;$/;"	t
+CC	../src/Makefile	/^CC         = gcc$/;"	m
+CDEFINES	../src/Makefile	/^CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DHAVE_CONFIG_H$/;"	m
+CFG_MAX_BUF_LEN	../include/cfg.h	51;"	d
+CFLAGS	../src/Makefile	/^CFLAGS     = -fPIC -g -O2 -Wall  $(CDEFINES) $(CINCLUDES)$/;"	m
+CINCLUDES	../src/Makefile	/^CINCLUDES  = -I..\/include $/;"	m
+C_COPYRIGHT	../include/config.h	6;"	d
+C_RELEASE_DATE	../include/config.h	5;"	d
+C_VERSION	../include/config.h	4;"	d
+Cfg	../include/cfg.h	/^typedef struct Cfg {$/;"	s
+Cfg_t	../include/cfg.h	/^} Cfg_t;$/;"	t
+Cfgbuf	../include/cfg.h	/^typedef struct Cfgbuf {$/;"	s
+Cfgbuf_t	../include/cfg.h	/^} Cfgbuf_t;$/;"	t
+DISTFILES	../Makefile	/^DISTFILES = $(DISTPACK) Makefile config.status config.log *.cache include\/config.h$/;"	m
+DISTNAME	../Makefile	/^DISTNAME  = libfuc-0.3.6$/;"	m
+DISTPACK	../Makefile	/^DISTPACK  = $(DISTNAME).tar.gz$/;"	m
+File_name_t	../include/file.h	/^typedef char File_name_t[256];$/;"	t
+HASH_MAX_MAP_SIZE	../include/hash.h	35;"	d
+Hashtable	../include/hash.h	/^typedef struct Hashtable {$/;"	s
+Hashtable_t	../include/hash.h	/^} Hashtable_t;$/;"	t
+INADDR_NONE	../src/net.c	33;"	d	file:
+LFLAGS	../src/Makefile	/^LFLAGS     = -fPIC -shared -Wl,-soname,$(LIBSO).$(MAJVER)$/;"	m
+LIB	../src/Makefile	/^LIB        = libfuc.a$/;"	m
+LIBDIR	../Makefile	/^LIBDIR    = lib$/;"	m
+LIBO	../src/Makefile	/^LIBO = c2q.o cfg.o date.o file.o hash.o log.o net.o skt.o str.o sys.o  $/;"	m
+LIBPATH	../src/Makefile	/^LIBPATH    = ..\/lib$/;"	m
+LIBSO	../src/Makefile	/^LIBSO      = libfuc.so$/;"	m
+LLIBS	../src/Makefile	/^LLIBS      = -lrt -lnsl -lpthread   $/;"	m
+LOGDIR	../Makefile	/^LOGDIR    = log$/;"	m
+LOG_CLOSE	../include/log.h	71;"	d
+LOG_CRITICAL	../include/log.h	83;"	d
+LOG_DEBUG	../include/log.h	107;"	d
+LOG_DEINIT	../include/log.h	58;"	d
+LOG_ERROR	../include/log.h	89;"	d
+LOG_GET_HANDLE	../include/log.h	41;"	d
+LOG_INFO	../include/log.h	101;"	d
+LOG_INIT	../include/log.h	51;"	d
+LOG_LEVEL_CRITICAL	../include/log.h	/^    LOG_LEVEL_CRITICAL,$/;"	e
+LOG_LEVEL_DEBUG	../include/log.h	/^    LOG_LEVEL_DEBUG,$/;"	e
+LOG_LEVEL_ERROR	../include/log.h	/^    LOG_LEVEL_ERROR,$/;"	e
+LOG_LEVEL_INFO	../include/log.h	/^    LOG_LEVEL_INFO,$/;"	e
+LOG_LEVEL_MAX	../include/log.h	/^    LOG_LEVEL_MAX$/;"	e
+LOG_LEVEL_NONE	../include/log.h	/^    LOG_LEVEL_NONE,$/;"	e
+LOG_LEVEL_WARNING	../include/log.h	/^    LOG_LEVEL_WARNING,$/;"	e
+LOG_OPEN	../include/log.h	65;"	d
+LOG_ROTATE	../include/log.h	77;"	d
+LOG_SET_HANDLE	../include/log.h	45;"	d
+LOG_WARNING	../include/log.h	95;"	d
+Log	../include/log.h	/^typedef struct Log {$/;"	s
+Log_t	../include/log.h	/^} Log_t;$/;"	t
+MAINDIR	../Makefile	/^MAINDIR   = \/home\/zander\/projects\/fun2\/fun2\/libfuc$/;"	m
+MAJVER	../src/Makefile	/^MAJVER     = 0$/;"	m
+MINVER	../src/Makefile	/^MINVER     = 3.6$/;"	m
+MYDB_CONPARAMS	../include/mydb.h	/^} MYDB_CONPARAMS;$/;"	t
+MYDB_CONPARAMS_	../include/mydb.h	/^typedef struct MYDB_CONPARAMS_ {$/;"	s
+MYDB_FIELD	../include/mydb.h	/^} MYDB_FIELD;$/;"	t
+MYDB_FIELD_	../include/mydb.h	/^typedef struct MYDB_FIELD_ {$/;"	s
+MYDB_RES	../include/mydb.h	/^} MYDB_RES;$/;"	t
+MYDB_RES_	../include/mydb.h	/^typedef struct MYDB_RES_ {$/;"	s
+MYDB_ROW	../include/mydb.h	/^} MYDB_ROW;$/;"	t
+MYDB_ROW_	../include/mydb.h	/^typedef struct MYDB_ROW_ {$/;"	s
+NET_MAX_IPADDR_LEN	../src/net.c	36;"	d	file:
+RANLIB	../src/Makefile	/^RANLIB     = ranlib$/;"	m
+SKT_MAX_BACKLOG	../include/skt.h	31;"	d
+STR_PAD_BOTH	../include/str.h	/^    STR_PAD_BOTH,$/;"	e	enum:Strpad
+STR_PAD_BOTH_MASKED	../include/str.h	/^    STR_PAD_BOTH_MASKED$/;"	e	enum:Strpad
+STR_PAD_LEFT	../include/str.h	/^    STR_PAD_LEFT,$/;"	e	enum:Strpad
+STR_PAD_LEFT_MASKED	../include/str.h	/^    STR_PAD_LEFT_MASKED,$/;"	e	enum:Strpad
+STR_PAD_RIGHT	../include/str.h	/^    STR_PAD_RIGHT,$/;"	e	enum:Strpad
+STR_PAD_RIGHT_MASKED	../include/str.h	/^    STR_PAD_RIGHT_MASKED,$/;"	e	enum:Strpad
+SUBDIRS	../Makefile	/^SUBDIRS   = src$/;"	m
+Skt	../include/skt.h	/^typedef struct Skt {$/;"	s
+Skt_t	../include/skt.h	/^} Skt_t;$/;"	t
+Strpad	../include/str.h	/^typedef enum Strpad { $/;"	g
+Strpad_t	../include/str.h	/^} Strpad_t;$/;"	t
+TMPDIR	../Makefile	/^TMPDIR    = \/tmp$/;"	m
+VERSION	../src/Makefile	/^VERSION    = 0.3.6$/;"	m
+_Hash_map	../include/hash.h	/^typedef struct _Hash_map {$/;"	s
+_Hash_map_t	../include/hash.h	/^} _Hash_map_t;$/;"	t
+__C2Q_H__	../include/c2q.h	18;"	d
+__CFG_H__	../include/cfg.h	43;"	d
+__DATE_H__	../include/date.h	18;"	d
+__FILE_H__	../include/file.h	18;"	d
+__HASH_H__	../include/hash.h	18;"	d
+__LIBFUC_H__	../include/libfuc.h	18;"	d
+__LOG_H__	../include/log.h	18;"	d
+__MYDB_H__	../include/mydb.h	18;"	d
+__NET_H__	../include/net.h	18;"	d
+__SKT_H__	../include/skt.h	18;"	d
+__STR_H__	../include/str.h	18;"	d
+__SYS_H__	../include/sys.h	18;"	d
+_hash_get_index	../src/hash.c	/^static uint32_t _hash_get_index (uint32_t hash, uint32_t max)$/;"	f	file:
+_skt_close	../src/skt.c	/^static void _skt_close (int fd)$/;"	f	file:
+_skt_free	../src/skt.c	/^static void _skt_free (Skt_t *s)$/;"	f	file:
+_skt_new	../src/skt.c	/^static Skt_t* _skt_new (void)$/;"	f	file:
+_skt_open	../src/skt.c	/^static int _skt_open (void)$/;"	f	file:
+_skt_set_nonblocking	../src/skt.c	/^static int _skt_set_nonblocking (int fd)$/;"	f	file:
+active	../include/skt.h	/^    char active;$/;"	m	struct:Skt
+buf	../include/cfg.h	/^    Cfgbuf_t *buf;$/;"	m	struct:Cfg
+c2q_deinit	../src/c2q.c	/^int c2q_deinit (C2q_t *q)$/;"	f
+c2q_dequeue	../src/c2q.c	/^int c2q_dequeue (C2q_t *q, void *entry, int entry_size)$/;"	f
+c2q_dequeue_ptr	../src/c2q.c	/^int c2q_dequeue_ptr (C2q_t *q, void **entry)$/;"	f
+c2q_enqueue	../src/c2q.c	/^int c2q_enqueue (C2q_t *q, void *entry, int entry_size)$/;"	f
+c2q_enqueue_ptr	../src/c2q.c	/^int c2q_enqueue_ptr (C2q_t *q, void *entry)$/;"	f
+c2q_free	../src/c2q.c	/^void c2q_free (C2q_t *q)$/;"	f
+c2q_init	../src/c2q.c	/^int c2q_init (C2q_t *q)$/;"	f
+c2q_is_empty	../src/c2q.c	/^int c2q_is_empty (C2q_t *q)$/;"	f
+c2q_lock	../src/c2q.c	/^int c2q_lock (C2q_t *q)$/;"	f
+c2q_new	../src/c2q.c	/^C2q_t* c2q_new (void)$/;"	f
+c2q_node_free	../src/c2q.c	/^static void c2q_node_free (C2q_node_t *q_node)$/;"	f	file:
+c2q_node_new	../src/c2q.c	/^static C2q_node_t* c2q_node_new (void)$/;"	f	file:
+c2q_unlock	../src/c2q.c	/^int c2q_unlock (C2q_t *q)$/;"	f
+c2q_wait	../src/c2q.c	/^int c2q_wait (C2q_t *q, int sec)$/;"	f
+cfg_getval	../src/cfg.c	/^int cfg_getval(Cfg_t *config, const char *sec, const char *key, char *val, const int val_size)$/;"	f
+cfg_init	../src/cfg.c	/^int cfg_init(Cfg_t *config, const char *fpath)$/;"	f
+cfg_load	../src/cfg.c	/^int cfg_load(Cfg_t *config)$/;"	f
+cfg_save	../src/cfg.c	/^int cfg_save(Cfg_t *config)$/;"	f
+cfg_setval	../src/cfg.c	/^int cfg_setval(Cfg_t *config, const char *sec, const char *key, const char *val)$/;"	f
+cfg_unload	../src/cfg.c	/^int cfg_unload(Cfg_t *config)$/;"	f
+clock_gettime	../configure	/^clock_gettime ();$/;"	f
+comment_escape_	../src/cfg.c	/^static void comment_escape_(char *dest, const char *src, int dest_size)$/;"	f	file:
+comment_unescape_	../src/cfg.c	/^static void comment_unescape_(char *dest, const char *src, int dest_size) $/;"	f	file:
+date_compare	../src/date.c	/^time_t date_compare (char *ps_date1, char *ps_date2, char *ps_format)$/;"	f
+date_get	../src/date.c	/^int date_get (char *ps_date, char *ps_format)$/;"	f
+date_get_by_epoch	../src/date.c	/^int date_get_by_epoch (char *ps_date, char *ps_format, time_t *pt_lt)$/;"	f
+date_get_epoch	../src/date.c	/^time_t date_get_epoch (char *ps_date, char *ps_format)$/;"	f
+date_is_valid	../src/date.c	/^int date_is_valid (char *ps_date, char *ps_format)$/;"	f
+date_normalize	../src/date.c	/^int date_normalize (char *ps_date_d, char *ps_date_s, char *ps_format)$/;"	f
+default_log	../src/log.c	/^static Log_t default_log;$/;"	v	file:
+default_plog	../src/log.c	/^static Log_t* default_plog = NULL;$/;"	v	file:
+entry	../include/c2q.h	/^    void *entry;$/;"	m	struct:C2q_node
+entry_sz	../include/c2q.h	/^    int entry_sz;$/;"	m	struct:C2q_node
+fd	../include/skt.h	/^    int fd;$/;"	m	struct:Skt
+fds	../include/skt.h	/^    struct pollfd fds[1];$/;"	m	struct:Skt
+file_basename	../src/file.c	/^void file_basename (char *dest, char *src)$/;"	f
+file_copy	../src/file.c	/^int file_copy (char *srcpath, char *destpath)$/;"	f
+file_delete	../src/file.c	/^int file_delete (char *path)$/;"	f
+file_dirname	../src/file.c	/^void file_dirname (char *dest, char *src)$/;"	f
+file_exists	../src/file.c	/^int file_exists (char *path)$/;"	f
+file_goto_first_line	../src/file.c	/^int file_goto_first_line (const char *fpath, char *line, int line_size)$/;"	f
+file_goto_last_line	../src/file.c	/^int file_goto_last_line (const char *fpath, char *line, int line_size)$/;"	f
+file_is_dir	../src/file.c	/^int file_is_dir (char *path)$/;"	f
+file_list	../src/file.c	/^int file_list (const char *dir, const char *pattern, File_name_t **flist)$/;"	f
+file_list_free	../src/file.c	/^void file_list_free (File_name_t *flist)$/;"	f
+file_list_get_first	../src/file.c	/^int file_list_get_first (const char *dir, const char *pattern, char *fname)$/;"	f
+file_list_get_last	../src/file.c	/^int file_list_get_last (const char *dir, const char *pattern, char *fname)$/;"	f
+file_mkdir	../src/file.c	/^int file_mkdir (char *path)$/;"	f
+file_move	../src/file.c	/^int file_move (char *oldpath, char *newpath)$/;"	f
+file_trim	../src/file.c	/^void file_trim (char *path)$/;"	f
+fmode	../include/log.h	/^    char fmode[8];$/;"	m	struct:Log
+fp	../include/log.h	/^    FILE *fp;$/;"	m	struct:Log
+fpath	../include/cfg.h	/^    char fpath[256];$/;"	m	struct:Cfg
+fpath	../include/log.h	/^    char fpath[512];$/;"	m	struct:Log
+get_comment_	../src/cfg.c	/^static char* get_comment_(const char *src)$/;"	f	file:
+get_property_value_	../src/cfg.c	/^static int get_property_value_(char *dest, const char *src, const int dest_size)$/;"	f	file:
+h_lock	../include/c2q.h	/^    pthread_mutex_t h_lock;$/;"	m	struct:C2q
+hash	../include/hash.h	/^    uint32_t hash;$/;"	m	struct:_Hash_map
+hash_generate	../src/hash.c	/^uint32_t hash_generate (const char *key, const size_t key_len)$/;"	f
+hash_get_index	../src/hash.c	/^uint32_t hash_get_index (uint32_t hash, uint32_t max_size)$/;"	f
+hash_table_deinit	../src/hash.c	/^int hash_table_deinit (Hashtable_t *t)$/;"	f
+hash_table_del	../src/hash.c	/^int hash_table_del (Hashtable_t *t, char *key)$/;"	f
+hash_table_free	../src/hash.c	/^void hash_table_free (Hashtable_t *t)$/;"	f
+hash_table_get	../src/hash.c	/^int hash_table_get (Hashtable_t *t, char *key, void *val, int val_size)$/;"	f
+hash_table_get_ptr	../src/hash.c	/^int hash_table_get_ptr (Hashtable_t *t, char *key, void **val)$/;"	f
+hash_table_init	../src/hash.c	/^int hash_table_init (Hashtable_t *t, unsigned int t_size)$/;"	f
+hash_table_new	../src/hash.c	/^Hashtable_t* hash_table_new (void)$/;"	f
+hash_table_set	../src/hash.c	/^int hash_table_set (Hashtable_t *t, char *key, void *val, int val_size)$/;"	f
+hash_table_set_ptr	../src/hash.c	/^int hash_table_set_ptr (Hashtable_t *t, char *key, void *val)$/;"	f
+head	../include/c2q.h	/^    C2q_node_t *head;$/;"	m	struct:C2q
+host	../include/skt.h	/^    char host[256];$/;"	m	struct:Skt
+initialized	../include/c2q.h	/^    char initialized;$/;"	m	struct:C2q
+initialized	../include/hash.h	/^    char initialized;$/;"	m	struct:Hashtable
+initialized	../include/log.h	/^    char initialized;$/;"	m	struct:Log
+is_blank_	../src/cfg.c	/^static short is_blank_(const char *s)$/;"	f	file:
+is_comment_	../src/cfg.c	/^static short is_comment_(const char *s)$/;"	f	file:
+is_keymatch_	../src/cfg.c	/^static short is_keymatch_(const char *buf, const char *key) {$/;"	f	file:
+is_secmatch_	../src/cfg.c	/^static short is_secmatch_(const char *buf, const char *sec) {$/;"	f	file:
+is_section_	../src/cfg.c	/^static short is_section_(const char *s)$/;"	f	file:
+jenkins_one_at_a_time_hash	../src/hash.c	/^static uint32_t jenkins_one_at_a_time_hash (const char *key, const size_t key_len)$/;"	f	file:
+key	../include/hash.h	/^    char *key;$/;"	m	struct:_Hash_map
+line	../include/cfg.h	/^    char line[CFG_MAX_BUF_LEN];$/;"	m	struct:Cfgbuf
+loadbuf_	../src/cfg.c	/^static Cfgbuf_t* loadbuf_(const char *fpath)$/;"	f	file:
+loaded	../include/cfg.h	/^    char loaded;$/;"	m	struct:Cfg
+lock	../include/hash.h	/^    pthread_mutex_t lock;$/;"	m	struct:Hashtable
+lock	../include/log.h	/^    pthread_mutex_t lock;$/;"	m	struct:Log
+log_close	../src/log.c	/^int log_close (Log_t *log)$/;"	f
+log_deinit	../src/log.c	/^int log_deinit (Log_t *log)$/;"	f
+log_event	../src/log.c	/^int log_event (Log_t *log, const int loglevel, const char *fmt, ...)$/;"	f
+log_format	../src/log.c	/^int log_format (Log_t *log, const char *fmt, ...)$/;"	f
+log_free	../src/log.c	/^void log_free (Log_t *log)$/;"	f
+log_get_default	../src/log.c	/^Log_t* log_get_default (void)$/;"	f
+log_init	../src/log.c	/^int log_init (Log_t *log, const char *fpath, const int loglevel)$/;"	f
+log_is_open	../src/log.c	/^int log_is_open (Log_t *log)$/;"	f
+log_mesg	../src/log.c	/^int log_mesg (Log_t *log, const char *fmt, ...)$/;"	f
+log_new	../src/log.c	/^Log_t* log_new (void)$/;"	f
+log_open	../src/log.c	/^int log_open (Log_t *log)$/;"	f
+log_rclose	../src/log.c	/^int log_rclose (Log_t *log)$/;"	f
+log_read	../src/log.c	/^int log_read (Log_t *log, char *buf, int buf_size)$/;"	f
+log_refresh	../src/log.c	/^int log_refresh (Log_t *log)$/;"	f
+log_ropen	../src/log.c	/^int log_ropen (Log_t *log)$/;"	f
+log_rotate	../src/log.c	/^int log_rotate (Log_t *log)$/;"	f
+log_set_default	../src/log.c	/^void log_set_default (Log_t *log)$/;"	f
+log_write	../src/log.c	/^int log_write (Log_t *log, char *buf)$/;"	f
+loglevel	../include/log.h	/^    char loglevel;$/;"	m	struct:Log
+loglevel_str	../src/log.c	/^static char loglevel_str[LOG_LEVEL_MAX][16] = {$/;"	v	file:
+main	../src/c2q.c	/^int main ()$/;"	f
+main	../src/date.c	/^int main ()$/;"	f
+main	../src/hash.c	/^int main ()$/;"	f
+main	../src/log.c	/^int main ()$/;"	f
+map	../include/hash.h	/^    _Hash_map_t *map;$/;"	m	struct:Hashtable
+map_node_del	../src/hash.c	/^static int map_node_del (_Hash_map_t *map_root, uint32_t hash, char *key)$/;"	f	file:
+map_node_free	../src/hash.c	/^static void map_node_free (_Hash_map_t *map_node)$/;"	f	file:
+map_node_free_all	../src/hash.c	/^static void map_node_free_all (_Hash_map_t *map_root)$/;"	f	file:
+map_node_get	../src/hash.c	/^static int map_node_get (_Hash_map_t *map_root, uint32_t hash, char *key, void *val, int val_size)$/;"	f	file:
+map_node_get_ptr	../src/hash.c	/^static int map_node_get_ptr (_Hash_map_t *map_root, uint32_t hash, char *key, void **val)$/;"	f	file:
+map_node_new	../src/hash.c	/^static _Hash_map_t* map_node_new (void)$/;"	f	file:
+map_node_set	../src/hash.c	/^static int map_node_set (_Hash_map_t *map_root, uint32_t hash, char *key, void *val, int val_size)$/;"	f	file:
+map_node_set_ptr	../src/hash.c	/^static int map_node_set_ptr (_Hash_map_t *map_root, uint32_t hash, char *key, void *val)$/;"	f	file:
+map_sz	../include/hash.h	/^    unsigned int map_sz;$/;"	m	struct:Hashtable
+mk_time_	../src/date.c	/^static time_t mk_time_ (char *ps_date, char *ps_format)$/;"	f	file:
+mydb	../include/mydb.h	/^    MYSQL mydb;$/;"	m	struct:MYDB_CONPARAMS_
+mydb_connect	../src/mydb.c	/^int mydb_connect (MYDB_CONPARAMS *pconn)$/;"	f
+mydb_disconnect	../src/mydb.c	/^int mydb_disconnect (MYDB_CONPARAMS *pconn)$/;"	f
+mydb_fetch_field	../src/mydb.c	/^int mydb_fetch_field (MYDB_FIELD *pfield, MYDB_ROW *prow, unsigned int ifield)$/;"	f
+mydb_fetch_field_by_colname	../src/mydb.c	/^int mydb_fetch_field_by_colname (MYDB_FIELD *pfield, MYDB_ROW *prow, char *pscolname)$/;"	f
+mydb_fetch_row	../src/mydb.c	/^int mydb_fetch_row (MYDB_ROW *prow, MYDB_RES *presult)$/;"	f
+mydb_free_result	../src/mydb.c	/^int mydb_free_result (MYDB_RES *presult)$/;"	f
+mydb_num_fields	../src/mydb.c	/^unsigned int mydb_num_fields (MYDB_RES *presult)$/;"	f
+mydb_ping	../src/mydb.c	/^int mydb_ping (MYDB_CONPARAMS *pconn)$/;"	f
+mydb_query	../src/mydb.c	/^int mydb_query (MYDB_RES *presult, MYDB_CONPARAMS *pconn, char *pssql)$/;"	f
+net_get_address	../src/net.c	/^unsigned long net_get_address (char *host)$/;"	f
+net_get_hostname	../src/net.c	/^void net_get_hostname (char *host, int host_size)$/;"	f
+net_get_ipaddr	../src/net.c	/^void net_get_ipaddr (char *ipaddr, struct in_addr in)$/;"	f
+net_lock	../src/net.c	/^static pthread_mutex_t net_lock = PTHREAD_MUTEX_INITIALIZER;$/;"	v	file:
+next	../include/c2q.h	/^    struct C2q_node *next;$/;"	m	struct:C2q_node
+next	../include/cfg.h	/^    struct Cfgbuf *next;$/;"	m	struct:Cfgbuf
+next	../include/hash.h	/^    struct _Hash_map *next;$/;"	m	struct:_Hash_map
+next_ok	../include/c2q.h	/^    char next_ok;$/;"	m	struct:C2q_node
+notempty	../include/c2q.h	/^    pthread_cond_t  notempty;$/;"	m	struct:C2q
+num_to_num2	../src/hash.c	/^static uint32_t num_to_num2 (uint32_t n)$/;"	f	file:
+parse_date_format_	../src/date.c	/^static int parse_date_format_ (char *ps_date, char *ps_format, time_t *pt_lt)$/;"	f	file:
+pname	../include/mydb.h	/^    char *pname;$/;"	m	struct:MYDB_FIELD_
+port	../include/skt.h	/^    int port;$/;"	m	struct:Skt
+pres	../include/mydb.h	/^    MYSQL_RES *pres;$/;"	m	struct:MYDB_RES_
+pres	../include/mydb.h	/^    MYSQL_RES *pres;$/;"	m	struct:MYDB_ROW_
+prototypes	../configure	/^   function prototypes and stuff, but not '\\xHH' hex character constants.$/;"	f
+psdbname	../include/mydb.h	/^    char *psdbname;$/;"	m	struct:MYDB_CONPARAMS_
+pshost	../include/mydb.h	/^    char *pshost;$/;"	m	struct:MYDB_CONPARAMS_
+pspass	../include/mydb.h	/^    char *pspass;$/;"	m	struct:MYDB_CONPARAMS_
+psuser	../include/mydb.h	/^    char *psuser;$/;"	m	struct:MYDB_CONPARAMS_
+pthread_create	../configure	/^pthread_create ();$/;"	f
+pvalue	../include/mydb.h	/^    char *pvalue;$/;"	m	struct:MYDB_FIELD_
+row	../include/mydb.h	/^    MYSQL_ROW row;$/;"	m	struct:MYDB_ROW_
+searchbuf_	../src/cfg.c	/^static Cfgbuf_t* searchbuf_(const Cfgbuf_t *buf, const char *sec, const char *key)$/;"	f	file:
+sin	../include/skt.h	/^    struct sockaddr_in sin;$/;"	m	struct:Skt
+sin_sz	../include/skt.h	/^    size_t sin_sz;$/;"	m	struct:Skt
+skt_accept	../src/skt.c	/^Skt_t* skt_accept (Skt_t *s, int mtimeout)$/;"	f
+skt_close	../src/skt.c	/^void skt_close (Skt_t *s)$/;"	f
+skt_connect	../src/skt.c	/^int skt_connect (Skt_t *s)$/;"	f
+skt_disable_read	../src/skt.c	/^int skt_disable_read (Skt_t *s)$/;"	f
+skt_disable_write	../src/skt.c	/^int skt_disable_write (Skt_t *s)$/;"	f
+skt_listen	../src/skt.c	/^int skt_listen (Skt_t *s)$/;"	f
+skt_open	../src/skt.c	/^Skt_t* skt_open (char *host, int port)$/;"	f
+skt_poll	../src/skt.c	/^int skt_poll (Skt_t *s, short events, short *revents, int mtimeout)$/;"	f
+skt_read	../src/skt.c	/^int skt_read (Skt_t *s, char *buf, int nbytes)$/;"	f
+skt_read_wait	../src/skt.c	/^int skt_read_wait (Skt_t *s, int mtimeout)$/;"	f
+skt_reconnect	../src/skt.c	/^int skt_reconnect (Skt_t *s)$/;"	f
+skt_recv	../src/skt.c	/^int skt_recv (Skt_t *s, char *buf, int nbytes, int mtimeout)$/;"	f
+skt_send	../src/skt.c	/^int skt_send (Skt_t *s, char *buf, int nbytes, int mtimeout)$/;"	f
+skt_unlisten	../src/skt.c	/^int skt_unlisten (Skt_t *s)$/;"	f
+skt_write	../src/skt.c	/^int skt_write (Skt_t *s, char *buf, int nbytes)$/;"	f
+skt_write_wait	../src/skt.c	/^int skt_write_wait (Skt_t *s, int mtimeout)$/;"	f
+socket	../configure	/^socket ();$/;"	f
+str_chomp	../src/str.c	/^int str_chomp (char *s)$/;"	f
+str_chr	../src/str.c	/^char* str_chr (const char *s)$/;"	f
+str_dos2unix	../src/str.c	/^int str_dos2unix (char *dest, const char *src, int dest_size)$/;"	f
+str_escape	../src/str.c	/^int str_escape (char *dest, const char *src, int dest_size) $/;"	f
+str_is_alnum	../src/str.c	/^int str_is_alnum (const char *s)$/;"	f
+str_is_alpha	../src/str.c	/^int str_is_alpha (const char *s)$/;"	f
+str_is_numeric	../src/str.c	/^int str_is_numeric (const char *s)$/;"	f
+str_is_printable	../src/str.c	/^int str_is_printable (const char *s)$/;"	f
+str_ltrim	../src/str.c	/^int str_ltrim (char *s)$/;"	f
+str_ltrim_char	../src/str.c	/^int str_ltrim_char (char *s, char c)$/;"	f
+str_pad	../src/str.c	/^int str_pad (char *dest, const char *src, int len, const char *padstr, Strpad_t padtype)$/;"	f
+str_rand	../src/str.c	/^int str_rand (char *s, int len)$/;"	f
+str_rchr	../src/str.c	/^char* str_rchr (const char *s)$/;"	f
+str_replace	../src/str.c	/^int str_replace (char *dest, const char *src, int dest_size, const char *search, const char *replace)$/;"	f
+str_reverse	../src/str.c	/^int str_reverse (char *s)$/;"	f
+str_rtrim	../src/str.c	/^int str_rtrim (char *s)$/;"	f
+str_rtrim_char	../src/str.c	/^int str_rtrim_char (char *s, char c)$/;"	f
+str_slice	../src/str.c	/^int str_slice (char *dest, char *src, int len)$/;"	f
+str_substr	../src/str.c	/^int str_substr (char *dest, const char *src, int idx, int len)$/;"	f
+str_tok	../src/str.c	/^int str_tok (char *dest, char *src, const char *needle)$/;"	f
+str_tolower	../src/str.c	/^int str_tolower (char *s)$/;"	f
+str_toupper	../src/str.c	/^int str_toupper (char *s)$/;"	f
+str_trim	../src/str.c	/^int str_trim (char *s)$/;"	f
+str_trim_char	../src/str.c	/^int str_trim_char (char *s, char c)$/;"	f
+str_unescape	../src/str.c	/^int str_unescape (char *dest, const char *src, int dest_size) $/;"	f
+str_unix2dos	../src/str.c	/^int str_unix2dos (char *dest, const char *src, int dest_size)$/;"	f
+sys_abort	../src/sys.c	/^void sys_abort (void)$/;"	f
+sys_bind	../src/sys.c	/^int sys_bind (int port)$/;"	f
+sys_daemon	../src/sys.c	/^void sys_daemon (void)$/;"	f
+sys_getopt	../src/sys.c	/^int sys_getopt (int argc, char **argv, char *opts, char *opt_arg, int opt_arg_size)$/;"	f
+sys_msleep	../src/sys.c	/^void sys_msleep (int msec)$/;"	f
+sys_sigblock	../src/sys.c	/^void sys_sigblock (void)$/;"	f
+sys_sigwait	../src/sys.c	/^int sys_sigwait (void)$/;"	f
+t_lock	../include/c2q.h	/^    pthread_mutex_t t_lock;$/;"	m	struct:C2q
+tail	../include/c2q.h	/^    C2q_node_t *tail;$/;"	m	struct:C2q
+uiport	../include/mydb.h	/^    unsigned int uiport;$/;"	m	struct:MYDB_CONPARAMS_
+unloadbuf_	../src/cfg.c	/^static void unloadbuf_(Cfgbuf_t *buf)$/;"	f	file:
+val	../include/hash.h	/^    void *val;$/;"	m	struct:_Hash_map
+val_sz	../include/hash.h	/^    int val_sz;$/;"	m	struct:_Hash_map
+w_lock	../include/c2q.h	/^    pthread_mutex_t w_lock;$/;"	m	struct:C2q

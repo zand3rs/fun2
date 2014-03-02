@@ -1,0 +1,76 @@
+# lock port
+lock_port = 52783
+
+# log level 
+# 0 = off
+# 1 = critical
+# 2 = error
+# 3 = warning
+# 4 = info
+# 5 = debug
+loglevel = 5
+
+# log file
+logfile = log/fun2_transaction.log
+
+# cluster node id, this should be unique through out the cluster
+cluster_node = 1
+access_code = 2884
+
+# database
+db_host = orcl
+db_user = fun2
+db_pass = fun2
+db_fetch_limit = 150
+
+thread_count = 2
+
+# API library path
+library_path = lib
+
+csp_url = http://localhost/zander/csp.php
+csp_timeout_sec = 60
+csp_userid = 
+csp_password = 
+
+nsn_host = 10.163.92.6
+nsn_port = 9882
+nsn_name = CPS
+nsn_user = fun2
+nsn_pass = fun2_t3$t!ng
+
+[roaming_component]
+roaming_component_count = 2
+
+[roaming_component_1]
+step_no = 1
+description = CCB
+svc_url = http://url.com
+svc_host = 
+svc_port = 
+svc_user = 
+svc_pass = 
+db_host = 
+db_user = 
+db_pass = 
+timeout = 60
+libpath = lib/libccb.so
+thread_count = 2
+max_retry = 3
+
+[roaming_component_2]
+step_no = 2
+description = HLR
+svc_url = http://url.com
+svc_host = 
+svc_port = 
+svc_user = 
+svc_pass = 
+db_host = 
+db_user = 
+db_pass = 
+timeout = 60
+libpath = lib/libccb.so
+thread_count = 2
+max_retry = 3
+

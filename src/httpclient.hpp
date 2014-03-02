@@ -1,0 +1,58 @@
+/*
+ *    ____  |
+ *         /     Author  : Alexander A. Magtipon
+ *       /       Created : 2009-07-27
+ *     /         Updated : 2010-10-23
+ *  _______|     Remarks : boy - zand3rs@gmail.com
+ *
+ *
+ * Filename    : httpclient.hpp
+ * Description : http client
+ *
+ * $Id$
+ */
+
+/******************************************************************************/
+
+#ifndef _HTTPCLIENT_HPP_
+#define _HTTPCLIENT_HPP_
+
+#include <string>
+
+/*-defines--------------------------------------------------------------------*/
+
+/*-functions------------------------------------------------------------------*/
+
+class HttpClient {
+
+    public:
+        HttpClient();
+        ~HttpClient();
+
+        //----------------------------------------------------------------------
+
+        short httpGet(char const* url, unsigned short timeout_sec = 0);
+        short httpPost(char const* url, char const* fields,
+                unsigned short timeout_sec = 0);
+        short httpPost(char const* url, char const* content,
+                char const* content_type, unsigned short timeout_sec = 0);
+
+        char const* getResponseBody() const {
+            return _out_buf.c_str();
+        }
+        char const* getError() const {
+            return _err_buf.c_str();
+        }
+
+    private:
+        std::string _out_buf;
+        std::string _err_buf;
+
+        static bool _global_init;
+        static size_t _writer(void *ptr, size_t size, size_t nmemb, void *stream);
+
+};
+
+#endif
+
+/******************************************************************************/

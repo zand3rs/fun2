@@ -1,0 +1,94 @@
+#
+# Main Makefile...
+# 
+# $Id$
+#
+
+MAINDIR   = @MAINDIR@
+SUBDIRS   = @SUBDIRS@
+BINDIR    = bin
+LIBDIR    = lib
+LOGDIR    = log
+TMPDIR    = /tmp
+DISTNAME  = @PACKAGE_NAME@-@PACKAGE_VERSION@
+DISTPACK  = $(DISTNAME).tar.gz
+DISTFILES = $(DISTPACK) Makefile config.status config.log *.cache @CONFIGHEADER@
+@SET_MAKE@
+
+all:
+	@{ \
+	for d in $(SUBDIRS); do \
+	    if [ -d $$d ]; then \
+	        cd $$d; \
+	        if [[ ! -f "Makefile" && -x "configure" ]]; then \
+	            ./configure; \
+	            if [ $$? != 0 ]; then \
+	                exit 1; \
+	            fi; \
+	        fi; \
+	        if [ -f "Makefile" ]; then \
+	            $(MAKE); \
+	            if [ $$? != 0 ]; then \
+	                exit 1; \
+	            fi; \
+	        fi; \
+	        cd ../; \
+	    fi \
+	done; \
+	}
+
+dist:
+	@{ \
+	if [ "$(DISTNAME)" != "-" ]; then \
+	    \rm -f $(DISTPACK); \
+	    \rm -Rf $(DISTNAME); \
+	    \rm -Rf $(TMPDIR)/$(DISTNAME); \
+	    mkdir $(TMPDIR)/$(DISTNAME); \
+	    \cp -RPpf * $(TMPDIR)/$(DISTNAME)/. ; \
+	    cd $(TMPDIR)/$(DISTNAME); \
+	    $(MAKE) distclean; \
+	    cd $(MAINDIR); \
+	    \mv -f $(TMPDIR)/$(DISTNAME) ./$(DISTNAME) ; \
+	    tar -cf - $(DISTNAME) | gzip -c9 > $(DISTPACK); \
+	    \rm -Rf $(DISTNAME); \
+	fi \
+	}
+
+clean:
+	@{ \
+	for d in $(SUBDIRS); do \
+	    if [ -d $$d ]; then \
+	        cd $$d; \
+	        if [ -f "Makefile" ]; then \
+	            $(MAKE) clean; \
+	        fi; \
+	        cd ../; \
+	    fi \
+	done; \
+	}
+
+cleanall: clean
+
+distclean:
+	@{ \
+	for d in $(SUBDIRS); do \
+	    if [ -d $$d ]; then \
+	        cd $$d; \
+	        if [ -f "Makefile" ]; then \
+	            $(MAKE) distclean; \
+	        fi; \
+	        cd ../; \
+	    fi \
+	done; \
+	if [ -d $(BINDIR) ]; then \
+	    \rm -f $(BINDIR)/*; \
+	fi; \
+	if [ -d $(LIBDIR) ]; then \
+	    \rm -f $(LIBDIR)/*; \
+	fi; \
+	if [ -d $(LOGDIR) ]; then \
+	    \rm -f $(LOGDIR)/*; \
+	fi; \
+	}
+	\rm -Rf $(DISTFILES)
+

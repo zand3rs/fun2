@@ -1,0 +1,53 @@
+#
+# Makefile for libfuc...
+# 
+# $Id$
+#
+
+CC         = @CC@
+
+VERSION    = @PACKAGE_VERSION@
+MAJVER     = @PACKAGE_MAJOR_VERSION@
+MINVER     = @PACKAGE_MINOR_VERSION@
+LIBSO      = @PACKAGE_NAME@.so
+LIB        = @PACKAGE_NAME@.a
+BIN        = test
+
+LIBPATH    = ../lib
+BINPATH    = ../bin
+CINCLUDES  = -I../include @MYSQL_INCPATH@
+CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS @DEFS@
+CFLAGS     = -fPIC @CFLAGS@ @X64_CFLAGS@ $(CDEFINES) $(CINCLUDES)
+LFLAGS     = -fPIC -shared -Wl,-soname,$(LIBSO).$(MAJVER)
+LLIBS      = @LIBS@ @MYSQL_LIBPATH@ @MYSQL_LLIB@
+RANLIB     = ranlib
+
+# target files...
+LIBO = c2q.o cfg.o date.o file.o hash.o log.o net.o skt.o str.o sys.o @MYDB_OBJ@ 
+BINO =
+
+all: $(LIB)
+
+$(LIB): $(LIBO)
+	ar rcs $@ $(LIBO)
+	$(RANLIB) $@
+	if [ -d $(LIBPATH) ]; then \mv -f $(LIB) $(LIBPATH)/.; fi
+	$(CC) $(LFLAGS) -o $(LIBSO).$(VERSION) $(LIBO)
+	ln -fs $(LIBSO).$(VERSION) $(LIBSO).$(MAJVER)
+	ln -fs $(LIBSO).$(VERSION) $(LIBSO)
+	if [ -d $(LIBPATH) ]; then \mv -f $(LIBSO)* $(LIBPATH)/.; fi
+
+$(BIN): $(BINO) $(LIBO)
+	$(CC) -o $@ $(BINO) $(LIBO) $(LLIBS)
+	if [ -d $(BINPATH) ]; then \mv -f $(BIN) $(BINPATH)/.; fi
+
+cleanobj: 
+	\rm -f *.o
+
+clean: cleanobj
+	\rm -f core* $(BIN) $(LIB)
+
+cleanall: clean
+
+distclean: cleanall
+	\rm -f Makefile

@@ -1,0 +1,88 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+CC	Makefile	/^CC         = g++$/;"	m
+CDEFINES	Makefile	/^CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DHAVE_CONFIG_H$/;"	m
+CINCLUDES	Makefile	/^CINCLUDES  = -I..\/include -I..\/..\/libfuc\/include$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS   = -fPIC -g -O2 $(CDEFINES) $(CINCLUDES) -g -m32 -D_REENTRANT -W -Wall -Wmissing-prototypes -I\/usr\/local\/include\/ -I\/usr\/local\/lib\/libsqlora8\/include  $/;"	m
+LFLAGS	Makefile	/^LFLAGS     = -fPIC -shared -Wl,-soname,$(LIB).$(VERSION)$/;"	m
+LIB	Makefile	/^LIB        = $(LIBNAME).so$/;"	m
+LIBNAME	Makefile	/^LIBNAME    = libnsn$/;"	m
+LIBO	Makefile	/^LIBO = nsn.o oradb.o oradbsimple.o$/;"	m
+LIBPATH	Makefile	/^LIBPATH    = ..\/lib$/;"	m
+LLIBS	Makefile	/^LLIBS      = ..\/..\/libfuc\/lib\/libfuc.a$/;"	m
+MAX_ORACLE_CONNECT_RETRY_COUNT	oradb.hpp	/^            MAX_ORACLE_CONNECT_RETRY_COUNT = 10$/;"	e	enum:OraDB::<anonymous>
+NSN	nsn.hpp	/^        NSN() : buffer(NULL) {};$/;"	f	class:NSN
+NSN	nsn.hpp	/^class NSN : public Fun2RC {$/;"	c
+ORADBSIMPLE_HPP	oradbsimple.hpp	2;"	d
+ORADB_HPP	oradb.hpp	2;"	d
+ORAERR_CRITICAL	oradb.cpp	11;"	d	file:
+ORAERR_REGULAR	oradb.cpp	12;"	d	file:
+ORAERR_TERMINAL	oradb.cpp	10;"	d	file:
+OraDB	oradb.hpp	/^        OraDB(const char* ora_auth = "") : _dbh(-1), _ora_auth(ora_auth) {}$/;"	f	class:OraDB
+OraDB	oradb.hpp	/^class OraDB {$/;"	c
+OraDBSimple	oradbsimple.cpp	/^OraDBSimple::OraDBSimple(const char* ora_auth) : OraDB(ora_auth) {}$/;"	f	class:OraDBSimple
+OraDBSimple	oradbsimple.hpp	/^class OraDBSimple : public OraDB$/;"	c
+STH_INIT	oradb.hpp	/^        static const sqlo_stmt_handle_t STH_INIT = SQLO_STH_INIT;$/;"	m	class:OraDB
+VERSION	Makefile	/^VERSION    = 0.0.20$/;"	m
+_FUN2RC_NSN_HPP_	nsn.hpp	4;"	d
+__class__	nsn.hpp	13;"	d
+_buf	oradbsimple.hpp	/^        const char** _buf;$/;"	m	class:OraDBSimple
+_dbh	oradb.hpp	/^        sqlo_db_handle_t _dbh; \/\/ libsqlora handle$/;"	m	class:OraDB
+_initialized	oradb.cpp	/^bool OraDB::_initialized = false;$/;"	m	class:OraDB	file:
+_initialized	oradb.hpp	/^        static bool _initialized;$/;"	m	class:OraDB
+_ora_auth	oradb.hpp	/^        std::string _ora_auth;$/;"	m	class:OraDB
+_result	oradb.hpp	/^        int		_result;$/;"	m	class:OraDB
+_sth_ping	oradb.hpp	/^        sqlo_stmt_handle_t _sth_ping;$/;"	m	class:OraDB
+activate	nsn.cpp	/^int NSN::activate(const char *msisdn)$/;"	f	class:NSN
+buffer	nsn.hpp	/^        char* buffer;$/;"	m	class:NSN
+buffer_size	nsn.hpp	/^        static const int buffer_size=1024*16;$/;"	m	class:NSN
+connectSocket	nsn.cpp	/^int NSN::connectSocket() $/;"	f	class:NSN
+deactivate	nsn.cpp	/^int NSN::deactivate(const char *msisdn)$/;"	f	class:NSN
+deinitialize	nsn.cpp	/^int NSN::deinitialize()$/;"	f	class:NSN
+destroy_db	oradb.cpp	/^int OraDB::destroy_db()$/;"	f	class:OraDB
+executeActivate	nsn.cpp	/^int NSN::executeActivate(char *msisdn)$/;"	f	class:NSN
+executeDeactivate	nsn.cpp	/^int NSN::executeDeactivate(char *msisdn)$/;"	f	class:NSN
+executeGetBalance	nsn.cpp	/^int NSN::executeGetBalance(char *msisdn)$/;"	f	class:NSN
+fetchRow	oradbsimple.cpp	/^const char** OraDBSimple::fetchRow(sqlo_stmt_handle_t& sth)$/;"	f	class:OraDBSimple
+freeResult	oradbsimple.cpp	/^int OraDBSimple::freeResult(sqlo_stmt_handle_t& sth)$/;"	f	class:OraDBSimple
+fun2rc_del	nsn.hpp	/^extern "C" void fun2rc_del(Fun2RC* p) {$/;"	f
+fun2rc_new	nsn.hpp	/^extern "C" Fun2RC* fun2rc_new() {$/;"	f
+getBalance	nsn.cpp	/^int NSN::getBalance(const char *msisdn)$/;"	f	class:NSN
+getIMSI	nsn.cpp	/^int NSN::getIMSI(const char *msisdn, char *imsi, int imsi_size)$/;"	f	class:NSN
+getPingUrl	nsn.cpp	/^char *NSN::getPingUrl()$/;"	f	class:NSN
+host	nsn.hpp	/^        char host[64];$/;"	m	class:NSN
+init_lib	oradb.cpp	/^int OraDB::init_lib(bool threaded_mode)$/;"	f	class:OraDB
+initialize	nsn.cpp	/^int NSN::initialize()$/;"	f	class:NSN
+initialize	oradb.cpp	/^int OraDB::initialize()$/;"	f	class:OraDB
+initialize	oradb.hpp	/^        int initialize(const char* ora_auth) {$/;"	f	class:OraDB
+login	nsn.cpp	/^int NSN::login()$/;"	f	class:NSN
+logout	nsn.cpp	/^int NSN::logout()$/;"	f	class:NSN
+m_Host	nsn.hpp	/^        struct hostent m_Host;      \/\/ Host$/;"	m	class:NSN
+m_pHost	nsn.hpp	/^        struct hostent *m_pHost;      \/\/ Host$/;"	m	class:NSN
+m_serverSocket	nsn.hpp	/^        int m_serverSocket;$/;"	m	class:NSN
+nsnExpirationDate	nsn.hpp	/^        char nsnExpirationDate[64];$/;"	m	class:NSN
+nsnUsername	nsn.hpp	/^        char nsnUsername[64];$/;"	m	class:NSN
+ora_force_execute	oradb.cpp	/^int OraDB::ora_force_execute (sqlo_stmt_handle_t* psth, int check_res, int commit) {$/;"	f	class:OraDB
+ora_force_fetch	oradb.cpp	/^int OraDB::ora_force_fetch(sqlo_stmt_handle_t* psth) {$/;"	f	class:OraDB
+ora_ping	oradb.cpp	/^int OraDB::ora_ping() {$/;"	f	class:OraDB
+ora_ping_bind	oradb.cpp	/^int OraDB::ora_ping_bind() {$/;"	f	class:OraDB
+ora_reconnect	oradb.cpp	/^int OraDB::ora_reconnect() $/;"	f	class:OraDB
+password	nsn.hpp	/^        char password[64];$/;"	m	class:NSN
+payload	nsn.hpp	/^        char payload[1024];$/;"	m	class:NSN
+ping	nsn.cpp	/^int NSN::ping()$/;"	f	class:NSN
+port	nsn.hpp	/^        int port;$/;"	m	class:NSN
+query	oradbsimple.cpp	/^int OraDBSimple::query(sqlo_stmt_handle_t* psth, const char *stmt)$/;"	f	class:OraDBSimple
+readStream	nsn.cpp	/^int NSN::readStream(char *buf, int buf_sz) $/;"	f	class:NSN
+sendData	nsn.cpp	/^int NSN::sendData(char *data) $/;"	f	class:NSN
+serverSocket	nsn.hpp	/^        struct sockaddr_in serverSocket;$/;"	m	class:NSN
+session_url	nsn.hpp	/^        char session_url[1024];$/;"	m	class:NSN
+stmt_handle_t	oradb.hpp	/^        typedef sqlo_stmt_handle_t stmt_handle_t;$/;"	t	class:OraDB
+timeout	nsn.hpp	/^        int timeout;$/;"	m	class:NSN
+username	nsn.hpp	/^        char username[64];$/;"	m	class:NSN
+~NSN	nsn.hpp	/^        ~NSN() {};$/;"	f	class:NSN
+~OraDB	oradb.cpp	/^OraDB::~OraDB()$/;"	f	class:OraDB
+~OraDBSimple	oradbsimple.cpp	/^OraDBSimple::~OraDBSimple() {}$/;"	f	class:OraDBSimple

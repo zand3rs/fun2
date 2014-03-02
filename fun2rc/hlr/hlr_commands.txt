@@ -1,0 +1,97 @@
+----------------------------------------------
+
+HLR::callForwardingUnconditionalErased:
+ZMSS:MSISDN=639271002030:CFU=E;
+
+## HLR::callForwardingUnconditionalDeactivated:
+## ZMSS:MSISDN=639271002030:CFU=D;
+
+----------------------------------------------
+
+HLR::callForwardingBusyErased:
+ZMSS:MSISDN=639271002030:CFB=E;
+
+## HLR::callForwardingBusyDeactivated:
+## ZMSS:MSISDN=639271002030:CFB=D;
+
+----------------------------------------------
+
+HLR::callForwardingNotReachableErased:
+ZMSS:MSISDN=639271002030:CFNR=E;
+
+## HLR::callForwardingNotReachableDeactivated:
+## ZMSS:MSISDN=639271002030:CFNR=D;
+
+----------------------------------------------
+
+HLR::callForwardingNoReplyErased:
+ZMSS:MSISDN=639271002030:CFNA=E;
+
+## HLR::callForwardingNoReplyDeactivated:
+## ZMSS:MSISDN=639271002030:CFNA=D;
+
+----------------------------------------------
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedT11:
+ZMSS:IMSI=515029900003201,BSERV=T11:BORO=A;
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedT11:
+ZMSS:IMSI=515029900003201,BSERV=T11:BORO=D:;
+
+----------------------------------------------
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB16:
+ZMSS:IMSI=515029900003201,BSERV=B16:BORO=A;
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB16:
+ZMSS:IMSI=515029900003201,BSERV=B16:BORO=D:;
+
+----------------------------------------------
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB1F:
+ZMSS:IMSI=515029900003201,BSERV=B1F:BORO=A;
+
+HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB1F:
+ZMSS:IMSI=515029900003201,BSERV=B1F:BORO=D:;
+
+----------------------------------------------
+
+HLR::defineSuplementaryServicesDeactivated:
+ZMSD:MSISDN=639271002030:MPTY=N,PSW=N;
+
+HLR::defineSuplementaryServicesActivated:
+ZMSS:MSISDN=639271002030:MPTY=Y,PSW=1234;
+
+----------------------------------------------
+
+HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16:
+ZMSS:IMSI=515029900003201,BSERV=B16:BIRO=A;
+
+HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB16:
+ZMSS:IMSI=515029900003201,BSERV=B16:BIRO=D;
+
+----------------------------------------------
+
+HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB1F:
+ZMSS:IMSI=515029900003201,BSERV=B1F:BIRO=A;
+
+HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB1F:
+ZMSS:IMSI=515029900003201,BSERV=B1F:BIRO=D;
+
+----------------------------------------------
+
+HLR::setActivateDisableGPRS:
+ZMNM:IMSI=515029900003201:NWACC=NONGPRS,GRP=5;
+
+HLR::setDeactivateEnableGPRS:
+ZMSS:IMSI=515029900003201,NWACC=BOTH:;
+
+----------------------------------------------
+
+HLR::setActivateSAM:
+ZMIM:IMSI=515029900003201:SAM=ALL,RP=4,ACT=A;
+
+HLR::setDeactivateSAM:
+ZMSS:IMSI=515029900003201,SAM=NAT,RP=6,ACT=A;
+
+----------------------------------------------

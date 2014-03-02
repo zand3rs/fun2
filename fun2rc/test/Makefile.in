@@ -1,0 +1,41 @@
+#
+# Makefile for ccb...
+# 
+# $Id$
+#
+
+CC         = @CXX@
+
+LIB        = 
+BIN        = @PACKAGE_NAME@.test
+
+LIBPATH    = ../lib
+BINPATH    = ../bin
+CINCLUDES  = -I../include -I../../libfuc/include
+CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS @DEFS@
+CXXFLAGS   = @CXXFLAGS@ $(CDEFINES) $(CINCLUDES)
+LLIBS      = @LIBS@ @LIBCURL@ ../../libfuc/lib/libfuc.a
+
+# target files...
+LIBO = 
+BINO = test.o
+
+all: $(BIN)
+
+$(BIN): $(BINO)
+	$(CC) -o $@ $(BINO) $(LLIBS)
+	if [ -d $(BINPATH) ]; then \mv -f $(BIN) $(BINPATH)/.; fi
+
+test_sset: test_sset.o
+	$(CC) -o $@ test_sset.o $(LLIBS)
+
+cleanobj: 
+	\rm -f *.o
+
+clean: cleanobj
+	\rm -f core* $(BIN) $(LIB)
+
+cleanall: clean
+
+distclean: cleanall
+	\rm -f Makefile

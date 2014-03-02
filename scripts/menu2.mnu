@@ -1,0 +1,27 @@
+header_location_xy=3,4
+items_location_xy=3,8
+line_spaces=1
+input_prompt_location_xy=11,20,date
+input_location_xy=24,20,date
+input_prompt=Enter Choice:
+enclosed_brackets=[,]
+menu_title=Fun2 Startup and Shutdown 
+parent_menu=/appl/fun2/scripts/OPSMainMenuAll4.mnu
+<header>
+---------------------------------------------------------
+		Fun2 Startup and Shutdown 
+---------------------------------------------------------
+</header>
+<items_list>
+1~c~Startup All Applications daemon~/appl/fun2/scripts/fun2.sh start~24,20
+2~c~Shutdown All Applications daemon~/appl/fun2/scripts/fun2.sh stop~24,20
+3~c~Startup fun2_transaction daemon~/appl/fun2/app/fun2_transaction -c /appl/fun2_transaction.cfg/~24,20
+4~c~Shutdown fun2_transaction daemon~/appl/fun2/scripts/stop.sh fun2_transaction~24,20
+5~c~Startup fun2_request daemon~/appl/fun2/app/fun2_request -c /appl/fun2/cfg/fun2_request.cfg~24,20
+6~c~Shutdown fun2_request daemon~/appl/fun2/scripts/stop.sh fun2_request~24,20
+7~c~Startup fun2_response daemon~/appl/fun2/app/fun2_response -c /appl/fun2/cfg/fun2_response.cfg~24,20
+8~c~Shutdown fun2_response daemon~/appl/fun2/scripts/stop.sh fun2_response~24,20
+9~c~Startup fun2_broadcast daemon~/appl/fun2/app/fun2_broadcast -c /appl/fun2/cfg/fun2_broadcast.cfg~24,20
+10~c~Shutdown fun2_broadcast daemon~/appl/fun2/scripts/stop.sh fun2_broadcast~24,20
+11~m~Return to Fun2 Main Menu~OPSMainMenuAll4.mnu
+</items_list>

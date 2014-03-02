@@ -1,0 +1,45 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+CC	Makefile	/^CC         = g++$/;"	m
+CDEFINES	Makefile	/^CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DHAVE_CONFIG_H$/;"	m
+CINCLUDES	Makefile	/^CINCLUDES  = -I..\/include -I..\/..\/libfuc\/include$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS   = -fPIC -g -O2 $(CDEFINES) $(CINCLUDES)$/;"	m
+HttpClient	httpclient.hpp	/^        HttpClient()$/;"	f	class:HttpClient
+HttpClient	httpclient.hpp	/^class HttpClient {$/;"	c
+LFLAGS	Makefile	/^LFLAGS     = -fPIC -shared -Wl,-soname,$(LIB).$(VERSION)$/;"	m
+LIB	Makefile	/^LIB        = $(LIBNAME).so$/;"	m
+LIBNAME	Makefile	/^LIBNAME    = librbt$/;"	m
+LIBO	Makefile	/^LIBO = rbt.o httpclient.o$/;"	m
+LIBPATH	Makefile	/^LIBPATH    = ..\/lib$/;"	m
+LLIBS	Makefile	/^LLIBS      = ..\/..\/libfuc\/lib\/libfuc.a$/;"	m
+MAX_LENGTH	rbt.hpp	12;"	d
+RBT	rbt.hpp	/^        RBT() {};$/;"	f	class:RBT
+RBT	rbt.hpp	/^class RBT : public Fun2RC {$/;"	c
+VERSION	Makefile	/^VERSION    = 0.0.20$/;"	m
+_FUN2RC_RBT_HPP_	rbt.hpp	4;"	d
+_HTTPCLIENT_HPP_	httpclient.hpp	18;"	d
+__class__	rbt.hpp	19;"	d
+_err_buf	httpclient.hpp	/^        std::string _err_buf;$/;"	m	class:HttpClient
+_out_buf	httpclient.hpp	/^        std::string _out_buf;$/;"	m	class:HttpClient
+_url	httpclient.hpp	/^        std::string _url;$/;"	m	class:HttpClient
+activate	rbt.cpp	/^int RBT::activate(const char *msisdn)$/;"	f	class:RBT
+deactivate	rbt.cpp	/^int RBT::deactivate(const char *msisdn)$/;"	f	class:RBT
+deinitialize	rbt.cpp	/^int RBT::deinitialize()$/;"	f	class:RBT
+fun2rc_del	rbt.hpp	/^extern "C" void fun2rc_del(Fun2RC* p) {$/;"	f
+fun2rc_new	rbt.hpp	/^extern "C" Fun2RC* fun2rc_new() {$/;"	f
+getBalance	rbt.cpp	/^int RBT::getBalance(const char *msisdn)$/;"	f	class:RBT
+getBody	httpclient.hpp	/^        const char* getBody() const {$/;"	f	class:HttpClient
+getError	httpclient.hpp	/^        const char* getError() const {$/;"	f	class:HttpClient
+getIMSI	rbt.cpp	/^int RBT::getIMSI(const char *msisdn, char *imsi, int imsi_size)$/;"	f	class:RBT
+httpGet	httpclient.cpp	/^int HttpClient::httpGet(const char* url, const int timeout)$/;"	f	class:HttpClient
+initialize	rbt.cpp	/^int RBT::initialize()$/;"	f	class:RBT
+timeout	rbt.hpp	/^        int timeout;$/;"	m	class:RBT
+url	rbt.hpp	/^        char *url;$/;"	m	class:RBT
+url_buffer	rbt.hpp	/^        char url_buffer[MAX_LENGTH];$/;"	m	class:RBT
+writer	httpclient.cpp	/^static size_t writer(void *ptr, size_t size, size_t nmemb, void *stream)$/;"	f	file:
+~HttpClient	httpclient.hpp	/^        ~HttpClient() {}$/;"	f	class:HttpClient
+~RBT	rbt.hpp	/^        ~RBT() {};$/;"	f	class:RBT

@@ -1,0 +1,1396 @@
+/******************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <sys/types.h>
+#include <sys/poll.h>
+#include <errno.h>
+#include <fstream>
+#include <algorithm>
+#include <ctype.h>
+#include <netdb.h>
+#include <pwd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <csignal>
+#include <string>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "libfuc.h"
+#include "oradbsimple.hpp"
+#include "hlr.hpp"
+
+/*============================================================================*/
+
+int HLR::login()
+{
+    int nbytes;
+
+    if (connectSocket() != 0) {
+        LOG_ERROR("%s::%s: Connection failed: host: %s, port: %d", __class__, __func__, host, port);
+        return -1;
+    }
+
+    nbytes = readStream(buffer, buffer_size);	
+    if (nbytes <= 0) {
+        LOG_ERROR("%s::%s: readStream1 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+    while (strstr(buffer,"ENTER USERNAME <") == NULL) {
+        nbytes = readStream(&buffer[strlen(buffer)], buffer_size-strlen(buffer));	
+        if (nbytes <= 0) {
+            LOG_ERROR("%s::%s: readStream2 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+            return -1;
+        }
+    }
+    //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+
+    sprintf(buffer,"%s\r\n",username);
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) != 0) {
+        LOG_ERROR("%s::%s: sendData1 failed: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+
+    nbytes = readStream(buffer, buffer_size);	
+    if (nbytes <= 0) {
+        LOG_ERROR("%s::%s: readStream3 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+    while (strstr(buffer,"ENTER PASSWORD <") == NULL) {
+        nbytes = readStream(&buffer[strlen(buffer)], buffer_size-strlen(buffer));	
+        if (nbytes <= 0) {
+            LOG_ERROR("%s::%s: readStream4 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+            return -1;
+        }
+    }
+    //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+
+    sprintf(buffer,"%s\r\n",password);
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) != 0) {
+        LOG_ERROR("%s::%s: sendData2 failed: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+
+    nbytes = readStream(buffer, buffer_size);	
+    if (nbytes <= 0) {
+        LOG_ERROR("%s::%s: readStream5 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+    //while (strstr(buffer,"MAIN LEVEL COMMAND <___>") == NULL)
+    while (strstr(buffer,"\n\r") == NULL) {
+        nbytes = readStream(&buffer[strlen(buffer)], buffer_size-strlen(buffer));	
+        if (nbytes <= 0) {
+            LOG_ERROR("%s::%s: readStream6 = NULL: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+            return -1;
+        }
+    }
+    //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+
+    if (strstr(buffer,"MAIN LEVEL COMMAND <___>")) {
+        //fprintf(stdout,"%s: This is the SUCCESS stream:%s\n[end]\n", __func__, buffer);
+        LOG_INFO("%s::%s: Successful: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return 0;
+    } else {
+        //fprintf(stdout,"%s: This is the FAILED stream:%s\n[end]\n", __func__, buffer);
+        LOG_INFO("%s::%s: Failed: host: %s, port: %d, username: %s, password: %s", __class__, __func__, host, port, username, password);
+        return -1;
+    }
+
+    return 0;
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingUnconditionalErased(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFU=E;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFU=E;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"%s: SUCCESSFULL callForwardingUnconditionalErased for %s:%s\n", __func__,msisdn,buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"%s: FAILED callForwardingUnconditionalErased for %s:%s\n", __func__,msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"%s: Unable to send %s\n", __func__,buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingUnconditionalDeactivated(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFU=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFU=D;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingUnconditionalDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingUnconditionalDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingBusyErased(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFB=E;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFB=E;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingBusyErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingBusyErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingBusyDeactivated(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFB=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFB=D;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingBusyDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingBusyDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingNotReachableErased(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFNR=E;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFNR=E;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNotReachableErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNotReachableErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingNotReachableDeactivated(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFNR=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFNR=D;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNotReachableDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNotReachableDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setServiceIndex(const char *msisdn,const  char *sset)
+{
+    //ZMQG:MSISDN=639550000000:SSET=1518;
+    int nbytes;
+    char *testPointer = NULL;
+    char *pbuf = NULL;
+
+    sprintf(buffer,"ZMQG:MSISDN=%s:SSET=%s;\r\n",msisdn,sset);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL setServiceIndex for %s",msisdn);
+            //LOG_DEBUG("%s::%s: result: %s", __class__, __func__, buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED setServiceIndex for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedT11()
+{
+    //ZMSS:IMSI=639550000000:BORO=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=T11:BORO=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNoReplyErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNoReplyErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB16()
+{
+    //ZMSS:IMSI=639550000000:BORO=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B16:BORO=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNoReplyErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNoReplyErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB1F()
+{
+    //ZMSS:IMSI=639550000000:BORO=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B1F:BORO=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNoReplyErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNoReplyErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedT11()
+{
+    //ZMSS:IMSI=<IMSI>,BSERV=T11:BORO=D:;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=T11:BORO=D;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"%s: SUCCESSFULL callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"%s: FAILED callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"%s: Unable to send %s",__func__,buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB16()
+{
+    //ZMSS:IMSI=<IMSI>,BSERV=B16:BORO=D:;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B16:BORO=D;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"%s: SUCCESSFULL callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"%s: FAILED callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"%s: Unable to send %s",__func__,buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB1F()
+{
+    //ZMSS:IMSI=<IMSI>,BSERV=B1F:BORO=D:;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B1F:BORO=D;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"%s: This is the data being sent:%s\n[end]\n", __func__,buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buffer);
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"%s: SUCCESSFULL callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"%s: FAILED callForwardingNoReplyDeactivated for %s:%s",__func__,msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"%s: Unable to send %s",__func__,buffer);
+        return -1;
+    }
+}
+
+
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingNoReplyErased(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFNA=E;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFNA=E;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNoReplyErased for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNoReplyErased for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::callForwardingNoReplyDeactivated(const char *msisdn)
+{
+    //ZMSS:IMSI=515021007307645:CFNA=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:MSISDN=%s:CFNA=D;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL callForwardingNoReplyDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED callForwardingNoReplyDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::defineSuplementaryServicesActivated(const char *msisdn)
+{
+    //ZMSD:MSISDN=639550000000:MPTY=Y,PSW=N;
+    int nbytes;
+    char *testPointer = NULL;
+    char *pbuf = NULL;
+
+    sprintf(buffer,"ZMSD:MSISDN=%s:MPTY=Y,PSW=1234;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL defineSuplementaryServicesActivated for %s",msisdn);
+            //LOG_DEBUG("%s::%s: result: %s", __class__, __func__, buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED defineSuplementaryServicesActivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::defineSuplementaryServicesDeactivated(const char *msisdn)
+{
+    //ZMSD:MSISDN=639550000000:MPTY=Y,PSW=Y;
+    int nbytes;
+
+    sprintf(buffer,"ZMSD:MSISDN=%s:MPTY=N,PSW=N;\r\n",msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL defineSuplementaryServicesDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED defineSuplementaryServicesDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16()
+{
+    //ZMSS:MSISDN=639550000000:BIRO=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B16:BIRO=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryActivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryActivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB1F()
+{
+    //ZMSS:MSISDN=639550000000:BIRO=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B1F:BIRO=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryActivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryActivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB16()
+{
+    //ZMSS:IMSI=<IMSI>,BSERV=B16:BIRO=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B16:BIRO=D;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB1F()
+{
+    //ZMSS:IMSI=<IMSI>,BSERV=B1F:BIRO=D;
+    int nbytes;
+
+    sprintf(buffer,"ZMSS:IMSI=%s,BSERV=B1F:BIRO=D;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setActivateDisableGPRS()
+{
+    //ZMNM:IMSI=<IMSI>:NWACC=NONGPRS,GRP=5;
+    int nbytes;
+
+    sprintf(buffer,"ZMNM:IMSI=%s:NWACC=NONGPRS,GRP=5;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+
+/*----------------------------------------------------------------------------*/
+int HLR::setDeactivateEnableGPRS()
+{
+    //ZMNM:IMSI=<IMSI>:NWACC=BOTH:;
+    int nbytes;
+
+    sprintf(buffer,"ZMNM:IMSI=%s:NWACC=BOTH;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::setActivateSAM()
+{
+    //ZMIM:IMSI=<IMSI>:SAM=ALL,RP=4,ACT=A;
+    int nbytes;
+
+    sprintf(buffer,"ZMIM:IMSI=%s:SAM=ALL,RP=4,ACT=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+
+/*----------------------------------------------------------------------------*/
+int HLR::setDeactivateSAM()
+{
+    //ZMIM:IMSI=515021007307645:SAM=NAT,RP=6,ACT=A:;
+    int nbytes;
+
+    sprintf(buffer,"ZMIM:IMSI=%s:SAM=NAT,RP=6,ACT=A;\r\n",_imsi);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if ((strstr(buffer,"COMMAND EXECUTED")) || (strstr(buffer,"COMMAND PARTLY SUCCESSFUL")) || (strstr(buffer,"SERVICE EXISTS"))) {
+            //fprintf(stdout,"SUCCESSFULL BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s",msisdn);
+            //LOG_DEBUG("%s::%s: result: %s", __class__, __func__, buffer);
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED BarringofInocmingCallsRoaminOutsideHomeCountryDeactivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::getRealIMSI(const char *msisdn)
+{
+    //ZMIO:MSISDN=639550000000;;
+
+    sprintf(buffer,"ZMIO:MSISDN=%s;\r\n", msisdn);
+
+    LOG_DEBUG("%s::%s: command: %s", __class__, __func__, buffer);
+
+    //-- initialize _imsi buffer...
+    memset(_imsi,0,sizeof(_imsi));
+
+    //fprintf(stdout,"This is the data being sent:%s",buffer);
+    if (sendData(buffer) == 0) {
+        int nbytes = readStream2(buffer, buffer_size);	
+        if (nbytes <= 0) {
+            return -1;
+        }
+        if (strstr(buffer,"COMMAND EXECUTED")) {
+            //fprintf(stdout,"SUCCESSFULL getRealIMSI for %s",msisdn);
+            //LOG_DEBUG("%s::%s: result: %s", __class__, __func__, buffer);
+            char searchKey[256] = "INTERNATIONAL MOBILE SUBSCRIBER IDENTITY ... \0";
+            char* p = strstr(buffer, searchKey);
+            if (p) {
+                p += strlen(searchKey);
+                memcpy(_imsi, p, 15);
+            }
+            if (! *_imsi) {
+                return -1;
+            }
+            
+            LOG_DEBUG("%s::%s: IMSI: %s", __class__, __func__, _imsi);
+
+            return 0;
+        } else {
+            //fprintf(stdout,"FAILED defineSuplementaryServicesActivated for %s:%s",msisdn,buffer);
+            return -1;
+        }
+    } else {
+        //fprintf(stdout,"Unable to send %s",buffer);
+        return -1;
+    }
+}
+
+/*============================================================================*/
+
+int HLR::connectSocket() 
+{
+    int herr;
+
+    m_serverSocket = socket(AF_INET,SOCK_STREAM,0);
+    if (m_serverSocket != -1) {
+        //m_pHost=gethostbyname(host);
+        gethostbyname_r(host, &m_Host, buffer, buffer_size, &m_pHost, &herr);
+        serverSocket.sin_addr = *((struct in_addr *)m_pHost->h_addr);
+        serverSocket.sin_family = AF_INET;
+        serverSocket.sin_port = htons(port);
+        memset(&(serverSocket.sin_zero), '\0', 8);
+        if(connect(m_serverSocket, (struct sockaddr *)&serverSocket, sizeof(struct sockaddr)) != -1){
+            return 0;
+        } else {
+            return -1;
+        }
+    } else {
+        return -1;
+    }
+}
+/*----------------------------------------------------------------------------*/
+int HLR::readStream(char *buf, int buf_sz) 
+{
+    memset(buf, 0, buf_sz);
+    int received = recv(m_serverSocket, buf, buf_sz-1, 0);
+    return received;
+}
+/*----------------------------------------------------------------------------*/
+int HLR::readStream2(char *buf, int buf_sz)
+{
+    memset(buf, 0, buf_sz);
+    int received = recv(m_serverSocket, buf, buf_sz-1, 0);
+    if (received <= 0) {
+        return received;
+    }
+    //fprintf(stdout,"%s: This is the stream:%s\n[end]\n", __func__, buf);
+
+    while (((int)strlen(buf) < (buf_sz-1)) && (strstr(buf,"< ") == NULL)) {
+        int nbytes = recv(m_serverSocket, &buf[strlen(buf)], (buf_sz-strlen(buf))-1, 0);
+        if (nbytes <= 0) {
+            break;
+        }
+        received += nbytes;
+    }
+    return received;
+}
+/*----------------------------------------------------------------------------*/
+int HLR::sendData(char *data) 
+{
+    struct pollfd pfd[1];
+    pfd[0].fd = m_serverSocket;
+    pfd[0].events = POLLOUT;
+    int nRet = poll (pfd,1,timeout);
+    if (nRet > 0) {
+        if (pfd[0].revents & POLLERR) {
+            return -1;
+        } else if (pfd[0].revents & POLLOUT) {
+            if (send(m_serverSocket,data,strlen(data),0) == -1) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    } else {
+        return -1;
+    }
+    return -1;
+}
+
+/*============================================================================*/
+
+int HLR::initialize()
+{
+    if (_param.logh) {
+        LOG_SET_HANDLE(_param.logh);
+    }
+
+    if (OraDB::init_lib(true) < 0) {
+        LOG_CRITICAL("%s::%s: Unable to initialize OCI!!!", __class__, __func__);
+        return -1;
+    }
+
+    *username = 0; 
+    *password = 0; 
+    *host = 0;
+    *normal_sset = 0; 
+    *ir_sset = 0; 
+    *_imsi = 0; 
+    port = 0; 
+    timeout = 0;
+    buffer = (char*)malloc(buffer_size);
+    if (! buffer) {
+        LOG_CRITICAL("%s::%s: Unable to allocate memory fo buffer!", __class__, __func__);
+        return -1;
+    }
+    memset(buffer, 0, buffer_size);
+
+#if 0
+    if (login() != 0) 
+        return -1;
+#endif
+
+    LOG_INFO("%s::%s: ...", __class__, __func__);
+
+    return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int HLR::deinitialize()
+{
+    LOG_INFO("%s::%s: ...", __class__, __func__);
+
+    if (buffer) {
+        free(buffer);
+        buffer = NULL;
+    }
+    close(m_serverSocket);
+    shutdown(m_serverSocket,SHUT_RDWR);
+
+    return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int HLR::activate(const char *msisdn)
+{
+    LOG_INFO("%s::%s: msisdn: %s: start", __class__, __func__, msisdn);
+
+    std::string ora_auth = _param.db_user;
+    ora_auth.append("/");
+    ora_auth.append(_param.db_pass);
+    ora_auth.append("@");
+    ora_auth.append(_param.db_host);
+
+    LOG_DEBUG("%s::%s: ora_auth = [%s]", __class__, __func__, ora_auth.c_str());
+
+    if (OraDBSimple::init_lib(true) < 0) {
+        LOG_CRITICAL("%s::%s: Unable to initialize OCI!!!", __class__, __func__);
+        return -1;
+    }
+
+    OraDBSimple conn;
+    if (conn.initialize(ora_auth.c_str()) < 0) {
+        LOG_ERROR("%s::%s: Unable to connect to oracle: ora_auth: %s", __class__, __func__, ora_auth.c_str());
+        return -1;
+    }
+
+    OraDBSimple::stmt_handle_t res = OraDBSimple::STH_INIT;
+    const char** row;
+
+    std::string q = "select s.SERVER_IP, s.SERVER_PORT, s.SERVER_NAME, s.USERNAME, s.PASSWORD, s.TIMEOUT, s.RETRY_CNT, m.MSISDN_FR, m.MSISDN_TO,c.IRSSET, c.NORMALSSET from HLR_SERVERS s, HLR_SERVER_MAPPING m, SSET_MAPPING c where  s.SERVER_NAME = m.SERVER_NAME and (m.MSISDN_FR<='";
+    q.append(msisdn);
+    q.append("' and m.MSISDN_TO>='");
+    q.append(msisdn);
+    q.append("') and (c.MSISDN_FR<='");
+    q.append(msisdn);
+    q.append("' and c.MSISDN_TO>='");
+    q.append(msisdn);
+    q.append("')");
+
+    LOG_DEBUG("%s::%s: sql = [%s]", __class__, __func__, q.c_str());
+
+    //-- initialize parameters...
+    memset(username, 0, sizeof(username));
+    memset(password, 0, sizeof(password));
+    memset(host, 0, sizeof(host));
+    memset(normal_sset, 0, sizeof(normal_sset));
+    memset(ir_sset, 0, sizeof(ir_sset));
+    timeout = 60000;
+    port = 0;
+
+    conn.query(&res, q.c_str());
+    if ((row = conn.fetchRow(res)) != NULL) {
+        if (row[3]) {
+            if (strlen(row[3])) {
+                snprintf(username, sizeof(username), "%s", (char *)row[3]);
+            }
+        }
+        if (row[4]) {
+            if (strlen(row[4])) {
+                snprintf(password, sizeof(password), "%s", (char *)row[4]);
+            }
+        } 
+        if (row[0]) {
+            if (strlen(row[0])) {
+                snprintf(host, sizeof(host), "%s", (char *)row[0]);
+            }
+        }
+        if (row[1]) { 
+            if (strlen(row[1]) > 0) {
+                port = atoi((char *)row[1]);
+            } else {
+                port = 0;
+            }
+        }
+        if (row[5]) {
+            if (strlen(row[5]) > 0) {
+                timeout = atoi((char *)row[5])*1000;
+            } else {
+                timeout = 60000;
+            }
+        }
+        if (row[9]) {
+            if (strlen(row[9])) {
+                snprintf(ir_sset, sizeof(ir_sset), "%s", (char *)row[9]);
+            }
+        }
+        if (row[10]) {
+            if (strlen(row[10])) {
+                snprintf(normal_sset, sizeof(normal_sset), "%s", (char *)row[10]);
+            }
+        }
+    } else {
+        LOG_DEBUG("%s::%s: sql = [%s]: returned NULL", __class__, __func__, q.c_str());
+    }
+
+    conn.freeResult(res);
+    conn.destroy_db();
+
+    if (! *username || ! *host || ! *password || ! *normal_sset || ! *ir_sset || ! port) {
+        LOG_ERROR("%s::%s: Missing required parameters: host: %s, port: %d, user: %s, pass: %s, normal_sset: %s, ir_sset:%s", __class__, __func__,
+                host, port, username, password,normal_sset,ir_sset);
+        LOG_DEBUG("%s::%s: Database query: %s", __class__, __func__, q.c_str());
+        return -1;
+    }
+
+    LOG_DEBUG("%s::%s: msisdn: %s: login start", __class__, __func__, msisdn);
+
+    if (login() != 0) { 
+        LOG_ERROR("%s::%s: Unable to login!", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+
+    LOG_DEBUG("%s::%s: msisdn: %s: login done", __class__, __func__, msisdn);
+
+    if (getRealIMSI(msisdn) != 0) {
+        LOG_ERROR("%s::%s: Unable to get IMSI information!", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+
+    if (callForwardingUnconditionalErased(msisdn) !=0) {
+        LOG_ERROR("%s::%s: Failed: callForwardingUnconditionalErased", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+    if (callForwardingBusyErased(msisdn) !=0 ) {
+        LOG_ERROR("%s::%s: Failed: callForwardingBusyErased", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (callForwardingNotReachableErased(msisdn) !=0 ) {
+        LOG_ERROR("%s::%s: Failed: callForwardingNotReachableErased", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (callForwardingNoReplyErased(msisdn) !=0 ) {
+        LOG_ERROR("%s::%s: Failed: callForwardingNoReplyErased", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    } 
+#if 0
+    if (setServiceIndex(msisdn,ir_sset) !=0 ) {
+        LOG_ERROR("%s::%s: Failed: setServiceIndex", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+#endif
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedT11()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedT11", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB16()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB16", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB1F()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryActivatedB1F", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (defineSuplementaryServicesDeactivated(msisdn) !=0) {
+        LOG_ERROR("%s::%s: Failed: defineSuplementaryServicesDeactivated", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+    if (setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16() !=0) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    } 
+    if (setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB1F() !=0) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB1F", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    } 
+    if (setActivateDisableGPRS() !=0) {
+        LOG_ERROR("%s::%s: Failed: setActivateDisableGPRS", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    } 
+    if (setActivateSAM() !=0) {
+        LOG_ERROR("%s::%s: Failed: setActivateSAM", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    } 
+    close(m_serverSocket);
+
+    LOG_INFO("%s::%s: msisdn: %s: done", __class__, __func__, msisdn);
+    return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int HLR::deactivate(const char *msisdn)
+{
+    LOG_INFO("%s::%s: msisdn: %s: start", __class__, __func__, msisdn);
+
+    std::string ora_auth = _param.db_user;
+    ora_auth.append("/");
+    ora_auth.append(_param.db_pass);
+    ora_auth.append("@");
+    ora_auth.append(_param.db_host);
+
+    LOG_DEBUG("%s::%s: ora_auth = [%s]", __class__, __func__, ora_auth.c_str());
+
+    if (OraDBSimple::init_lib(true) < 0) {
+        LOG_CRITICAL("%s::%s: Unable to initialize OCI!!!", __class__, __func__);
+        return -1;
+    }
+
+    OraDBSimple conn;
+    if (conn.initialize(ora_auth.c_str()) < 0) {
+        LOG_ERROR("%s::%s: Unable to connect to oracle: ora_auth: %s", __class__, __func__, ora_auth.c_str());
+        return -1;
+    }
+
+    OraDBSimple::stmt_handle_t res = OraDBSimple::STH_INIT;
+    const char** row;
+
+    std::string q = "select s.SERVER_IP, s.SERVER_PORT, s.SERVER_NAME, s.USERNAME, s.PASSWORD, s.TIMEOUT, s.RETRY_CNT, m.MSISDN_FR, m.MSISDN_TO,c.IRSSET, c.NORMALSSET from HLR_SERVERS s, HLR_SERVER_MAPPING m, SSET_MAPPING c where  s.SERVER_NAME = m.SERVER_NAME and (m.MSISDN_FR<='";
+    q.append(msisdn);
+    q.append("' and m.MSISDN_TO>='");
+    q.append(msisdn);
+    q.append("') and (c.MSISDN_FR<='");
+    q.append(msisdn);
+    q.append("' and c.MSISDN_TO>='");
+    q.append(msisdn);
+    q.append("')");
+
+    LOG_DEBUG("%s::%s: sql = [%s]", __class__, __func__, q.c_str());
+
+    //-- initialize parameters...
+    memset(username, 0, sizeof(username));
+    memset(password, 0, sizeof(password));
+    memset(host, 0, sizeof(host));
+    memset(normal_sset, 0, sizeof(normal_sset));
+    memset(ir_sset, 0, sizeof(ir_sset));
+    timeout = 60000;
+    port = 0;
+
+    conn.query(&res, q.c_str());
+    if ((row = conn.fetchRow(res)) != NULL) {
+        if (row[3]) {
+            if (strlen(row[3])) {
+                snprintf(username, sizeof(username), "%s", (char *)row[3]);
+            }
+        }
+        if (row[4]) {
+            if (strlen(row[4])) {
+                snprintf(password, sizeof(password), "%s", (char *)row[4]);
+            }
+        } 
+        if (row[0]) {
+            if (strlen(row[0])) {
+                snprintf(host, sizeof(host), "%s", (char *)row[0]);
+            }
+        }
+        if (row[1]) { 
+            if (strlen(row[1]) > 0) {
+                port = atoi((char *)row[1]);
+            } else {
+                port = 0;
+            }
+        }
+        if (row[5]) {
+            if (strlen(row[5]) > 0) {
+                timeout = atoi((char *)row[5])*1000;
+            } else {
+                timeout = 60000;
+            }
+        }
+        if (row[9]) {
+            if (strlen(row[9])) {
+                snprintf(ir_sset, sizeof(ir_sset), "%s", (char *)row[9]);
+            }
+        }
+        if (row[10]) {
+            if (strlen(row[10])) {
+                snprintf(normal_sset, sizeof(normal_sset), "%s", (char *)row[10]);
+            }
+        }
+    } else {
+        LOG_DEBUG("%s::%s: sql = [%s]: returned NULL", __class__, __func__, q.c_str());
+    }
+
+    conn.freeResult(res);
+    conn.destroy_db();
+
+    if (! *username || ! *host || ! *password || ! *normal_sset ||!  *ir_sset || ! port) {
+        /*LOG_ERROR("%s::%s: Missing required parameters: host: %s, port: %d, user: %s, pass: %s", __class__, __func__,
+          host, port, username, password);*/
+        LOG_ERROR("%s::%s: Missing required parameters: host: %s, port: %d, user: %s, pass: %s, normal_sset: %s, ir_sset:%s", __class__, __func__,
+                host, port, username, password,normal_sset,ir_sset);
+        LOG_DEBUG("%s::%s: Database query: %s", __class__, __func__, q.c_str());
+        return -1;
+    }
+
+    LOG_DEBUG("%s::%s: msisdn: %s: login start", __class__, __func__, msisdn);
+
+    if (login() != 0) { 
+        LOG_ERROR("%s::%s: Unable to login!", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+
+    LOG_DEBUG("%s::%s: msisdn: %s: login done", __class__, __func__, msisdn);
+
+    if (getRealIMSI(msisdn) != 0) {
+        LOG_ERROR("%s::%s: Unable to get IMSI information!", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+
+#if 0
+    if (callForwardingUnconditionalDeactivated(msisdn) != 0) {
+        close(m_serverSocket);
+        return -1;
+    }
+    if (callForwardingBusyDeactivated(msisdn) !=0 ) {
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (callForwardingNotReachableDeactivated(msisdn) !=0 ) {
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (callForwardingNoReplyDeactivated(msisdn) !=0 ) {
+        close(m_serverSocket);
+        return -1; 
+    }
+#endif
+
+    if (defineSuplementaryServicesActivated(msisdn) !=0) {
+        LOG_ERROR("%s::%s: Failed: defineSuplementaryServicesActivated", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+#if 0
+    if (setServiceIndex(msisdn,normal_sset) !=0 ) {
+        LOG_ERROR("%s::%s: Failed: setServiceIndex", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+#endif
+    if (setDeactivateEnableGPRS()) {
+        LOG_ERROR("%s::%s: Failed: setDeactivateEnableGPRS", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setDeactivateSAM()) {
+        LOG_ERROR("%s::%s: Failed: setDeactivateSAM", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedT11()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedT11", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB16()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB16", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB1F()) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfOutGoingCallsRoamingOutsideHomeCountryDeactivatedB1F", __class__, __func__);
+        close(m_serverSocket);
+        return -1; 
+    }
+    if (setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB16() !=0) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+    if (setBarringOfIncomingCallsRoamingOutsideHomeCountryDeactivatedB1F() !=0) {
+        LOG_ERROR("%s::%s: Failed: setBarringOfIncomingCallsRoamingOutsideHomeCountryActivatedB16", __class__, __func__);
+        close(m_serverSocket);
+        return -1;
+    }
+    close(m_serverSocket);
+
+    LOG_INFO("%s::%s: msisdn: %s: done", __class__, __func__, msisdn);
+    return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int HLR::getIMSI(const char *msisdn, char *imsi, int imsi_size)
+{
+    LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
+
+    if (! imsi) {
+        return -1;
+    }
+
+    snprintf(imsi, imsi_size, "%s", _imsi);
+    LOG_DEBUG("%s::%s: msisdn: %s, imsi: %s", __class__, __func__, msisdn, imsi);
+
+    return 0;
+}
+
+/******************************************************************************/

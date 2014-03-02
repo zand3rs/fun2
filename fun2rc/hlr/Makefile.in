@@ -1,0 +1,39 @@
+#
+# Makefile for hlr...
+# 
+# $Id$
+#
+
+CC         = @CXX@
+
+VERSION    = @PACKAGE_VERSION@
+LIBNAME    = libhlr
+LIB        = $(LIBNAME).so
+LLIBS      = ../../libfuc/lib/libfuc.a
+
+LIBPATH    = ../lib
+CINCLUDES  = -I../include -I../../libfuc/include
+CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS @DEFS@
+CXXFLAGS   = -fPIC @CXXFLAGS@ $(CDEFINES) $(CINCLUDES) @LIBSQLORA8_CFLAGS@
+LFLAGS     = -fPIC -shared -Wl,-soname,$(LIB).$(VERSION)
+
+# target files...
+LIBO = hlr.o oradb.o oradbsimple.o
+
+all: $(LIB)
+
+$(LIB): $(LIBO)
+	$(CC) $(LFLAGS) -o $(LIB).$(VERSION) $(LIBO) $(LLIBS)
+	ln -fs $(LIB).$(VERSION) $(LIB)
+	if [ -d $(LIBPATH) ]; then \mv -f $(LIB)* $(LIBPATH)/.; fi
+
+cleanobj: 
+	\rm -f *.o
+
+clean: cleanobj
+	\rm -f core* $(LIB)
+
+cleanall: clean
+
+distclean: cleanall
+	\rm -f Makefile

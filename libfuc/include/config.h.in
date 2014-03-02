@@ -1,0 +1,6 @@
+#undef __MYSQL__
+#undef __DEBUG__
+#undef C_VERSION
+#undef C_RELEASE_DATE
+#undef C_COPYRIGHT
+

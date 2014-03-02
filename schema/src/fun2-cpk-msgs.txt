@@ -1,0 +1,36 @@
+GROAM_ON_SUCCESSFUL
+	Alert Message On Manual Provisioning. (When subscriber sends GROAM ON to 2884, we need to inform user that the system has already received his Roaming Activation Command and that it will be processed after a few minutes.)
+	We have received your request to activate your roaming. Please wait while we process your request. Thank you.
+
+GROAM_YES_SUCCESSFUL
+GROAM_ON_ACTIVATED
+	Alert Message Upon Receipt of First RNA from ARDS for User who sent Manual Provisioning Command. (User will be activated for roaming. No further keywords or commands required).
+	Your roaming has now been activated from <start date mm-dd-yyyy> to <end date mm-dd-yyyy>. For info on roaming, text GROAM HELP to 2884 or call our Globe Roaming Support Hotline at *131*6327301212#. Roaming rates apply. Thank you for roaming with Globe.
+
+ARDS_ROAM_ACTIVATED
+	Alert Message Upon Receipt of First RNA from ARDS for User who is Auto Provisioned. (User will be activated for roaming provisionally for 48 hours. Unless User sends NO or Does not Reply with yes in 48 hours).
+	Your roaming has now been activated. For info on roaming, text GROAM HELP to 2884 or call our Globe Roaming Support Hotline at *131*6327301212#. Roaming rates apply. Thank you for roaming with Globe.
+
+ARDS_PROVISIONAL_PROV_1ST_EXPIRY
+	Alert Message For Autoprovisioned user who has not yet sent NO or Replied with yes after 24 hours. (User will receive alert message reminding him that roaming will be deactivated after 24 hours unless he/she sends with yes).
+	You are currently out of the country. Would you like to activate your roaming? Reply GROAM YES to activate roaming or GROAM NO if not. You will be charged P25/text. If you do not reply to this message within 24 hours, your roaming will be automatically deactivated. Thank you.
+
+ARDS_PROVISIONAL_PROV_2ND_EXPIRY
+	Alert Message For Autoprovisioned user who has not yet sent No or Replied with yes after 40 hours(arbitrary). (User will receive alert message that roaming is going to be deactivated after 8 hours unless he/she sends yes).
+	You are currently out of the country. Would you like to activate your roaming? Reply GROAM YES to activate roaming or GROAM NO if not. You will be charged P25/text. If you do not reply to this message within 8 hours, your roaming will be automatically deactivated. Thank you.
+
+	Alert Message for user who is below maintaining balance(User will receive alert message that maintaining balance is below the acceptable balance for roaming. Roaming will be deactivated after N hours unless user tops up.).
+	You currently have P<amount>, which is below roaming maintaning balance. To ensure a seamless roaming experience, please load within [x] hours and maintain a daily balance of P100. Thank you for roaming with Globe.
+
+GROAM_NO_PRE_DEACT
+GROAM_NO_SUCCESSFUL
+ARDS_ROAM_DEACTIVATED
+	Alert Message For User that sent No on Autoprovisioning Scenario. (User will receive alert message that roaming is now deactivated).
+	Your roaming has now been deactivated. To activate your roaming, you may call our Globe Roaming Support Hotline at +632 7301212 from any phone in the country you are currently in.
+
+	Alert Message for User that was provisionally provisioned but did not reply with Yes after 48 hours. (User will receive alert message that roaming is now deactivated.)
+	Your roaming has now been deactivated. To activate your roaming, you may call our Globe Roaming Support Hotline at +632 7301212 from any phone in the country you are currently in.
+
+	Alert Message to user on Roaming Deactivation Scenarios from ARDS.
+	Your roaming has now been deactivated. To activate your roaming, you may call our Globe Roaming Support Hotline at +632 7301212 from any phone in the country you are currently in.
+

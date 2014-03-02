@@ -1,0 +1,27 @@
+#
+# Makefile for sset...
+# 
+# $Id$
+#
+
+CC         = g++
+LIBCURL    = `curl-config --libs`
+LLIBS      = ../../libfuc/lib/libfuc.a $(LIBCURL)
+CINCLUDES  = -I../include -I../../libfuc/include
+CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS
+CXXFLAGS   = $(CDEFINES) $(CINCLUDES)
+
+# target files...
+OBJ = httpclient.o pugixml.o pugixpath.o test.o
+
+test: $(OBJ)
+	$(CC) -o $(@) $(OBJ) $(LLIBS)
+
+cleanobj: 
+	\rm -f *.o
+
+clean: cleanobj
+	\rm -f core* $(LIB)
+
+cleanall: clean
+
