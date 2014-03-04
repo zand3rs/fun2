@@ -13,11 +13,11 @@
 *.a
 
 # http://www.gnu.org/software/autoconf
-aclocal.m4
-depcomp
-install-sh
-missing
-config.h.in
+#aclocal.m4
+#depcomp
+#install-sh
+#missing
+#config.h.in
 
 config.status
 config.log
@@ -28,7 +28,7 @@ stamp-h1
 test-driver
 
 # http://www.gnu.org/software/automake
-Makefile.in
+#Makefile.in
 Makefile
 
 *.test
