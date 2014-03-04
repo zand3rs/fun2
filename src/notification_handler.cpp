@@ -98,7 +98,7 @@ void* notification_handler (void* arg)
     time_t t;
     struct tm lt;
     char timestamp[32];
-    char url[1024*8];
+    char tran_type[8];
 
     if (OraDBNotification::init_lib() < 0) {
         LOG_CRITICAL("%s: %d: Unable to initialize libsqlora8!", __func__, proc_id);
@@ -125,17 +125,15 @@ void* notification_handler (void* arg)
             t = time(NULL);
             localtime_r(&t, &lt);
             strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", &lt);
-            memset(url, 0, sizeof(url));
+            memset(tran_type, 0, sizeof(tran_type));
 
             switch (notification.tran_type) {
                 case TRAN_TYPE_GROAM_ON:
-                    snprintf(url, sizeof(url), "%s?MSISDN=%s&TYPE=1&TIMESTAMP=%s",
-                            Config::getEndpointUrl(), notification.msisdn, timestamp);
+                    snprintf(tran_type, sizeof(tran_type), "1");
                     break;
                 case TRAN_TYPE_GROAM_OFF:
                 case TRAN_TYPE_GROAM_NO:
-                    snprintf(url, sizeof(url), "%s?MSISDN=%s&TYPE=2&TIMESTAMP=%s",
-                            Config::getEndpointUrl(), notification.msisdn, timestamp);
+                    snprintf(tran_type, sizeof(tran_type), "2");
                     break;
                 default:
                     LOG_ERROR("%s: %d: Invalid notification tran_type: %d, id: %d.", __func__, proc_id,
@@ -143,16 +141,29 @@ void* notification_handler (void* arg)
                     break;
             }
 
-            if (! *url) {
-                //-- invalid url
+            if (! *tran_type) {
+                //-- invalid tran_type
                 continue;
             }
 
             HttpClient hc;
-            int res_code = hc.httpGet(url, Config::getEndpointTimeoutSec());
+            std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                              "<soapenv:Envelope\n"
+                              " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
+                              " xmlns:mbf=\"http://danateq.com/soap/link/raven/mbfun2\">\n"
+                              "<soapenv:Header/>\n"
+                              "<soapenv:Body>\n"
+                              "    <mbf:RoamingStatusRequest>\n"
+                              "        <MSISDN>" + std::string(notification.msisdn) + "</MSISDN>\n"
+                              "        <DeactAct>" + std::string(tran_type) + "</DeactAct>\n"
+                              "        <Timestamp>" + std::string(timestamp) + "</Timestamp>\n"
+                              "    </mbf:RoamingStatusRequest>\n"
+                              "</soapenv:Body>\n"
+                              "</soapenv:Envelope>\n";
+            int res_code = hc.httpPost(Config::getEndpointUrl(), req.c_str(), "text/xml", Config::getEndpointTimeoutSec());
 
             LOG_INFO("%s: %d: url: %s, res_code: %d, res_body: %s, res_error: %s", __func__, proc_id,
-                    url, res_code, hc.getResponseBody(), hc.getError());
+                    Config::getEndpointUrl(), res_code, hc.getResponseBody(), hc.getError());
 
             notification.status = (200 == res_code) ? TXN_STATUS_SUCCESSFUL : TXN_STATUS_ERROR;
 
