@@ -124,7 +124,7 @@ void* notification_handler (void* arg)
 
             t = time(NULL);
             localtime_r(&t, &lt);
-            strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", &lt);
+            strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%S", &lt);
             memset(tran_type, 0, sizeof(tran_type));
 
             switch (notification.tran_type) {
