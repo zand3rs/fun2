@@ -62,6 +62,15 @@ std::string Config::_nsn_pass = "";
 
 int Config::_bypass_ards = 0;
 
+std::string Config::_ftp_host = "";
+std::string Config::_ftp_user = "";
+std::string Config::_ftp_pass = "";
+std::string Config::_ftp_local_dir = "";
+
+std::string Config::_local_dir = "";
+std::string Config::_local_processed_dir = "";
+std::string Config::_local_completed_dir = "";
+
 Config::rc_map_t Config::_rc_map;
 
 /*============================================================================*/
@@ -172,6 +181,24 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);
+
+        cfg_getval(&cfg, "", "ftp_host", buf, sizeof(buf));
+        _ftp_host = buf;
+
+        cfg_getval(&cfg, "", "ftp_user", buf, sizeof(buf));
+        _ftp_user = buf;
+
+        cfg_getval(&cfg, "", "ftp_pass", buf, sizeof(buf));
+        _ftp_pass = buf;
+
+        cfg_getval(&cfg, "", "ftp_local_dir", buf, sizeof(buf));
+        _ftp_local_dir = buf;
+
+        cfg_getval(&cfg, "", "local_dir", buf, sizeof(buf));
+        _local_dir = buf;
+
+        _local_processed_dir = _local_dir + std::string("/processed/");
+        _local_completed_dir = _local_dir + std::string("/completed/");
 
         cfg_getval(&cfg, "roaming_component", "roaming_component_count", buf, sizeof(buf));
         int rc_count = strtol(buf, NULL, 10);

@@ -38,7 +38,7 @@ POST_UNINSTALL = :
 bin_PROGRAMS = fun2_request$(EXEEXT) fun2_response$(EXEEXT) \
 	fun2_notification$(EXEEXT) fun2_transaction$(EXEEXT) \
 	fun2_broadcast$(EXEEXT) fun2_geoprobe$(EXEEXT) \
-	fun2_ods$(EXEEXT)
+	fun2_ods$(EXEEXT) fun2_default_unli$(EXEEXT)
 subdir = src
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -61,6 +61,13 @@ am_fun2_broadcast_OBJECTS = fun2_broadcast.$(OBJEXT) config.$(OBJEXT) \
 	sysmsg.$(OBJEXT)
 fun2_broadcast_OBJECTS = $(am_fun2_broadcast_OBJECTS)
 fun2_broadcast_DEPENDENCIES = ../libfuc/lib/libfuc.a
+am_fun2_default_unli_OBJECTS = fun2_default_unli.$(OBJEXT) \
+	ecsv.$(OBJEXT) config.$(OBJEXT) global.$(OBJEXT) \
+	oradb.$(OBJEXT) oradbdefaultunli.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) default_unli_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT)
+fun2_default_unli_OBJECTS = $(am_fun2_default_unli_OBJECTS)
+fun2_default_unli_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_geoprobe_OBJECTS = fun2_geoprobe.$(OBJEXT) ecsv.$(OBJEXT) \
 	oradb.$(OBJEXT) oradbgeoprobe.$(OBJEXT)
 fun2_geoprobe_OBJECTS = $(am_fun2_geoprobe_OBJECTS)
@@ -114,14 +121,14 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(fun2_broadcast_SOURCES) $(fun2_geoprobe_SOURCES) \
-	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
-	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_transaction_SOURCES)
-DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_geoprobe_SOURCES) \
-	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
-	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_transaction_SOURCES)
+SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
+	$(fun2_geoprobe_SOURCES) $(fun2_notification_SOURCES) \
+	$(fun2_ods_SOURCES) $(fun2_request_SOURCES) \
+	$(fun2_response_SOURCES) $(fun2_transaction_SOURCES)
+DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
+	$(fun2_geoprobe_SOURCES) $(fun2_notification_SOURCES) \
+	$(fun2_ods_SOURCES) $(fun2_request_SOURCES) \
+	$(fun2_response_SOURCES) $(fun2_transaction_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -341,6 +348,23 @@ fun2_ods_LDADD = \
              ../libfuc/lib/libfuc.a \
              @LIBSQLORA8_LIBS@
 
+fun2_default_unli_SOURCES = \
+                       data_struct.hpp \
+                       fun2_default_unli.cpp \
+                       ecsv.cpp ecsv.hpp \
+                       config.cpp config.hpp \
+                       global.cpp global.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbdefaultunli.cpp oradbdefaultunli.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       default_unli_handler.cpp default_unli_handler.hpp \
+                       signal_handler.cpp signal_handler.hpp
+
+fun2_default_unli_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             @LIBSQLORA8_LIBS@ \
+             @LIBCURL@
+
 noinst_HEADERS = 
 all: all-am
 
@@ -401,6 +425,9 @@ clean-binPROGRAMS:
 fun2_broadcast$(EXEEXT): $(fun2_broadcast_OBJECTS) $(fun2_broadcast_DEPENDENCIES) 
 	@rm -f fun2_broadcast$(EXEEXT)
 	$(CXXLINK) $(fun2_broadcast_LDFLAGS) $(fun2_broadcast_OBJECTS) $(fun2_broadcast_LDADD) $(LIBS)
+fun2_default_unli$(EXEEXT): $(fun2_default_unli_OBJECTS) $(fun2_default_unli_DEPENDENCIES) 
+	@rm -f fun2_default_unli$(EXEEXT)
+	$(CXXLINK) $(fun2_default_unli_LDFLAGS) $(fun2_default_unli_OBJECTS) $(fun2_default_unli_LDADD) $(LIBS)
 fun2_geoprobe$(EXEEXT): $(fun2_geoprobe_OBJECTS) $(fun2_geoprobe_DEPENDENCIES) 
 	@rm -f fun2_geoprobe$(EXEEXT)
 	$(CXXLINK) $(fun2_geoprobe_LDFLAGS) $(fun2_geoprobe_OBJECTS) $(fun2_geoprobe_LDADD) $(LIBS)
@@ -429,8 +456,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/broadcast_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ccb_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/default_unli_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ecsv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_broadcast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_default_unli.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_geoprobe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_notification.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_ods.Po@am__quote@
@@ -452,6 +481,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbbroadcast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbccb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbdailybal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbdefaultunli.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbgeoprobe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbnotification.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbods.Po@am__quote@

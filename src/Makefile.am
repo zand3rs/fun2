@@ -1,7 +1,7 @@
 AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include
 AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include
 
-bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods
+bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli
 
 fun2_request_SOURCES = \
                        data_struct.hpp \
@@ -134,6 +134,23 @@ fun2_ods_SOURCES = \
 fun2_ods_LDADD = \
              ../libfuc/lib/libfuc.a \
              @LIBSQLORA8_LIBS@
+
+fun2_default_unli_SOURCES = \
+                       data_struct.hpp \
+                       fun2_default_unli.cpp \
+                       ecsv.cpp ecsv.hpp \
+                       config.cpp config.hpp \
+                       global.cpp global.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbdefaultunli.cpp oradbdefaultunli.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       default_unli_handler.cpp default_unli_handler.hpp \
+                       signal_handler.cpp signal_handler.hpp
+
+fun2_default_unli_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             @LIBSQLORA8_LIBS@ \
+             @LIBCURL@
 
 noinst_HEADERS =
 

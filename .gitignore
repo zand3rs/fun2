@@ -34,6 +34,8 @@ Makefile
 *.test
 *.log
 .deps
+tmp
+local
 
 dist-install
 

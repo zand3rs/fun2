@@ -51,7 +51,7 @@ int ECsv::getline()
                 }
 				break;
 			}
-			continue;
+			//continue;
 		}
 
 		// check for quotes...

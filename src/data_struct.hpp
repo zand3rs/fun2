@@ -445,6 +445,28 @@ typedef struct notification_t {
     }
 } notification_t;
 
+typedef struct default_unli_t {
+    int id;
+    int cluster_node;
+    char msisdn[16];
+    char mnc[32];
+    char mcc[32];
+    char sgsn_ip[32];
+    char date[32];
+    char filename[128];
+    int db_retr;
+
+    default_unli_t () {
+    }
+    default_unli_t (const default_unli_t& right) {
+        *this = right;
+    }
+    default_unli_t& operator= (const default_unli_t& right) {
+        memcpy((void*)this, (void*)&right, sizeof(default_unli_t));
+        return *this;
+    }
+} default_unli_t;
+
 /*-functions------------------------------------------------------------------*/
 
 #endif

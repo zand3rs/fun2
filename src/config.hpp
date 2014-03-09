@@ -129,6 +129,29 @@ class Config {
             return _bypass_ards;
         }
 
+        static const char* getFtpHost() {
+            return _ftp_host.c_str();
+        }
+        static const char* getFtpUser() {
+            return _ftp_user.c_str();
+        }
+        static const char* getFtpPass() {
+            return _ftp_pass.c_str();
+        }
+        static const char* getFtpLocalDir() {
+            return _ftp_local_dir.c_str();
+        }
+
+        static const char* getLocalDir() {
+            return _local_dir.c_str();
+        }
+        static const char* getLocalProcessedDir() {
+            return _local_processed_dir.c_str();
+        }
+        static const char* getLocalCompletedDir() {
+            return _local_completed_dir.c_str();
+        }
+
         static int getRCSize() {
             return (int)_rc_map.size();
         }
@@ -170,6 +193,15 @@ class Config {
         static std::string _nsn_pass;
 
         static int _bypass_ards;
+
+        static std::string _ftp_host;
+        static std::string _ftp_user;
+        static std::string _ftp_pass;
+        static std::string _ftp_local_dir;
+
+        static std::string _local_dir;
+        static std::string _local_processed_dir;
+        static std::string _local_completed_dir;
 
         static rc_map_t _rc_map;
 
