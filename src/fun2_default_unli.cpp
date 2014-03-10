@@ -98,10 +98,20 @@ int main (int argc, char *argv[])
         exit(-1);
     }
 
-    /* -- initialize default_unli file queue -- */
-    if (0 != c2q_init(Global::getDefaultUnliFileQ())) {
-        LOG_CRITICAL("%s: Unable to initialize default_unli file queue!", app_name);
-        exit(-1);
+    /* -- check local ignored dir -- */
+    if (0 != access(Config::getLocalIgnoredDir(), F_OK)) {
+        if (ENOTDIR == errno) {
+            // exists but not a directory
+            LOG_CRITICAL("%s: %s should be a directory!", app_name, Config::getLocalIgnoredDir());
+            exit(-1);
+        }
+        if (ENOENT == errno) {
+            // does not exist, try to create it
+            if (0 != mkdir(Config::getLocalIgnoredDir(), 0775)) {
+                LOG_CRITICAL("%s: Unable to create directory: %s", app_name, Config::getLocalIgnoredDir());
+                exit(-1);
+            }
+        }
     }
 
     /* -- check local processed dir -- */
@@ -138,6 +148,7 @@ int main (int argc, char *argv[])
 
     /* -- some info -- */
     LOG_INFO("%s: local directory: %s", __func__, Config::getLocalDir());
+    LOG_INFO("%s: ignored local directory: %s", __func__, Config::getLocalIgnoredDir());
     LOG_INFO("%s: processed local directory: %s", __func__, Config::getLocalProcessedDir());
     LOG_INFO("%s: completed local directory: %s", __func__, Config::getLocalCompletedDir());
 

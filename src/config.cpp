@@ -68,6 +68,7 @@ std::string Config::_ftp_pass = "";
 std::string Config::_ftp_local_dir = "";
 
 std::string Config::_local_dir = "";
+std::string Config::_local_ignored_dir = "";
 std::string Config::_local_processed_dir = "";
 std::string Config::_local_completed_dir = "";
 
@@ -197,6 +198,7 @@ int Config::load(const char *fpath)
         cfg_getval(&cfg, "", "local_dir", buf, sizeof(buf));
         _local_dir = buf;
 
+        _local_ignored_dir = _local_dir + std::string("/ignored/");
         _local_processed_dir = _local_dir + std::string("/processed/");
         _local_completed_dir = _local_dir + std::string("/completed/");
 

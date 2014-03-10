@@ -76,6 +76,7 @@ create or replace procedure sp_process_default_unli (
   -- 107 - Duplicate entry
   
   vMsg     Varchar2(2000);
+  vMsgType Varchar2(30);
   nRetr    Number;
   vPartner Number; 
   vTranDate Date;
@@ -111,7 +112,8 @@ begin
   -- check mcc
   if vPartner = 1 then 
     begin
-       select msg into vMsg
+       select msg, message_type 
+       into vMsg, vMsgType
        from mcc_messages
        where mcc = p_mcc
        and   message_type = 1;
@@ -121,7 +123,8 @@ begin
     end;
   else
     begin
-       select msg into vMsg
+       select msg, message_type 
+       into vMsg, vMsgType
        from mcc_messages
        where mcc = p_mcc
        and   message_type = 2;
@@ -140,8 +143,8 @@ begin
            nRetr := 107;
      end;
      begin
-        insert into broadcast_log (id, msisdn, tx_date, status, cluster_node, msg)
-        values (broadcast_log_seq.nextval, p_msisdn, vTranDate, 0, 1, vMsg);
+        insert into broadcast_log (id, msisdn, message_id, tx_date, status, cluster_node, msg)
+        values (broadcast_log_seq.nextval, p_msisdn, vMsgType, vTranDate, 0, 1, vMsg);
      exception 
         when dup_val_on_index then 
            nRetr := 107;
@@ -196,11 +199,16 @@ begin
   into   vFileFormat
   from   radcom_downloaded_files;
 
-  p_filename := vFileFormat;
+  if vFileFormat is not null then
+     p_filename := vFileFormat;
+  else
+     p_filename := to_char(trunc(sysdate), 'YYYY_MM_DD_HH24_MI"_Gi*"');
+  end if;
+
+  p_retr := nRetr;
 end sp_get_radcom_file_format;
 /
-
-
+show err
 
 ---------------------------------------------------------------------------------------------------------
 -- #### Sample SQLPlus stored procedure call
@@ -225,11 +233,11 @@ end;
 /
 
 set define ^
-insert into mcc_messages values (1, 'USA', 1, 'Thank you for using Roam UnliSurf! You can now enjoy 24 hrs of unlimited surfing at only P599, with FREE TravelCare insurance for up to 30 days. Please manually select AT&T during your stay, as usage on other networks is charged at P300/MB. For TravelCare info,  dial *143# toll-free.', sysdate);
-insert into mcc_messages values (2, 'USA', 2, 'Hi! We noticed you are incurring regular surfing charges of P300/MB on your current roaming network. You may wish to manually select AT&T instead for unlimited mobile surfing at only P599/day.',  sysdate); 
-insert into mcc_messages values (3, 'USA', 3, 'Your Roam UnliSurf expires at <EXPIRY TIME> today, EST. To continue enjoying unlimited mobile surfing for another 24 hrs at only P599, just stay connected on AT&T. Usage on other operators will incur data roaming charges of P300/MB. Thank you!', sysdate);
+insert into mcc_messages values (4, '515', 1, 'Thank you for using Roam UnliSurf! You can now enjoy 24 hrs of unlimited surfing at only P599, with FREE TravelCare insurance for up to 30 days. Please manually select AT&T during your stay, as usage on other networks is charged at P300/MB. For TravelCare info,  dial *143# toll-free.', sysdate);
+insert into mcc_messages values (5, '515', 2, 'Hi! We noticed you are incurring regular surfing charges of P300/MB on your current roaming network. You may wish to manually select AT&T instead for unlimited mobile surfing at only P599/day.',  sysdate); 
+insert into mcc_messages values (6, '515', 3, 'Your Roam UnliSurf expires at <EXPIRY TIME> today, EST. To continue enjoying unlimited mobile surfing for another 24 hrs at only P599, just stay connected on AT&T. Usage on other operators will incur data roaming charges of P300/MB. Thank you!', sysdate);
 set define &
-insert into roaming_partners values (1, '1', 'USA', '+7'); 
+insert into roaming_partners values (1, '2', '515', '+7'); 
 
 col mcc form a6
 col mnc form a6

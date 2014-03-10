@@ -36,7 +36,7 @@
 
 /*============================================================================*/
 
-int glob(std::vector<std::string>& result, const std::string& pattern)
+static int glob(std::vector<std::string>& result, const std::string& pattern)
 {
     glob_t glob_result;
     glob(pattern.c_str(), GLOB_TILDE, NULL, &glob_result);
@@ -54,7 +54,7 @@ int glob(std::vector<std::string>& result, const std::string& pattern)
 
 /*----------------------------------------------------------------------------*/
 
-int cp(const std::string& src, const std::string& dest)
+static int cp(const std::string& src, const std::string& dest)
 {
     std::ifstream src_stream(src.c_str());
     std::ofstream dest_stream(dest.c_str());
@@ -65,7 +65,7 @@ int cp(const std::string& src, const std::string& dest)
 
 /*----------------------------------------------------------------------------*/
 
-int mv(const std::string& src, const std::string& dest)
+static int mv(const std::string& src, const std::string& dest)
 {
     cp(src, dest);
     return remove(src.c_str());
@@ -73,7 +73,7 @@ int mv(const std::string& src, const std::string& dest)
 
 /*----------------------------------------------------------------------------*/
 
-std::string basename(const std::string& path)
+static std::string basename(const std::string& path)
 {
     unsigned found = path.find_last_of("/");
     std::string name = path;
@@ -86,7 +86,7 @@ std::string basename(const std::string& path)
 
 /*----------------------------------------------------------------------------*/
 
-int load_default_unli(std::vector<default_unli_t>& default_unlis, const std::string& src)
+static int load_default_unli(std::vector<default_unli_t>& default_unlis, const std::string& src)
 {
     //-- clear vector...
     default_unlis.clear();
@@ -104,7 +104,6 @@ int load_default_unli(std::vector<default_unli_t>& default_unlis, const std::str
     csv->getline();
 
     while (0 == csv->getline()) {
-        char buffer[1024];
         default_unli_t default_unli;
         memset(&default_unli, 0, sizeof(default_unli_t)); 
 
@@ -137,18 +136,50 @@ void* default_unli_fetcher (void* arg)
 {
     void* retr = NULL;
     std::vector<std::string> list;
-    std::string pattern = std::string(Config::getLocalDir()) + std::string("/*.csv");
+    std::string pattern = std::string(Config::getLocalDir()) + std::string("/*Gi*.csv");
+    default_unli_t default_unli;
+
+    if (OraDBDefaultUnli::init_lib() < 0) {
+        LOG_CRITICAL("%s: Unable to initialize libsqlora8!", __func__);
+        DO_ABORT();
+        return retr;
+    }
+
+    OraDBDefaultUnli conn;
+    if (conn.initialize(Config::getOraAuth()) < 0) {
+        LOG_CRITICAL("%s: Unable to connect to db (%s).", __func__, Config::getOraAuth());
+        DO_ABORT();
+        return retr;
+    }
 
     LOG_INFO("%s: Started.", __func__);
     LOG_INFO("%s: processing %s files.", __func__, pattern.c_str());
 
     while (! IS_SHUTDOWN()) {
+        memset(&default_unli, 0, sizeof(default_unli_t));
+
+        if (conn.getLastFileProcessed(&default_unli) < 0 || default_unli.db_retr > 1) {
+            LOG_ERROR("%s: Unable to get last default_unli file: retr: %d, filename: %s", __func__
+                    , default_unli.db_retr, default_unli.filename);
+        }
+
+        std::string last_file = default_unli.filename;
+        //LOG_DEBUG("%s: last file: %s", __func__, last_file.c_str());
+        
         glob(list,  pattern);
         //LOG_DEBUG("%s: got %d files.", __func__, list.size());
 
         for (size_t i=0; i < list.size(); ++i) {
             std::string &src = list[i];
-            std::string dest = Config::getLocalProcessedDir() + basename(src);
+            std::string filename = basename(src);
+
+            //-- compare dates YYYY_MM_DD_hh_mm
+            int status = strncmp(filename.c_str(), last_file.c_str(), 16);
+
+            std::string processed = Config::getLocalProcessedDir() + filename;
+            std::string ignored = Config::getLocalIgnoredDir() + filename;
+            std::string &dest = (status > 0) ? processed : ignored;
+
             if (0 != mv(src, dest)) {
                 LOG_ERROR("%s: Unable to move '%s' to '%s'", __func__, src.c_str(), dest.c_str());
             }
@@ -159,6 +190,8 @@ void* default_unli_fetcher (void* arg)
     }
 
     LOG_INFO("%s: Terminated.", __func__);
+
+    conn.destroy_db();
 
     return retr;
 }

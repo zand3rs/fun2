@@ -145,6 +145,9 @@ class Config {
         static const char* getLocalDir() {
             return _local_dir.c_str();
         }
+        static const char* getLocalIgnoredDir() {
+            return _local_ignored_dir.c_str();
+        }
         static const char* getLocalProcessedDir() {
             return _local_processed_dir.c_str();
         }
@@ -200,6 +203,7 @@ class Config {
         static std::string _ftp_local_dir;
 
         static std::string _local_dir;
+        static std::string _local_ignored_dir;
         static std::string _local_processed_dir;
         static std::string _local_completed_dir;
 

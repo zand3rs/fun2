@@ -43,7 +43,6 @@ C2q_t Global::_broadcast_q;
 C2q_t Global::_ods_q;
 C2q_t Global::_ccb_q;
 C2q_t Global::_default_unli_q;
-C2q_t Global::_default_unli_file_q;
 
 /*============================================================================*/
 

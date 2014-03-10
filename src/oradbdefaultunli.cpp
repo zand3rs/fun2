@@ -20,6 +20,9 @@ int OraDBDefaultUnli::initialize(const char* ora_auth)
     if ((res = defaultUnliBind()) < 0)
         return res;
 
+    if ((res = lastFileProcessedBind()) < 0)
+        return res;
+
     return res;
 }
 
@@ -45,6 +48,31 @@ int OraDBDefaultUnli::processDefaultUnli(default_unli_t* default_unli)
     LOG_DEBUG("%s: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
             , default_unli->db_retr, default_unli->msisdn, default_unli->mnc, default_unli->mcc
             , default_unli->sgsn_ip, default_unli->date, default_unli->filename);
+
+    return 0;
+}
+
+int OraDBDefaultUnli::getLastFileProcessed(default_unli_t* default_unli)
+{
+    _var_retr = DB_RETR_INIT;
+
+    memcpy(&_default_unli, default_unli, sizeof(default_unli_t));
+
+    int ora_status = ora_force_execute(&_sth_lfp, 0);
+    memcpy(default_unli, &_default_unli, sizeof(default_unli_t));
+    default_unli->db_retr = _var_retr;
+
+    if (ora_status < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE SP_GET_RADCOM_FILE_FORMAT."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_lfp), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        lastFileProcessedBind();
+        return -1;
+    }
+
+    //LOG_DEBUG("%s: retr: %d, filename: %s", __func__, default_unli->db_retr, default_unli->filename);
 
     return 0;
 }
@@ -78,4 +106,27 @@ int OraDBDefaultUnli::defaultUnliBind()
     return 0;
 }
 
+int OraDBDefaultUnli::lastFileProcessedBind()
+{
+    const char sql_stmt[] = "BEGIN"
+        " SP_GET_RADCOM_FILE_FORMAT(:p_retr, :p_filename);"
+        " END;";
+
+    _sth_lfp = SQLO_STH_INIT;
+
+    if ((_sth_lfp = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for SP_GET_RADCOM_FILE_FORMAT.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_lfp, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
+                || sqlo_bind_by_name(_sth_lfp, ":p_filename", SQLOT_STR, &_default_unli.filename, sizeof(_default_unli.filename), 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for SP_GET_RADCOM_FILE_FORMAT statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
 

@@ -137,10 +137,6 @@ class Global {
             return &_default_unli_q;
         }
 
-        static C2q_t* getDefaultUnliFileQ() {
-            return &_default_unli_file_q;
-        }
-
     private:
         typedef std::map<int, rc_t> rc_map_t;
         static rc_map_t _rc_map;
@@ -159,7 +155,6 @@ class Global {
         static C2q_t _ods_q;
         static C2q_t _ccb_q;
         static C2q_t _default_unli_q;
-        static C2q_t _default_unli_file_q;
 };
 
 #endif
