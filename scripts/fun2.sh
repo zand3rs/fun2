@@ -13,7 +13,8 @@ RESPONSE_BIN="fun2_response"
 NOTIFICATION_BIN="fun2_notification"
 TRANSACTION_BIN="fun2_transaction"
 BROADCAST_BIN="fun2_broadcast"
-APP_BIN_LIST="$REQUEST_BIN $RESPONSE_BIN $NOTIFICATION_BIN $TRANSACTION_BIN $BROADCAST_BIN"
+DEFAULT_UNLI_BIN="fun2_default_unli"
+APP_BIN_LIST="$REQUEST_BIN $RESPONSE_BIN $NOTIFICATION_BIN $TRANSACTION_BIN $BROADCAST_BIN $DEFAULT_UNLI_BIN"
 
 ##---------------------------------------------------------------------------
 
