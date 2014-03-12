@@ -8,7 +8,7 @@ REMOTE_DIR="ftp"
 LOCAL_DIR="local"
 
 BASE_DIR="${0%/*}"
-CURRENT_FILE="$(date '+%Y_%m_%d_%H')*"
+CURRENT_FILE="$(date '+%Y_%m_%d_%H')*Gi*"
 
 /usr/bin/expect -f - <<EOFEXPECT
     set timeout 60
