@@ -114,10 +114,10 @@ static int load_default_unli(std::vector<default_unli_t>& default_unlis, const s
         snprintf(default_unli.filename, sizeof(default_unli.filename), "%s", filename.c_str());
 
         snprintf(default_unli.msisdn, sizeof(default_unli.msisdn), "%s", csv->getfield(1));
-        snprintf(default_unli.mnc, sizeof(default_unli.mnc), "%s", csv->getfield(11));
-        snprintf(default_unli.mcc, sizeof(default_unli.mcc), "%s", csv->getfield(12));
-        snprintf(default_unli.sgsn_ip, sizeof(default_unli.sgsn_ip), "%s", csv->getfield(15));
-        snprintf(default_unli.date, sizeof(default_unli.date), "%s", csv->getfield(2));
+        snprintf(default_unli.mnc, sizeof(default_unli.mnc), "%s", csv->getfield(14));
+        snprintf(default_unli.mcc, sizeof(default_unli.mcc), "%s", csv->getfield(15));
+        snprintf(default_unli.sgsn_ip, sizeof(default_unli.sgsn_ip), "%s", csv->getfield(18));
+        snprintf(default_unli.date, sizeof(default_unli.date), "%s", csv->getfield(3));
 
         LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
                 , default_unli.msisdn, default_unli.mnc, default_unli.mcc
@@ -156,16 +156,6 @@ void* default_unli_fetcher (void* arg)
     LOG_INFO("%s: processing %s files.", __func__, pattern.c_str());
 
     while (! IS_SHUTDOWN()) {
-        memset(&default_unli, 0, sizeof(default_unli_t));
-
-        if (conn.getLastFileProcessed(&default_unli) < 0 || default_unli.db_retr > 1) {
-            LOG_ERROR("%s: Unable to get last default_unli file: retr: %d, filename: %s", __func__
-                    , default_unli.db_retr, default_unli.filename);
-        }
-
-        std::string last_file = default_unli.filename;
-        //LOG_DEBUG("%s: last file: %s", __func__, last_file.c_str());
-        
         glob(list,  pattern);
         //LOG_DEBUG("%s: got %d files.", __func__, list.size());
 
@@ -173,15 +163,26 @@ void* default_unli_fetcher (void* arg)
             std::string &src = list[i];
             std::string filename = basename(src);
 
-            //-- compare dates YYYY_MM_DD_hh_mm
-            int status = strncmp(filename.c_str(), last_file.c_str(), 16);
+            //-- check if already processed...
+            memset(&default_unli, 0, sizeof(default_unli_t));
+            snprintf(default_unli.filename, sizeof(default_unli.filename), "%s", filename.c_str());
 
-            std::string processed = Config::getLocalProcessedDir() + filename;
-            std::string ignored = Config::getLocalIgnoredDir() + filename;
-            std::string &dest = (status > 0) ? processed : ignored;
+            if (conn.getLastFileProcessed(&default_unli) < 0) {
+                LOG_ERROR("%s: Unable to get last default_unli file: retr: %d, filename: %s", __func__
+                        , default_unli.db_retr, default_unli.filename);
+            } else {
+                int status = default_unli.db_retr;
+                if (1 != status) {
+                    LOG_DEBUG("%s: Ignoring previously processed file: %s", __func__, default_unli.filename);
+                }
 
-            if (0 != mv(src, dest)) {
-                LOG_ERROR("%s: Unable to move '%s' to '%s'", __func__, src.c_str(), dest.c_str());
+                std::string processed = Config::getLocalProcessedDir() + filename;
+                std::string ignored = Config::getLocalIgnoredDir() + filename;
+                std::string &dest = (1 == status) ? processed : ignored;
+
+                if (0 != mv(src, dest)) {
+                    LOG_ERROR("%s: Unable to move '%s' to '%s'", __func__, src.c_str(), dest.c_str());
+                }
             }
         }
         
