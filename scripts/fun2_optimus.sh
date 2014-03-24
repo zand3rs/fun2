@@ -4,7 +4,7 @@ FTP_HOST="10.226.224.108"
 FTP_USER="oracle"
 FTP_PASS="oracle123"
 
-REMOTE_DIR="/radcom/omniq"
+REMOTE_DIR="/optimus/insurance_feed"
 LOCAL_DIR="/home/isoladm/app/local"
 
 # do not show getopts errors...
@@ -29,11 +29,9 @@ while getopts h:u:p:l:r: FLAG; do
 done
 
 BASE_DIR="${0%/*}"
-PREVIOUS_MINUTE=$(date '+%M' -d '2 minutes ago')
-CURRENT_MINUTE=$(date '+%M')
-
-DATE_PATTERN="$(date '+%Y_%m_%d_%H_')\[${PREVIOUS_MINUTE:0:1}${CURRENT_MINUTE:0:1}\]"
-FILE_PATTERN="$DATE_PATTERN*Gi*"
+PROCESSED_DIR="processed"
+COMPLETED_DIR="completed"
+FILE_PATTERN="FUN2.EXT*"
 
 /usr/bin/expect -f - <<EOFEXPECT
     set timeout 60
@@ -47,7 +45,11 @@ FILE_PATTERN="$DATE_PATTERN*Gi*"
     expect "sftp>"
     send "cd $REMOTE_DIR\r";
     expect "sftp>"
-    send "mget $FILE_PATTERN\r";
+    send "!\\mv -f $FILE_PATTERN $PROCESSED_DIR\r";
+    expect "sftp>"
+    send "mput $PROCESSED_DIR/$FILE_PATTERN\r";
+    expect "sftp>"
+    send "!\\mv -f $PROCESSED_DIR/$FILE_PATTERN $COMPLETED_DIR\r";
     expect "sftp>"
     send "bye\r";
     expect eof
