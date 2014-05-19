@@ -271,6 +271,11 @@ void* default_unli_handler (void* arg)
         default_unli_t default_unli;
 
         while (! c2q_dequeue(Global::getDefaultUnliQ(), &default_unli, sizeof(default_unli_t))) {
+            if (! strcmp(default_unli.mcc, "515")) {
+                LOG_DEBUG("%s: %d: Ignoring records with mcc 515: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
+                        , default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.date, default_unli.filename);
+                continue;
+            }
             if (conn.processDefaultUnli(&default_unli) < 0 || default_unli.db_retr > 1) {
                 LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
                         , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc
