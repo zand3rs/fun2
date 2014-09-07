@@ -4,19 +4,20 @@ pid=trigger_owner
 pidpw=trgown123
 ORACLE_SID=trgprd
 ORACLE_HOME=/u01/app/oracle/product/10.2.0
-FUN2_SCRIPT=/home/isoladm/app/scripts
-FILEDIR='/home/isoladm/app/local'
+FUN2_SCRIPT=/appl/fun2_default_unli/scripts
+FILEDIR='/appl/optimus'
+
 export ORACLE_SID ORACLE_HOME FUN2_SCRIPT FILEDIR pid pidpw
 
 PATH=$PATH:$ORACLE_HOME/bin
 export PATH
 
 FILENM_DATA=$( sqlplus ${pid}/${pidpw}@${ORACLE_SID} @$FUN2_SCRIPT/fun2_gen_optimus_fnamedata.sql | grep '^FUN2_EXT.' | tr -d '\t' | tr -d ' ' )
-FILENM_LIST=$( sqlplus ${pid}/${pidpw}@${ORACLE_SID} @$FUN2_SCRIPT/fun2_gen_optimus_fnamelist.sql | grep '^FUN2_EXT.' | tr -d '\t' | tr -d ' ' )
+FILENM_LIST=$( sqlplus ${pid}/${pidpw}@${ORACLE_SID} @$FUN2_SCRIPT/fun2_gen_optimus_fnamelist.sql | grep '^FUN2.' | tr -d '\t' | tr -d ' ' )
 
-echo $FILENM_DATA" : "$FILENM_LIST
+#echo $FILENM_DATA" : "$FILENM_LIST
 
-cd /home/isoladm/app/log
+cd /appl/fun2_default_unli/log 
 echo >> fun2_feed_for_optimus.log
 echo "START OF OPTIMUS REPORT @ `date`" >> fun2_feed_for_optimus.log
 
@@ -34,8 +35,11 @@ spoo off
 exit
 EOF
 
-echo >> fun2_unli_notifications.log
+echo >> fun2_feed_for_optimus.log 
 echo "END OF OPTIMUS REPORT @ `date`" >> fun2_feed_for_optimus.log
 echo >> fun2_feed_for_optimus.log
 echo >> fun2_feed_for_optimus.log
+
+chmod 775 ${FILEDIR}/${FILENM_DATA}
+chmod 775 ${FILEDIR}/${FILENM_LIST}
 

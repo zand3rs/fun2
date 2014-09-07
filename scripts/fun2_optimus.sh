@@ -1,12 +1,10 @@
 #!/bin/bash
 
-FTP_HOST="10.226.224.108"
-FTP_USER="oracle"
-FTP_PASS="oracle123"
-
-REMOTE_DIR="/optimus/insurance_feed"
-LOCAL_DIR="/home/isoladm/app/local"
-
+FTP_HOST="10.234.20.220"
+FTP_USER="funsftp"
+FTP_PASS=""
+REMOTE_DIR="/archive_initload3/infa_shared_ph1/SrcFiles/Landing/NON_BSS/FUN2"
+LOCAL_DIR="/appl/optimus"
 # do not show getopts errors...
 OPTERR=0
 
@@ -31,13 +29,11 @@ done
 BASE_DIR="${0%/*}"
 PROCESSED_DIR="processed"
 COMPLETED_DIR="completed"
-FILE_PATTERN="FUN2.EXT*"
+FILE_PATTERN="FUN2*"
 
 /usr/bin/expect -f - <<EOFEXPECT
     set timeout 60
     spawn sftp $FTP_USER@$FTP_HOST
-    expect "password:"
-    send "$FTP_PASS\r";
     expect "sftp>"
     send "lcd $BASE_DIR\r";
     expect "sftp>"
@@ -56,3 +52,5 @@ FILE_PATTERN="FUN2.EXT*"
 EOFEXPECT
 
 exit 0
+
+

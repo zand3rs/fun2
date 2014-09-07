@@ -296,7 +296,7 @@ bool HLR::_getRealIMSI(char* imsi, int imsi_size)
     }
 
     //-- parse response
-    char searchKey[256] = "INTERNATIONAL MOBILE SUBSCRIBER IDENTITY ... ";
+    char searchKey[3256] = "INTERNATIONAL MOBILE SUBSCRIBER IDENTITY ... ";
     char* p = strstr(_buffer, searchKey);
     if (p) {
         p += strlen(searchKey);
@@ -340,12 +340,12 @@ bool HLR::_getRealMSISDN(char* msisdn, int msisdn_size)
     _sockReceive();
     if (! strstr(_buffer, "COMMAND EXECUTED")) {
         LOG_DEBUG("%s::%s: Got: %s", __class__, __func__, _buffer);
-        LOG_ERROR("%s::%s: Was expecting \"COMMAND EXECUTED\" from response!", __class__, __func__);
+        LOG_ERROR("%s::%s: Was expecting \"COMMAND EXECUTED\" from response!!", __class__, __func__);
         return retr;
     }
 
     //-- parse response
-    char searchKey[256] = "MOBILE STATION ISDN NUMBER ................. ";
+    char searchKey[3256] = "MOBILE SUBSCRIBER INTERNATIONAL ISDN NUMBER. ";
     char* p = strstr(_buffer, searchKey);
     if (p) {
         p += strlen(searchKey);

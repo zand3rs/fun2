@@ -9,7 +9,7 @@ export ORACLE_SID ORACLE_HOME pid pidpw
 PATH=$PATH:$ORACLE_HOME/bin
 export PATH
 
-cd /home/isoladm/app/log
+cd /appl/fun2_default_unli/log 
 echo >> fun2_unli_notifications.log
 echo "START OF UNLI NOTIFICATIONS @ `date`" >> fun2_unli_notifications.log
 
@@ -24,4 +24,5 @@ echo >> fun2_unli_notifications.log
 echo "END OF UNLI NOTIFICATIONS @ `date`" >> fun2_unli_notifications.log
 echo >> fun2_unli_notifications.log
 echo >> fun2_unli_notifications.log
+
 
