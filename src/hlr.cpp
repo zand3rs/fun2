@@ -296,7 +296,7 @@ bool HLR::_getRealIMSI(char* imsi, int imsi_size)
     }
 
     //-- parse response
-    char searchKey[3256] = "INTERNATIONAL MOBILE SUBSCRIBER IDENTITY ... ";
+    char searchKey[256] = "INTERNATIONAL MOBILE SUBSCRIBER IDENTITY ... ";
     char* p = strstr(_buffer, searchKey);
     if (p) {
         p += strlen(searchKey);
@@ -345,7 +345,7 @@ bool HLR::_getRealMSISDN(char* msisdn, int msisdn_size)
     }
 
     //-- parse response
-    char searchKey[3256] = "MOBILE SUBSCRIBER INTERNATIONAL ISDN NUMBER. ";
+    char searchKey[256] = "MOBILE SUBSCRIBER INTERNATIONAL ISDN NUMBER. ";
     char* p = strstr(_buffer, searchKey);
     if (p) {
         p += strlen(searchKey);
