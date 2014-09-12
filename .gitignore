@@ -33,6 +33,7 @@ Makefile
 
 *.test
 *.log
+*.gz
 .deps
 tmp
 local
