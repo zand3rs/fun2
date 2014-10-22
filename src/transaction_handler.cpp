@@ -71,6 +71,7 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                     //-- send successful message here...
                     switch (request.tran_type) {
                         case TRAN_TYPE_GROAM_ON:
+                        case TRAN_TYPE_ROAM_USURF_ON:
                             if (request.last_step_no > 0) {
                                 //-- insert to ccb queue for processing...
                                 ccb_insert(request.a_no, CCB_ACTION_ACTIVATE);
@@ -119,6 +120,10 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                             Config::getAccessCode(), request.a_no, SYSMSG_GROAM_ON_PRE_ACT_SUCCESSFUL, 1,
                                             request.activation_date);
                                 }
+                            }
+
+                            if (request.tran_type == TRAN_TYPE_ROAM_USURF_ON) {
+                                //--- WIP: call NF!!!!
                             }
                             break;
                         case TRAN_TYPE_GROAM_OFF:
@@ -421,6 +426,59 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                 Config::getAccessCode(), request.a_no, SYSMSG_GROAM_HELP, 1);
                     }
+                }
+            } else if (! strcasecmp(token, "ROAM")) {
+                //-- get USURF
+                token = strtok_r(NULL, " ", &pbuf);
+                if (token) {
+                    if (! strcasecmp(token, "USURF")) {
+                        //-- get country
+                        token = strtok_r(NULL, " ", &pbuf);
+                        if (token) {
+                            snprintf(request.country, sizeof(request.country), "%s", token);
+
+                            //-- get duration
+                            token = strtok_r(NULL, " ", &pbuf);
+                            if (token && (strchr(token, 'D') || strchr(token, 'd'))) {
+                                request.duration = strtol(token, NULL, 10);
+
+                                //-- get command
+                                token = strtok_r(NULL, " ", &pbuf);
+                                if (token) {
+                                    if (! strcasecmp(token, "ON")) {
+                                        request.tran_type = TRAN_TYPE_ROAM_USURF_ON;
+                                    } else if (! strcasecmp(token, "STATUS")) {
+                                        request.tran_type = TRAN_TYPE_ROAM_USURF_STATUS;
+                                    } else {
+                                        request.tran_type = TRAN_TYPE_UNKNOWN;
+                                        request.status = TXN_STATUS_ERROR;
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
+                                    }
+                                } else {
+                                    request.tran_type = TRAN_TYPE_UNKNOWN;
+                                    request.status = TXN_STATUS_ERROR;
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
+                                }
+                            } else {
+                                request.tran_type = TRAN_TYPE_UNKNOWN;
+                                request.status = TXN_STATUS_ERROR;
+                                send_system_msg(request.customer_type, request.tran_type, request.id,
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
+                            }
+                        }
+                    } else {
+                        request.tran_type = TRAN_TYPE_UNKNOWN;
+                        request.status = TXN_STATUS_ERROR;
+                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
+                    }
+                } else {
+                    request.tran_type = TRAN_TYPE_UNKNOWN;
+                    request.status = TXN_STATUS_ERROR;
+                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
                 }
             } else if (! strcasecmp(token, "HELP")) {
                 snprintf(request.customer_type, sizeof(request.customer_type), "%s", "FUN");
@@ -1118,6 +1176,63 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                         }
                     }
                     break;
+                case DB_RETR_USURF_W_ACTIVE_ROAM:
+                    request.status = TXN_STATUS_ERROR;
+                    if (! request.silent) {
+                        switch (request.tran_type) {
+                            case TRAN_TYPE_ROAM_USURF_ON:
+                                send_system_msg(request.customer_type, request.tran_type, request.id,
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_W_ACTIVE_ROAM, 1);
+                                break;
+                            case TRAN_TYPE_ROAM_USURF_STATUS:
+                                send_system_msg(request.customer_type, request.tran_type, request.id,
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_W_ACTIVE_ROAM, 1);
+                                break;
+                        }
+                    }
+                    break;
+                case DB_RETR_USURF_INVALID_COUNTRY:
+                    request.status = TXN_STATUS_ERROR;
+                    if (! request.silent) {
+                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_INVALID_COUNTRY, 1);
+                    }
+                    break;
+                case DB_RETR_USURF_INVALID_DURATION:
+                    request.status = TXN_STATUS_ERROR;
+                    if (! request.silent) {
+                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_INVALID_DURATION, 1);
+                    }
+                    break;
+                case DB_RETR_USURF_WO_ACTIVE_ROAM:
+                    request.status = TXN_STATUS_ERROR;
+                    if (! request.silent) {
+                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_WO_ACTIVE_ROAM, 1);
+                    }
+                    break;
+                case DB_RETR_USURF_W_PENDING_ROAM:
+                    request.status = TXN_STATUS_ERROR;
+                    if (! request.silent) {
+                        switch (request.tran_type) {
+                            case TRAN_TYPE_ROAM_USURF_ON:
+                                send_system_msg(request.customer_type, request.tran_type, request.id,
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_W_PENDING_ROAM, 1);
+                                break;
+                            case TRAN_TYPE_ROAM_USURF_STATUS:
+                                send_system_msg(request.customer_type, request.tran_type, request.id,
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_W_PENDING_ROAM, 1);
+                                break;
+                        }
+                    }
+                    break;
+                case DB_RETR_USURF_OK:
+                    request.status = TXN_STATUS_PENDING;
+                    break;
+                case DB_RETR_USURF_PRE_ACT:
+                    request.status = TXN_STATUS_SUCCESSFUL;
+                    break;
                 default:
                     request.status = TXN_STATUS_ERROR;
                     if (! request.silent) {
@@ -1624,6 +1739,7 @@ void* transaction_handler (void* arg)
 
             switch (request.tran_type) {
                 case TRAN_TYPE_GROAM_ON:
+                case TRAN_TYPE_ROAM_USURF_ON:
                     strcpy(tran_type, "Activation");
 
                     for (int i = 0; i < max_retry; ++i) {
