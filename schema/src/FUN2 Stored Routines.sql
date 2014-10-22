@@ -1,5 +1,6 @@
 PROMPT create FUNCTION "SF_CHECK_ROAMER_STATUS"...
 PROMPT create FUNCTION "SF_CHECK_ROAMER_STATUS_IMSI"...
+PROMPT create FUNCTION "SF_CHECK_USURF_STATUS"...
 PROMPT create FUNCTION "SF_DISPLAY_PROCESS_STATUS"...
 PROMPT create FUNCTION "SF_DISPLAY_PROCESS_STATUS_2"...
 PROMPT create FUNCTION "SF_DISPLAY_TRAN_TYPE"...
@@ -31,6 +32,7 @@ PROMPT create FUNCTION "SF_TRIGGER_HOUSEKEEPING"...
 PROMPT create FUNCTION "SF_VALIDATE_EXT_DURATION"...
 PROMPT create PROCEDURE "SP_GENERATE_UNLI_NOTIFICATIONS"...
 PROMPT create PROCEDURE "SP_GET_RADCOM_FILE_FORMAT"...
+PROMPT create PROCEDURE "SP_GET_USURF_STATUS"...
 PROMPT create PROCEDURE "SP_INIT_TRAN"...
 PROMPT create PROCEDURE "SP_LOGGER"...
 PROMPT create PROCEDURE "SP_PROCESS_DAILY_BALANCE"...
@@ -1715,6 +1717,22 @@ end sp_get_radcom_file_format;
 
 
 
+CREATE OR REPLACE PROCEDURE "SP_GET_USURF_STATUS"(
+   p_retr   out number, 
+   p_msisdn in  varchar2)
+   -- possible out p_retr
+   --    0 - No Subscription
+   --    1 - With active Subscription
+   --    2 - With Pending activation
+begin
+   nRetr := sf_check_usurf_status(p_msisdn);
+   p_retr := nvl(nRetr,0);
+end sp_get_usurf_status;
+/
+
+
+
+
 CREATE OR REPLACE PROCEDURE "SP_INIT_TRAN" (
     p_retr      out number,
     p_extra_o_1 out varchar2,
@@ -1788,8 +1806,9 @@ begin
    --    144 - Cancel Error - Sender is local SIM
    --    145 - USURF ON Error - Already subscribe to USURF
    --    146 - USURF ON Error - invalid country
-   --    147 - USURF ON Error - invalid denomination
+   --    147 - USURF ON Error - invalid duration
    --    148 - USURF STATUS for no subscription
+   --    149 - USURF STATUS with pending subscription
 
    --  0    TRAN_TYPE_UNKNOWN,
    --  1    TRAN_TYPE_HELP,
@@ -1809,7 +1828,8 @@ begin
    -- 18    TRAN_TYPE_YES_ARDS
    -- 19    TRAN_TYPE_NO_ARDS
    -- 20    USURF_ON
-   -- 21    USURF_STATUS
+   -- 21    USURF_OFF
+   -- 22    USURF_STATUS
 
    -- retr successful returns
    --      1 - successful except pre-reg
@@ -2461,25 +2481,27 @@ begin
 
       nRoamerStatus := sf_check_roamer_status(p_msisdn);
       if nRoamerStatus = 0 then
-         p_extra_o_1 := '1';
+         nRetr := 2;
       else
-         p_extra_o_1 := '2';
+         nRetr := 1;
       end if;
 
-      nRetr := 1;
       p_retr := nRetr;
       return;
-   -- 21    TRAN_TYPE_USURF_STATUS
-   elsif (p_trantype = 21) then
+   -- 22    TRAN_TYPE_USURF_STATUS
+   elsif (p_trantype = 22) then
       nRoamerStatus := sf_check_usurf_status(p_msisdn);
-      if nRoamerStatus = 0 then
+      if nRoamerStatus = 1 then
+         nRetr := 1;
+         p_retr := nRetr;
+      elsif nRoamerStatus = 0 then
          nRetr := 148;
          p_retr := nRetr;
-         sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-         return;
+      elsif nRoamerStatus = 2 then
+         nRetr := 149;
+         p_retr := nRetr;
       end if;
-
-      nRetr := 1;
+      sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
       p_retr := nRetr;
       return;
    end if;
