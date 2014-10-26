@@ -47,6 +47,8 @@ PROMPT create PROCEDURE "SP_PROCESS_GEO_PROBE"...
 PROMPT create PROCEDURE "SP_PROCESS_GEO_PROBE2"...
 PROMPT create PROCEDURE "SP_PROCESS_ODS"...
 PROMPT create PROCEDURE "SP_PROCESS_TRAN"...
+PROMPT create PROCEDURE "SP_USURF_ACTIVATION"...
+PROMPT create PROCEDURE "SP_USURF_DEACTIVATION"...
 
 
 CREATE OR REPLACE FUNCTION "SF_CHECK_ROAMER_STATUS" (
@@ -82,7 +84,7 @@ begin
    return nRoamer;
 end sf_check_roamer_status;
 /
-
+show err
 
 CREATE OR REPLACE FUNCTION "SF_CHECK_ROAMER_STATUS_IMSI" (
    p_msisdn in number,
@@ -121,6 +123,7 @@ begin
    return nRoamer;
 end sf_check_roamer_status_imsi;
 /
+show err
 
 
 
@@ -129,10 +132,11 @@ CREATE OR REPLACE FUNCTION "SF_CHECK_USURF_STATUS" (
    ) return number is
    nUsurfer Number(1);
    nActivationPending  Number;
+   vStatus usurf_activation.status%type;
 begin
    nUsurfer := 0;
    select status
-   from   vStatus
+   into   vStatus
    from   usurf_activation
    where  msisdn = p_msisdn;
    if vStatus = 'ACTIVE' then
@@ -145,6 +149,8 @@ exception
    when no_data_found then return 0;
 end sf_check_usurf_status;
 /
+show err
+
 
 
 CREATE OR REPLACE FUNCTION "SF_DISPLAY_PROCESS_STATUS" (
@@ -311,6 +317,7 @@ exception
    when others then return p_process;
 end SF_DISPLAY_PROCESS_STATUS;
 /
+show err
 
 
 
@@ -478,6 +485,7 @@ exception
    when others then return p_process;
 end SF_DISPLAY_PROCESS_STATUS_2;
 /
+show err
 
 
 
@@ -532,6 +540,7 @@ begin
 
 end sf_display_tran_type;
 /
+show err
 
 
 
@@ -557,6 +566,7 @@ begin
    return vCustomerType;
 end sf_get_customer_type;
 /
+show err
 
 
 
@@ -575,6 +585,7 @@ begin
    return vLinks;
 end SF_GET_FUN_LINKS;
 /
+show err
 
 
 
@@ -593,6 +604,7 @@ begin
    return vLinks;
 end SF_GET_FUN_LINKS_LOCAL;
 /
+show err
 
 
 
@@ -639,6 +651,7 @@ exception
       end if;
 end sf_get_mbal_bp_dtls;
 /
+show err
 
 
 
@@ -663,6 +676,7 @@ exception
    when no_data_found then return 0;
 end sf_get_min_bal;
 /
+show err
 
 
 
@@ -681,6 +695,7 @@ exception
    when others then return ' ';
 end sf_get_process_seq;
 /
+show err
 
 
 
@@ -699,6 +714,7 @@ exception
    when others then return ' ';
 end sf_get_reverse_process_seq;
 /
+show err
 
 
 
@@ -720,6 +736,7 @@ begin
    end if;
 end sf_get_tran_type;
 /
+show err
 
 
 
@@ -738,6 +755,7 @@ begin
    return (nHours/24);
 end sf_get_unli_tz;
 /
+show err
 
 
 
@@ -756,6 +774,7 @@ begin
    return nRoamer;
 end sf_is_active_fun;
 /
+show err
 
 
 
@@ -776,6 +795,7 @@ begin
    return nRoamer;
 end sf_is_active_roamer;
 /
+show err
 
 
 
@@ -815,6 +835,7 @@ begin
    return nRoamer;
 end sf_is_active_roamer_o;
 /
+show err
 
 
 
@@ -833,6 +854,7 @@ exception
    when others then return 0;
 end sf_is_blacklisted;
 /
+show err
 
 
 
@@ -852,6 +874,7 @@ exception
    when others then return 0;
 end is_chia_filtered;
 /
+show err
 
 
 
@@ -871,6 +894,7 @@ begin
    return nCnt ;
 end sf_is_in_customer_type_range;
 /
+show err
 
 
 
@@ -888,6 +912,7 @@ begin
    return nCnt ;
 end sf_is_in_hlr_range;
 /
+show err
 
 
 
@@ -907,6 +932,7 @@ begin
    return nRoamer;
 end sf_is_link_active;
 /
+show err
 
 
 
@@ -924,6 +950,7 @@ begin
    return nRoamer;
 end sf_is_link_pending;
 /
+show err
 
 
 
@@ -941,6 +968,7 @@ begin
    return nRoamer;
 end sf_is_local_sim_active_link;
 /
+show err
 
 
 
@@ -971,6 +999,7 @@ exception
    when others then return 0;
 end sf_is_max_link_reached;
 /
+show err
 
 
 
@@ -1014,6 +1043,7 @@ begin
    return nRoamer;
 end sf_is_roamer_info;
 /
+show err
 
 
 
@@ -1061,6 +1091,7 @@ begin
    return nRoamer;
 end sf_is_roamer_info_imsi;
 /
+show err
 
 
 
@@ -1099,6 +1130,7 @@ begin
    return nRetr;
 end sf_is_valid_activation_dt;
 /
+show err
 
 
 
@@ -1117,10 +1149,11 @@ begin
    return nValid;
 end sf_is_valid_globe_number;
 /
+show err
 
 
 
-CREATE OR REPLACE PROCEDURE "SP_IS_VALID_USURF" (p_country in varchar2, p_denom in number) return number is
+CREATE OR REPLACE FUNCTION "SF_IS_VALID_USURF" (p_country in varchar2, p_denom in number) return number is
    nRetr Number;
 begin
    -- 1 - OK
@@ -1143,6 +1176,7 @@ begin
    return nRetr;
 end sf_is_valid_usurf;
 /
+show err
 
 
 
@@ -1509,6 +1543,7 @@ begin
 
 end sf_trigger_housekeeping;
 /
+show err
 
 
 
@@ -1556,6 +1591,7 @@ begin
    return nValid;
 end SF_VALIDATE_EXT_DURATION;
 /
+show err
 
 
 
@@ -1664,6 +1700,7 @@ begin
    dbms_output.put_line ('No. of Expiry with No Message to Sent:' || to_char(vNoExpCounter));
 end sp_generate_unli_notifications;
 /
+show err
 
 
 
@@ -1713,22 +1750,25 @@ begin
   --p_filename := to_char(trunc(sysdate), 'YYYY_MM_DD_HH24_MI"_Gi*"');
 end sp_get_radcom_file_format;
 /
+show err
 
 
 
 
 CREATE OR REPLACE PROCEDURE "SP_GET_USURF_STATUS"(
    p_retr   out number, 
-   p_msisdn in  varchar2)
+   p_msisdn in  varchar2) as
+   nRetr Number;
    -- possible out p_retr
    --    0 - No Subscription
    --    1 - With active Subscription
-   --    2 - With Pending activation
+   --    2 - With Pending activation   
 begin
    nRetr := sf_check_usurf_status(p_msisdn);
    p_retr := nvl(nRetr,0);
 end sp_get_usurf_status;
 /
+show err
 
 
 
@@ -2540,6 +2580,7 @@ begin
 
 end sp_init_tran;
 /
+show err
 
 
 
@@ -2549,6 +2590,8 @@ begin
    values (p_source, p_info, sysdate, system_log_seq.nextval);
    commit;
 end;
+/
+show err
 
 
 
@@ -2642,6 +2685,7 @@ exception
         raise_application_error(-200002, SQLERRM);
 end sp_process_daily_balance;
 /
+show err
 
 
 
@@ -2866,6 +2910,7 @@ begin
 
 end sp_process_default_unli;
 /
+show err
 
 
 
@@ -2979,6 +3024,7 @@ begin
 
 end SP_PROCESS_FOR_ARDS_EXPIRY;
 /
+show err
 
 
 
@@ -3074,6 +3120,7 @@ begin
 
 end sp_process_for_cancel;
 /
+show err
 
 
 
@@ -3109,6 +3156,7 @@ begin
 
 end sp_process_for_daily_bal_chk;
 /
+show err
 
 
 
@@ -3230,6 +3278,7 @@ begin
 
 end sp_process_for_deactivation;
 /
+show err
 
 
 
@@ -3321,6 +3370,7 @@ begin
 
 end sp_process_for_deactivation_m;
 /
+show err
 
 
 
@@ -3355,6 +3405,7 @@ begin
 
 end sp_process_for_expire_pending;
 /
+show err
 
 
 
@@ -3605,6 +3656,7 @@ begin
 
 end sp_process_geo_probe;
 /
+show err
 
 
 
@@ -3866,6 +3918,7 @@ begin
 
 end sp_process_geo_probe2;
 /
+show err
 
 
 
@@ -3886,6 +3939,7 @@ begin
    p_retr := 1;
 end sp_process_ods;
 /
+show err
 
 
 
@@ -4624,3 +4678,44 @@ begin
 
 end sp_process_tran;
 /
+show err
+
+
+
+CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
+    p_msisdn    in  varchar2,
+    p_country   in  varchar2,
+    p_denom     in  number
+   ) is
+begin
+   begin
+      insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
+      values (usurf_activation_seq.nextval, p_msisdn, p_country, p_denom, sysdate, 'ACTIVE', sysdate, user);
+   exception
+      when dup_val_on_index then
+         update usurf_activation
+         set    status = 'ACTIVE',
+                denom = p_denom,
+                country = p_country,
+                activation_dt = sysdate
+         where  msisdn = p_msisdn;
+      when others then null;
+   end;
+end sp_usurf_activation;
+/
+show err
+
+
+
+CREATE OR REPLACE PROCEDURE "SP_USURF_DEACTIVATION" (
+    p_msisdn    in  varchar2
+   ) is
+begin
+   update usurf_activation
+   set    status = 'INACTIVE',
+          deactivation_dt = sysdate,
+          deactivation_reason = 'NF'
+   where  msisdn = p_msisdn;
+end sp_usurf_deactivation;
+/
+show err
