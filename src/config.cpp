@@ -46,6 +46,13 @@ std::string Config::_csp_userid = "";
 std::string Config::_csp_password = "";
 std::string Config::_csp_keyword = "";
 
+std::string Config::_nf_url = "";
+int Config::_nf_timeout_sec = 0;
+int Config::_nf_silent = 0;
+std::string Config::_nf_origin = "";
+std::string Config::_nf_service_id = "";
+std::string Config::_nf_param = "";
+
 std::string Config::_cart_url = "";
 int Config::_cart_timeout_sec = 0;
 std::string Config::_cart_userid = "";
@@ -146,6 +153,24 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "csp_keyword", buf, sizeof(buf));
         _csp_keyword = buf;
+
+        cfg_getval(&cfg, "", "nf_url", buf, sizeof(buf));
+        _nf_url = buf;
+
+        cfg_getval(&cfg, "", "nf_timeout_sec", buf, sizeof(buf));
+        _nf_timeout_sec = strtol(buf, NULL, 10);
+
+        cfg_getval(&cfg, "", "nf_silent", buf, sizeof(buf));
+        _nf_silent = strtol(buf, NULL, 10);
+
+        cfg_getval(&cfg, "", "nf_origin", buf, sizeof(buf));
+        _nf_origin = buf;
+
+        cfg_getval(&cfg, "", "nf_service_id", buf, sizeof(buf));
+        _nf_service_id = buf;
+
+        cfg_getval(&cfg, "", "nf_param", buf, sizeof(buf));
+        _nf_param = buf;
 
         cfg_getval(&cfg, "", "cart_url", buf, sizeof(buf));
         _cart_url = buf;

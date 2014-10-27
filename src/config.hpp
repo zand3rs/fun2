@@ -92,6 +92,25 @@ class Config {
             return _csp_keyword.c_str();
         }
 
+        static const char* getNfUrl() {
+            return _nf_url.c_str();
+        }
+        static int getNfTimeoutSec() {
+            return _nf_timeout_sec;
+        }
+        static int getNfSilent() {
+            return _nf_silent;
+        }
+        static const char* getNfOrigin() {
+            return _nf_origin.c_str();
+        }
+        static const char* getNfServiceId() {
+            return _nf_service_id.c_str();
+        }
+        static const char* getNfParam() {
+            return _nf_param.c_str();
+        }
+
         static const char* getCartUrl() {
             return _cart_url.c_str();
         }
@@ -180,6 +199,13 @@ class Config {
         static std::string _csp_userid;
         static std::string _csp_password;
         static std::string _csp_keyword;
+
+        static std::string _nf_url;
+        static int _nf_timeout_sec;
+        static int _nf_silent;
+        static std::string _nf_origin;
+        static std::string _nf_service_id;
+        static std::string _nf_param;
         
         static std::string _cart_url;
         static int _cart_timeout_sec;

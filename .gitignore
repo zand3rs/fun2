@@ -34,6 +34,7 @@ Makefile
 *.test
 *.log
 *.gz
+*.swp
 .deps
 tmp
 local

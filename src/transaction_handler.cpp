@@ -123,7 +123,8 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                             }
 
                             if (request.tran_type == TRAN_TYPE_ROAM_USURF_ON) {
-                                //--- WIP: call NF!!!!
+                                //--- call NF here...
+                                nf_provision(request.a_no);
                             }
                             break;
                         case TRAN_TYPE_GROAM_OFF:
