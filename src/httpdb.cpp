@@ -106,6 +106,52 @@ void HttpDB::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
     LOG_INFO("%s: Request URI: %s", __func__, httpRequest->getUri());
 
     //-- check if client is requesting for the correct service...
+
+    if (!strcmp(httpRequest->getService(), "/usurf") || !strcmp(httpRequest->getService(), "/usurf/")) {
+        //-- USURF Handler...
+        memset(&request, 0, sizeof(request_t));
+        request.cluster_node = Config::getClusterNode();
+
+        sKey = "msisdn";
+        sVal =  httpRequest->getFormValue(sKey);
+        snprintf(request.msisdn, sizeof(request.msisdn), "%s", sVal);
+        snprintf(&htmlBody[strlen(htmlBody)], sizeof(htmlBody)-strlen(htmlBody),
+                "%s: %s <br>\n", sKey, sVal);
+        LOG_DEBUG("%s: sKey=[%s], sVal=[%s], %s=[%s]", __func__, sKey, sVal, sKey, request.msisdn);
+
+        sKey = "opt";
+        sVal =  httpRequest->getFormValue(sKey);
+        int opt = strtol(sVal, NULL, 10);
+        snprintf(&htmlBody[strlen(htmlBody)], sizeof(htmlBody)-strlen(htmlBody),
+                "%s: %s <br>\n", sKey, sVal);
+        LOG_DEBUG("%s: sKey=[%s], sVal=[%s]", __func__, sKey, sVal);
+
+        sKey = "service_id";
+        sVal =  httpRequest->getFormValue(sKey);
+        snprintf(&htmlBody[strlen(htmlBody)], sizeof(htmlBody)-strlen(htmlBody),
+                "%s: %s <br>\n", sKey, sVal);
+        LOG_DEBUG("%s: sKey=[%s], sVal=[%s]", __func__, sKey, sVal);
+
+        sKey = "opt_time";
+        sVal =  httpRequest->getFormValue(sKey);
+        snprintf(&htmlBody[strlen(htmlBody)], sizeof(htmlBody)-strlen(htmlBody),
+                "%s: %s <br>\n", sKey, sVal);
+        LOG_DEBUG("%s: sKey=[%s], sVal=[%s]", __func__, sKey, sVal);
+
+        //-- check for required params
+        if (! *(request.msisdn) || opt != 2) {
+            LOG_ERROR("%s: Invalid request.", __func__);
+        } else {
+            if (_conn.usurfDeactivation(&request) < 0) {
+                LOG_ERROR("%s: Unable to process request: %s.", __func__, request.msisdn);
+            }
+        }
+
+        httpResponse->setBody(htmlBody);
+        httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
+        return;
+    }
+
     if (strcmp(httpRequest->getService(), "/")) {
         httpResponse->setResponseCode(HTTPRESPONSECODE_404_NOTFOUND);
         return;

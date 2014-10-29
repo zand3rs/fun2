@@ -35,6 +35,9 @@ int OraDBRequest::_do_bind()
     if ((res = processTranBind()) < 0)
         return res;
 
+    if ((res = usurfDeactivationBind()) < 0)
+        return res;
+
     if ((res = insertKeywordBind()) < 0)
         return res;
 
@@ -602,6 +605,54 @@ int OraDBRequest::processTranBind()
                 || sqlo_bind_by_name(_sth_pt, ":p_extra_i_3", SQLOT_STR, &_var_extra_i_3, sizeof(_var_extra_i_3), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SP_PROCESS_TRAN statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
+
+int OraDBRequest::usurfDeactivation(request_t* request)
+{
+    _var_retr = DB_RETR_INIT;
+
+    snprintf(_var_msisdn, sizeof(_var_msisdn), "%s", request->a_no);
+
+    int ora_status = ora_force_execute(&_sth_ud, 0);
+    request->db_retr = _var_retr;
+
+    if (ora_status < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE SP_USURF_DEACTIVATION."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_ud), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        usurfDeactivationBind();
+        return -1;
+    }
+
+    LOG_DEBUG("%s: retr: %d, msisdn: %s", __func__, request->db_retr, request->a_no);
+
+    return 0;
+}
+
+int OraDBRequest::usurfDeactivationBind()
+{
+    const char sql_stmt[] = "BEGIN"
+        " SP_USURF_DEACTIVATION(:p_retr, :p_msisdn);"
+        " END;";
+
+    _sth_ud = SQLO_STH_INIT;
+
+    if ((_sth_ud = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for SP_USURF_DEACTIVATION.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_ud, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
+                || sqlo_bind_by_name(_sth_ud, ":p_msisdn", SQLOT_STR, &_var_msisdn, sizeof(_var_msisdn), 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for SP_USURF_DEACTIVATION statement handle.", __func__);
         return -2;
     }
 

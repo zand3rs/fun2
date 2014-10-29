@@ -300,10 +300,11 @@ typedef struct request_t {
     char SUB_Mobtel[64];
     char SUB_Device_Details[256];
 
-#define txid  CSP_Txid
-#define msg   SMS_Message_String
-#define a_no  SUB_Mobtel
-#define b_no  SMS_SourceAddr
+#define txid   CSP_Txid
+#define msg    SMS_Message_String
+#define msisdn SUB_Mobtel
+#define a_no   SUB_Mobtel
+#define b_no   SMS_SourceAddr
 
     int id;
     int ref_id;
