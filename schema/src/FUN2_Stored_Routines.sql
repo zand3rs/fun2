@@ -4012,6 +4012,10 @@ begin
    -- 12    TRAN_TYPE_GLIST
    -- 13    TRAN_TYPE_GLIST_ZONE
 
+   -- 20    TRAN_TYPE_USURF_ON
+   -- 21    TRAN_TYPE_USURF_OFF
+   -- 22    TRAN_TYPE_USURF_STATUS
+
    sp_logger('PROCESS' , 'START => ' ||
                       ' p_trantype:'  || to_char(p_trantype) ||
                       ' p_msisdn:'    || p_msisdn            ||
@@ -4625,6 +4629,11 @@ begin
             nRetr := 7;
          end if;
       end if;
+
+   --  20    TRAN_TYPE_USURF_ON
+   elsif (p_trantype = 20) then
+      
+
    end if;
    commit;
 
@@ -4683,24 +4692,27 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
+    p_retr      out number,
     p_msisdn    in  varchar2,
     p_country   in  varchar2,
-    p_denom     in  number
+    p_duration  in  number
    ) is
 begin
    begin
       insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-      values (usurf_activation_seq.nextval, p_msisdn, p_country, p_denom, sysdate, 'ACTIVE', sysdate, user);
+      values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'PENDING', sysdate, user);
    exception
       when dup_val_on_index then
          update usurf_activation
-         set    status = 'ACTIVE',
-                denom = p_denom,
+         set    status = 'PENDING',
+                denom = p_duration,
                 country = p_country,
                 activation_dt = sysdate
          where  msisdn = p_msisdn;
       when others then null;
    end;
+   commit;
+   p_retr := 1;
 end sp_usurf_activation;
 /
 show err
@@ -4708,6 +4720,7 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_DEACTIVATION" (
+    p_retr      out number,
     p_msisdn    in  varchar2
    ) is
 begin
@@ -4716,6 +4729,632 @@ begin
           deactivation_dt = sysdate,
           deactivation_reason = 'NF'
    where  msisdn = p_msisdn;
+   commit;
+   p_retr := 1;
+exception 
+   when others then 
+      p_retr := 1;
 end sp_usurf_deactivation;
+/
+show err
+
+
+
+
+
+
+
+
+
+PROMPT creating FUN2 TRIGGERs
+PROMPT creating TRIGGER "ACL_INSERT_TRIGGER"
+PROMPT creating TRIGGER "BLACKLISTED_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "COUNTRIES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "COUNTRIES_UPDATE_TRIGGER"
+PROMPT creating TRIGGER "CUST_TYPES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "CUST_TYPES_MAP_INSERT_TRIGGER"
+PROMPT creating TRIGGER "GEO_PROBE_LOG_TRIGGER"
+PROMPT creating TRIGGER "HLR_SERVERS_INSERT_TRIGGER"
+PROMPT creating TRIGGER "HLR_SVR_IMSI_INSERT_TRIGGER"
+PROMPT creating TRIGGER "HLR_SVR_IMSI_UPDATE_TRIGGER"
+PROMPT creating TRIGGER "HLR_SVR_MAPPING_INSERT_TRIGGER"
+PROMPT creating TRIGGER "IN_SERVERS_INSERT_TRIGGER"
+PROMPT creating TRIGGER "IN_SVR_MAPPING_INSERT_TRIGGER"
+PROMPT creating TRIGGER "KEYWORDREQUEST_INSERT_TRIGGER"
+PROMPT creating TRIGGER "KEYWORDS_INSERT_TRIGGER"
+PROMPT creating TRIGGER "KEYWORD_MSG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "MODULES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "PASS_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "PLMN_MAPPING_INSERT_TRIGGER"
+PROMPT creating TRIGGER "PLMN_MAPPING_UPDATE_TRIGGER"
+PROMPT creating TRIGGER "PREACTIVATION_TRIGGER"
+PROMPT creating TRIGGER "REQUEST_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "RESPONSE_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "SERVICES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "SIM_ACT_NOTIFY_DT_TRIGGER"
+PROMPT creating TRIGGER "SSET_MAPPING_INSERT_TRIGGER"
+PROMPT creating TRIGGER "TRANSACTION_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "USER_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "USER_MASTER_INSERT_TRIGGER"
+PROMPT creating TRIGGER "USER_ROLES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "WHITELISTED_LOG_INSERT_TRIGGER"
+PROMPT creating TRIGGER "ZONES_INSERT_TRIGGER"
+PROMPT creating TRIGGER "ZONES_UPDATE_TRIGGER"
+
+
+
+CREATE OR REPLACE TRIGGER "ACL_INSERT_TRIGGER"
+before insert on acl
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select acl_seq.nextval into :new.id from dual;
+   end if;
+end acl_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "BLACKLISTED_LOG_INSERT_TRIGGER"
+before insert on blacklisted_log
+for each row
+begin
+   :new.tran_dt := trunc(nvl(:new.dt_created, sysdate));
+   insert into BLACKLISTED_WHITELISTED_LOG
+   values (:new.msisdn, 'BLACKLISTED', :new.dt_created, :new.remarks, :new.tran_dt, :new.created_by, :new.bulk_grp_id );
+end BLACKLISTED_LOG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "COUNTRIES_INSERT_TRIGGER"
+before insert on countries
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select countries_seq.nextval into :new.id from dual;
+   end if;
+   :NEW.country_name_upper := upper(nvl(:NEW.country_name, :NEW.country_code));
+end COUNTRIES_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "COUNTRIES_UPDATE_TRIGGER"
+before update of zone_id on countries
+for each row
+declare
+   nBreathing   Number;
+   nMaxDuration Number;
+begin
+   -- get
+   begin
+      select breathing_period, max_duration
+      into   nBreathing, nMaxDuration
+      from   zones
+      where  zone_id = :new.zone_id;
+   exception
+      when no_data_found then null;
+   end;
+
+   -- update
+   update plmn_mapping
+   set    breathing_period = nBreathing,
+          max_duration = nMaxDuration
+   where  country_code = :new.country_code;
+
+end COUNTRIES_UPDATE_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "CUST_TYPES_INSERT_TRIGGER"
+before insert on customer_types
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select customer_types_seq.nextval into :new.id from dual;
+   end if;
+end CUST_TYPES_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "CUST_TYPES_MAP_INSERT_TRIGGER"
+before insert on customer_types_mapping
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select customer_types_mapping_seq.nextval into :new.id from dual;
+   end if;
+end CUST_TYPES_MAP_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "GEO_PROBE_LOG_TRIGGER"
+before insert on geo_probe_log
+for each row
+begin
+   :NEW.tx_date    := trunc(sysdate);
+   :NEW.dt_created := sysdate;
+end GEO_PROBE_LOG_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "HLR_SERVERS_INSERT_TRIGGER"
+before insert on hlr_servers
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select hlr_servers_seq.nextval into :new.id from dual;
+   end if;
+end HLR_SERVERS_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "HLR_SVR_IMSI_INSERT_TRIGGER"
+before insert on HLR_IMSI_MAPPING
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select hlr_imsi_mapping_seq.nextval into :new.id from dual;
+   end if;
+   begin
+     select server_ip
+     into   :new.server_ip
+     from   hlr_servers
+     where  server_name = :new.server_name;
+   end;
+end HLR_SVR_IMSI_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "HLR_SVR_IMSI_UPDATE_TRIGGER"
+before update on HLR_IMSI_MAPPING
+for each row
+begin
+   if nvl(:new.server_name,'-x') <> nvl(:old.server_name,'-x')
+   then
+     select server_ip
+     into   :new.server_ip
+     from   hlr_servers
+     where  server_name = :new.server_name;
+   end if;
+end HLR_SVR_IMSI_UPDATE_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "HLR_SVR_MAPPING_INSERT_TRIGGER"
+before insert on hlr_server_mapping
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select hlr_server_mapping_seq.nextval into :new.id from dual;
+   end if;
+end HLR_SVR_MAPPING_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "IN_SERVERS_INSERT_TRIGGER"
+before insert on in_servers
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select in_servers_seq.nextval into :new.id from dual;
+   end if;
+end IN_SERVERS_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "IN_SVR_MAPPING_INSERT_TRIGGER"
+before insert on in_server_mapping
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select in_server_mapping_seq.nextval into :new.id from dual;
+   end if;
+end IN_SVR_MAPPING_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "KEYWORDREQUEST_INSERT_TRIGGER"
+before insert on keywordRequest
+for each row
+begin
+   --if (:new.tran_type in (8,9)) and (:new.imsi is null or :new.imsi= '') then
+   if (:new.imsi is null or :new.imsi = '') then
+      begin
+         select imsi
+         into  :new.imsi
+         from  sim_activation
+         where msisdn = :new.msisdn;
+      exception
+         when others then null;
+      end;
+   end if;
+
+end keywordRequest_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "KEYWORDS_INSERT_TRIGGER"
+before insert on keywords
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select keywords_seq.nextval into :new.id from dual;
+   end if;
+end KEYWORDS_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "KEYWORD_MSG_INSERT_TRIGGER"
+before insert on keyword_msg
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select keyword_msg_seq.nextval into :new.id from dual;
+   end if;
+end KEYWORD_MSG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "MODULES_INSERT_TRIGGER"
+before insert on modules
+for each row
+ begin
+   if :new.id is null or :new.id = 0
+   then
+ select modules_seq.nextval into :new.id from dual;
+   end if;
+end modules_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "PASS_LOG_INSERT_TRIGGER"
+before insert on pass_log
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select pass_log_seq.nextval into :new.id from dual;
+   end if;
+end pass_log_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "PLMN_MAPPING_INSERT_TRIGGER"
+before insert on plmn_mapping
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select plmn_mapping_seq.nextval into :new.id from dual;
+   end if;
+
+   -- get
+   begin
+      select breathing_period, max_duration
+      into   :new.breathing_period, :new.max_duration
+      from   zones z
+      where  exists ( select 1
+      from   countries c
+      where  c.country_code = :new.country_code
+      and    c.zone_id = z.zone_id );
+   exception
+      when no_data_found then null;
+   end;
+
+end PLMN_MAPPING_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "PLMN_MAPPING_UPDATE_TRIGGER"
+before update of country_code on plmn_mapping
+for each row
+begin
+   -- get
+   begin
+      select breathing_period, max_duration
+      into   :new.breathing_period, :new.max_duration
+      from   zones z
+      where  exists ( select 1
+      from   countries c
+      where  c.country_code = :new.country_code
+      and    c.zone_id = z.zone_id );
+   exception
+      when no_data_found then null;
+   end;
+
+end PLMN_MAPPING_UPDATE_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "PREACTIVATION_TRIGGER"
+before insert on manual_enrollment_log
+for each row
+begin
+   :new.tx_date := trunc(:new.tx_date);
+   if :new.enrollment_type = 'ACTIVATION' and :new.tx_date > trunc(sysdate)then
+         begin
+            insert into sim_activation (id, msisdn, activation_dt, status, remarks, request_origin, duration, min_bal, daily_bal)
+            values (sim_activation_seq.nextval, :new.msisdn, trunc(:new.tx_date), 'PENDING', :new.remarks, :new.request_origin,
+                    :new.duration, :new.min_bal, 0 );
+         exception
+            when dup_val_on_index then
+                UPDATE sim_activation
+                SET    activation_dt = trunc(:new.tx_date),
+                       deactivation_dt = null,
+                       status = 'PENDING',
+                       remarks = :new.remarks
+                WHERE  msisdn = :new.msisdn;
+            when others then null;
+         end;
+   end if;
+   if :new.msisdn <= 0 then
+      declare
+         nMSISDN Number;
+      begin
+         select msisdn
+         into   nMSISDN
+         from   sim_activation
+         where  imsi = :new.imsi;
+         if nMSISDN is not null then
+            :new.msisdn := nMSISDN;
+         end if;
+      exception
+         when no_data_found then null;
+      end;
+   end if;
+end PREACTIVATION_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "REQUEST_LOG_INSERT_TRIGGER"
+before insert on request_log
+for each row
+begin
+   if :new.TRAN_DT is null then
+      :new.TRAN_DT := trunc(sysdate);
+   end if;
+   :new.STEP_SEQ := sf_get_process_seq;
+
+   --if (:new.tran_type in (8,9)) and (:new.imsi is null or :new.imsi= '') then
+   if (:new.imsi is null or :new.imsi='') and
+      (:new.a_no is not null)
+   then
+      begin
+         select imsi
+         into  :new.imsi
+         from  sim_activation
+         where msisdn = :new.a_no;
+      exception
+         when others then null;
+      end;
+   end if;
+end REQUEST_LOG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "RESPONSE_LOG_INSERT_TRIGGER"
+before insert on response_log
+for each row
+begin
+   if :new.TRAN_DT is null then
+      :new.TRAN_DT := trunc(sysdate);
+   end if;
+end RESPONSE_LOG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "SERVICES_INSERT_TRIGGER"
+before insert on services
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select services_seq.nextval into :new.id from dual;
+   end if;
+end SERVICES_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "SIM_ACT_NOTIFY_DT_TRIGGER"
+before update of deactivation_dt on sim_activation
+for each row
+begin
+   if :new.deactivation_dt is not null then
+      :new.notify_date := :new.deactivation_dt-2;
+   else
+      :new.notify_date := null;
+   end if;
+end SIM_ACT_NOTIFY_DT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "SSET_MAPPING_INSERT_TRIGGER"
+before insert on sset_mapping
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select sset_mapping_seq.nextval into :new.id from dual;
+   end if;
+   select sset_mapping_sset_id_seq.nextval into :new.sset_id from dual;
+end SSET_MAPPING_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "TRANSACTION_LOG_INSERT_TRIGGER"
+before insert on transaction_log
+for each row
+begin
+   :new.tran_dt := trunc(nvl(:new.tx_start, sysdate));
+end TRANSACTION_LOG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "USER_LOG_INSERT_TRIGGER"
+before insert on user_log
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select user_log_seq.nextval into :new.id from dual;
+   end if;
+   if :new.user_code is null then
+      if :new.logs like 'LOGIN: User=%' then
+         :new.user_code := substr(:new.logs,13,instr(:new.logs,'Status',1,1)-13);
+      elsif :new.logs like 'LOGIN ERROR: User=%' then
+         :new.user_code := substr(:new.logs,19);
+      elsif :new.logs like 'LOCK ACCOUNT: User=%' then
+         :new.user_code := substr(:new.logs,19);
+      elsif :new.logs like 'LOCK ACCOUNT: User=%' then
+         :new.user_code := substr(:new.logs,19);
+      elsif :new.logs like 'LOGOUT: User=%' then
+         :new.user_code := substr(:new.logs,13);
+      end if;
+   end if;
+   if (:new.mod_name = 'Enrollment') or (:new.mod_name like 'Manual%') then
+      if :new.logs like '%MSISDN=%' then
+         :new.msisdn := substr(:new.logs,instr(:new.logs, 'MSISDN=', 1)+7,12);
+      end if;
+   end if;
+
+end user_log_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "USER_MASTER_INSERT_TRIGGER"
+before insert on user_master
+for each row
+begin
+   if :new.user_id is null or :new.user_id = 0
+   then
+ select user_master_seq.nextval into :new.user_id from dual;
+   end if;
+end user_master_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "USER_ROLES_INSERT_TRIGGER"
+before insert on user_roles
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+ select user_roles_seq.nextval into :new.id from dual;
+   end if;
+end user_roles_insert_trigger;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "WHITELISTED_LOG_INSERT_TRIGGER"
+before insert on whitelisted_log
+for each row
+begin
+   :new.tran_dt := trunc(nvl(:new.dt_created, sysdate));
+   insert into BLACKLISTED_WHITELISTED_LOG
+   values (:new.msisdn, 'WHITELISTED', :new.dt_created, :new.remarks, :new.tran_dt, :new.created_by, :new.bulk_grp_id );
+end WHITELISTED_LOG_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "ZONES_INSERT_TRIGGER"
+before insert on zones
+for each row
+begin
+   if :new.id is null or :new.id = 0
+   then
+      select zones_seq.nextval into :new.id from dual;
+   end if;
+end ZONES_INSERT_TRIGGER;
+/
+show err
+
+
+
+CREATE OR REPLACE TRIGGER "ZONES_UPDATE_TRIGGER"
+before update of breathing_period,max_duration on zones
+for each row
+begin
+   -- update zones
+   update plmn_mapping p
+   set    breathing_period = :new.breathing_period,
+          max_duration = :new.max_duration
+   where  exists ( select 1
+   from   countries c
+   where  c.country_code = p.country_code
+   and    zone_id = :new.zone_id );
+
+end ZONES_UPDATE_TRIGGER;
 /
 show err
