@@ -427,6 +427,7 @@ int OraDBRequest::initTran(request_t* request)
     snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->activation_date);
     snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%d", request->duration);
     snprintf(_var_extra_i_3, sizeof(_var_extra_i_3), "%s", request->gsm_num);
+    snprintf(_var_extra_i_4, sizeof(_var_extra_i_4), "%s", request->country);
 
     int ora_status = ora_force_execute(&_sth_it, 0);
     request->db_retr = _var_retr;
@@ -445,10 +446,10 @@ int OraDBRequest::initTran(request_t* request)
     snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
 
     LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-            ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, others: %s", __func__
+            ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, country: %s, others: %s", __func__
             , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
             , request->min_bal, request->activation_date, request->deactivation_date
-            , request->duration, request->others);
+            , request->duration, request->country, request->others);
 
     return 0;
 }
@@ -457,7 +458,7 @@ int OraDBRequest::initTranBind()
 {
     const char sql_stmt[] = "BEGIN"
         " SP_INIT_TRAN(:p_retr, :p_extra_o_1, :p_extra_o_2, :p_extra_o_3,"
-        " :p_trantype, :p_msisdn, :p_req_id, :p_ref_id, :p_extra_i_1, :p_extra_i_2, :p_extra_i_3);"
+        " :p_trantype, :p_msisdn, :p_req_id, :p_ref_id, :p_extra_i_1, :p_extra_i_2, :p_extra_i_3, :p_extra_i_4);"
         " END;";
 
     _sth_it = SQLO_STH_INIT;
@@ -479,6 +480,7 @@ int OraDBRequest::initTranBind()
                 || sqlo_bind_by_name(_sth_it, ":p_extra_i_1", SQLOT_STR, &_var_extra_i_1, sizeof(_var_extra_i_1), 0, 0)
                 || sqlo_bind_by_name(_sth_it, ":p_extra_i_2", SQLOT_STR, &_var_extra_i_2, sizeof(_var_extra_i_2), 0, 0)
                 || sqlo_bind_by_name(_sth_it, ":p_extra_i_3", SQLOT_STR, &_var_extra_i_3, sizeof(_var_extra_i_3), 0, 0)
+                || sqlo_bind_by_name(_sth_it, ":p_extra_i_4", SQLOT_STR, &_var_extra_i_4, sizeof(_var_extra_i_4), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SP_INIT_TRAN statement handle.", __func__);
         return -2;

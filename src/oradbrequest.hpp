@@ -79,6 +79,7 @@ class OraDBRequest : public OraDB
         char _var_extra_i_1[320];
         char _var_extra_i_2[320];
         char _var_extra_i_3[320];
+        char _var_extra_i_4[320];
 
         char _var_extra_o_1[320];
         char _var_extra_o_2[320];
