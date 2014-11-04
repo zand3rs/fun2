@@ -143,7 +143,7 @@ void HttpDB::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
             LOG_ERROR("%s: Invalid request.", __func__);
         } else {
             if (_conn.usurfDeactivation(&request) < 0) {
-                LOG_ERROR("%s: Unable to process request: %s.", __func__, request.msisdn);
+                LOG_ERROR("%s: usurf_deactivation failed msisdn: %s.", __func__, request.msisdn);
             }
         }
 

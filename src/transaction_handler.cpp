@@ -124,7 +124,12 @@ static void process_tran (OraDBRequest& conn, request_t& request)
 
                             if (request.tran_type == TRAN_TYPE_ROAM_USURF_ON) {
                                 //--- call NF here...
-                                nf_provision(request.a_no);
+                                if (0 == nf_provision(request.a_no)) {
+                                    if (conn.usurfActivation(&request) < 0) {
+                                        LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
+                                                request.id, request.tran_type, request.a_no, request.country, request.duration);
+                                    }
+                                }
                             }
                             break;
                         case TRAN_TYPE_GROAM_OFF:

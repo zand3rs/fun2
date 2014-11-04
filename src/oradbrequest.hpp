@@ -23,6 +23,7 @@ class OraDBRequest : public OraDB
 
         int initTran(request_t* request);
         int processTran(request_t* request);
+        int usurfActivation(request_t* request);
         int usurfDeactivation(request_t* request);
 
         int insertKeywordRequest(const request_t* request);
@@ -39,6 +40,7 @@ class OraDBRequest : public OraDB
 
         int initTranBind();
         int processTranBind();
+        int usurfActivationBind();
         int usurfDeactivationBind();
 
         int insertKeywordBind();
@@ -52,6 +54,7 @@ class OraDBRequest : public OraDB
 
         sqlo_stmt_handle_t _sth_it;
         sqlo_stmt_handle_t _sth_pt;
+        sqlo_stmt_handle_t _sth_ua;
         sqlo_stmt_handle_t _sth_ud;
 
         sqlo_stmt_handle_t _sth_insert_kw;
@@ -68,7 +71,10 @@ class OraDBRequest : public OraDB
         int _var_req_id;
         int _var_ref_id;
 
+        int _var_duration;
+
         char _var_msisdn[16];
+        char _var_country[32];
 
         char _var_extra_i_1[320];
         char _var_extra_i_2[320];

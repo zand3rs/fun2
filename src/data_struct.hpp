@@ -322,8 +322,8 @@ typedef struct request_t {
     char activation_date[32];
     char deactivation_date[32];
     int duration;
-    char country[256];
-    char rate[256];
+    char country[32];
+    char rate[32];
     char imsi[32];
     int zone;
     int error_code;
