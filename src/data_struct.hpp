@@ -330,6 +330,9 @@ typedef struct request_t {
     int result_code;
     int silent;
     int local_sim;
+    char partner[32];
+    char exptime[32];
+    char expdate[32];
     char others[256];
 
     request_t () {

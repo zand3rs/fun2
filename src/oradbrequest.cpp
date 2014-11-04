@@ -637,7 +637,12 @@ int OraDBRequest::usurfActivation(request_t* request)
         return -1;
     }
 
-    LOG_DEBUG("%s: retr: %d, msisdn: %s", __func__, request->db_retr, request->a_no);
+    snprintf(request->partner, sizeof(request->partner), "%s", _var_extra_o_1);
+    snprintf(request->exptime, sizeof(request->exptime), "%s", _var_extra_o_2);
+    snprintf(request->expdate, sizeof(request->expdate), "%s", _var_extra_o_3);
+
+    LOG_DEBUG("%s: retr: %d, msisdn: %s, partner: %s, exptime: %s, expdate: %s", __func__
+            , request->db_retr, request->a_no, request->partner, request->exptime, request->expdate);
 
     return 0;
 }
@@ -645,7 +650,7 @@ int OraDBRequest::usurfActivation(request_t* request)
 int OraDBRequest::usurfActivationBind()
 {
     const char sql_stmt[] = "BEGIN"
-        " SP_USURF_ACTIVATION(:p_retr, :p_msisdn, :p_country, :p_duration);"
+        " SP_USURF_ACTIVATION(:p_retr, :p_partner, :p_exptime, :p_expdate, :p_msisdn, :p_country, :p_duration);"
         " END;";
 
     _sth_ua = SQLO_STH_INIT;
@@ -657,6 +662,9 @@ int OraDBRequest::usurfActivationBind()
 
     if (SQLO_SUCCESS != (
                 sqlo_bind_by_name(_sth_ua, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
+                || sqlo_bind_by_name(_sth_ua, ":p_partner", SQLOT_STR, &_var_extra_o_1, sizeof(_var_extra_o_1), &_ind_extra_1, 0)
+                || sqlo_bind_by_name(_sth_ua, ":p_exptime", SQLOT_STR, &_var_extra_o_2, sizeof(_var_extra_o_2), &_ind_extra_2, 0)
+                || sqlo_bind_by_name(_sth_ua, ":p_expdate", SQLOT_STR, &_var_extra_o_3, sizeof(_var_extra_o_3), &_ind_extra_3, 0)
                 || sqlo_bind_by_name(_sth_ua, ":p_msisdn", SQLOT_STR, &_var_msisdn, sizeof(_var_msisdn), 0, 0)
                 || sqlo_bind_by_name(_sth_ua, ":p_country", SQLOT_STR, &_var_country, sizeof(_var_country), 0, 0)
                 || sqlo_bind_by_name(_sth_ua, ":p_duration", SQLOT_INT, &_var_duration, sizeof(_var_duration), 0, 0)

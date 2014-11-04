@@ -128,6 +128,12 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                     if (conn.usurfActivation(&request) < 0) {
                                         LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
                                                 request.id, request.tran_type, request.a_no, request.country, request.duration);
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_UNSUCCESSFUL, 1);
+                                    } else {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_SUCCESSFUL, 1,
+                                                request.partner, request.exptime, request.expdate);
                                     }
                                 }
                             }
