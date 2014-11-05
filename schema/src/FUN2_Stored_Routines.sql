@@ -28,6 +28,7 @@ PROMPT create FUNCTION "SF_IS_ROAMER_INFO"...
 PROMPT create FUNCTION "SF_IS_ROAMER_INFO_IMSI"...
 PROMPT create FUNCTION "SF_IS_VALID_ACTIVATION_DT"...
 PROMPT create FUNCTION "SF_IS_VALID_GLOBE_NUMBER"...
+PROMPT create FUNCTION "SF_IS_VALID_USURF"...
 PROMPT create FUNCTION "SF_TRIGGER_HOUSEKEEPING"...
 PROMPT create FUNCTION "SF_VALIDATE_EXT_DURATION"...
 PROMPT create PROCEDURE "SP_GENERATE_UNLI_NOTIFICATIONS"...
@@ -1153,12 +1154,12 @@ show err
 
 
 
-CREATE OR REPLACE FUNCTION "SF_IS_VALID_USURF" (p_country in varchar2, p_denom in number) return number is
+CREATE OR REPLACE FUNCTION "SF_IS_VALID_USURF" (p_country in varchar2, p_duration in number) return number is
    nRetr Number;
 begin
    -- 1 - OK
    -- 2 - Invalid Country
-   -- 3 - Invalid Denom
+   -- 3 - Invalid Duration
    nRetr := 2;
    begin
       select 1
@@ -1166,7 +1167,7 @@ begin
       from   usurf_countries
       where  country = p_country
       and    status = 'ACTIVE';
-      if p_denom not in (1,3,5) then
+      if p_duration not in (1,3,5) then
          nRetr := 3;
       end if; 
    exception
@@ -1784,7 +1785,8 @@ CREATE OR REPLACE PROCEDURE "SP_INIT_TRAN" (
     p_ref_id    in  number,
     p_extra_i_1 in  varchar2,
     p_extra_i_2 in  varchar2,
-    p_extra_i_3 in  varchar2
+    p_extra_i_3 in  varchar2,
+    p_extra_i_4 in  varchar2
    ) is
    nRetr                Number;
    bRoamer              Boolean;
@@ -1882,7 +1884,8 @@ begin
                       ' p_ref_id:'    || to_char(p_ref_id)   ||
                       ' p_extra_i_1:' || p_extra_i_1         ||
                       ' p_extra_i_2:' || p_extra_i_2         ||
-                      ' p_extra_i_3:' || p_extra_i_3);
+                      ' p_extra_i_3:' || p_extra_i_3         ||
+                      ' p_extra_i_4:' || p_extra_i_4);
 
    nRetr     := 1; -- successful except prereg
    bRoamer   := FALSE;
@@ -2506,7 +2509,7 @@ begin
          return;
       end if;
 
-      nRoamerStatus := sf_is_valid_usurf(p_extra_i_1, p_extra_i_2);
+      nRoamerStatus := sf_is_valid_usurf(p_extra_i_4, p_extra_i_2);
       if nRoamerStatus=2 then
          nRetr := 146;
          p_retr := nRetr;
@@ -2520,6 +2523,13 @@ begin
       end if;
 
       nRoamerStatus := sf_check_roamer_status(p_msisdn);
+      begin
+         insert into usurf_activation (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
+         values (usurf_activation_seq.nextval, p_msisdn, p_extra_i_4, p_extra_i_2, sysdate, 'PENDING', sysdate, user);
+      exception
+         when dup_val_on_index then null;
+         when others then null;
+      end;
       if nRoamerStatus = 0 then
          nRetr := 2;
       else
@@ -4632,8 +4642,7 @@ begin
 
    --  20    TRAN_TYPE_USURF_ON
    elsif (p_trantype = 20) then
-      
-
+      null;
    end if;
    commit;
 
@@ -4693,25 +4702,46 @@ show err
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
     p_retr      out number,
+    p_partner   out varchar2,
+    p_exptime   out varchar2,
+    p_expdate   out varchar2,
     p_msisdn    in  varchar2,
     p_country   in  varchar2,
     p_duration  in  number
    ) is
+   vPartner Varchar2(30);
+   vTz Varchar2(10);
 begin
-   begin
-      insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-      values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'PENDING', sysdate, user);
-   exception
-      when dup_val_on_index then
-         update usurf_activation
-         set    status = 'PENDING',
-                denom = p_duration,
-                country = p_country,
-                activation_dt = sysdate
-         where  msisdn = p_msisdn;
-      when others then null;
-   end;
+   update usurf_activation
+   set    status = 'ACTIVE',
+          denom = p_duration,
+          country = p_country,
+          activation_dt = sysdate
+   where  msisdn = p_msisdn;
+   if sql%notfound then
+      begin
+         insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
+         values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'ACTIVE', sysdate, user);
+      exception
+         when dup_val_on_index then null;
+         when others then null;
+      end;
+   end if;
    commit;
+
+   begin
+      select roaming_partner, tz
+      into   vPartner, vTz
+      from   usurf_countries
+      where  country = p_country;
+   exception
+      when others then
+         vPartner := 'Globe';
+         vTz := 'UTC';
+   end;
+   p_partner := vPartner;
+   p_exptime := to_char(sysdate+p_duration, 'HH24:MI') || ' ' || vTz;
+   p_expdate := to_char(trunc(sysdate+p_duration), 'MM-DD-YYYY');
    p_retr := 1;
 end sp_usurf_activation;
 /

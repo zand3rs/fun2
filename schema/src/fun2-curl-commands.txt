@@ -1,0 +1,116 @@
+curl 'http://10.226.153.84:8080/?CSP_Txid=UNIQUE_12345&SMS_Message_String=GROAM%20OFF&SMS_SourceAddr=2205&SUB_Mobtel=639271002251'
+
+- transaction id
+- roaming command: GROAM OFF
+- access code
+- msisdn
+
+
+
+Other FUN2 commands for testing purposes:
+
+GROAM ON     
+curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROAM%20ON%2009%2F18%2F2009%2015&SMS_SourceAddr=2884&SUB_Mobtel=639271010328'
+GROAM STATUS 
+curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROAM%20STATUS&SMS_SourceAddr=2884&SUB_Mobtel=639271010328'
+GROAM EXTEND
+curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROAM%20EXTEND%2015&SMS_SourceAddr=2884&SUB_Mobtel=639271010328'
+GROAM OFF    
+curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROAM%20OFF&SMS_SourceAddr=2884&SUB_Mobtel=639271010328'
+
+
+
+
+curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12331&SMS_Message_String=ROAM%20USURF%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639162900056'
+curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12345&SMS_Message_String=GROAM%20ON%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639271002251'
+
+insert into USURF_COUNTRIES values (USURF_COUNTRIES_SEQ.nextval, 'AUSTRALIA', 'ACTIVE', user, sysdate, null, null);
+insert into USURF_COUNTRIES values (USURF_COUNTRIES_SEQ.nextval, 'HONGKONG', 'ACTIVE', user, sysdate, null, null);
+insert into USURF_COUNTRIES values (USURF_COUNTRIES_SEQ.nextval, 'INDIA', 'ACTIVE', user, sysdate, null, null);
+commit;
+
+NF Testbed:
+nf1runner@10.226.144.66
+
+
+For activation:
+
+insert into manual_enrollment_log ( id, msisdn, enrollment_type, bulk_upload, tx_date, status, cs_username, dt_created, subs_name, subs_contact_no, remarks, bulk_grp_id, min_bal, breathing_period, customer_type, request_origin )
+values (manual_enrollment_log_seq.nextval, '639162900052', 'ACTIVATION', 1, trunc(sysdate), 0, user, sysdate, 'Subs_Name', 'Contact_number', 'Remarks', '0', sf_get_min_bal('TRIGGER', 0, 0), 0, 'TRIGGER', 'WEB');
+commit;
+NOTE: sf_get_min_bal('TRIGGER', 0, 0) -- will check min bal req. you can change it to  0 to override min bal req.
+
+
+For Deactivation:
+
+
+insert into manual_enrollment_log ( id, msisdn, enrollment_type, bulk_upload, tx_date, status, cs_username, dt_created, subs_name, subs_contact_no, remarks, bulk_grp_id, min_bal, breathing_period, customer_type, request_origin )
+values (manual_enrollment_log_seq.nextval, '639162900000', 'DEACTIVATION', 1, trunc(sysdate), 0, user, sysdate, 'Tester', 'Tester 1234', 'Sample Remarks', '0', 0, 0, 'TRIGGER', 'WEB');
+commit;
+
+insert into keywords values (keywords_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'ACTIVE', user, sysdate, null, null);
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Thank you for subscribing to Roam UnliSurf. Enjoy unlimited mobile browsing with %s until %s on %s. Please note that you may need to restart your phone to begin surfing.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_SUCCESSFUL');
+
+
+col msg form a30
+col info form a70
+col source form a20
+col imsi form a16
+col dstatus form a30
+set numwidth 12
+col id form 99999999
+select id, msisdn, imsi, status, deactivation_tm, activation_tm, substr(deactivation_reason,1,15) deact_reason from (select * from sim_activation order by id desc) where rownum < 11;
+select id, tx_date, msisdn, imsi, enrollment_type, status, request_origin, duration, silent, min_bal from (select * from manual_enrollment_log order by id desc ) where rownum < 11;
+select id, tran_dt, a_no, b_no, imsi, msg, sf_display_process_status(step_seq, step_no, last_step_no, status, error_code, '^') dstatus, request_origin from (select * from request_log order by id desc ) where rownum < 11 order by id;
+select * from (select * from system_log order by id desc ) where rownum < 11 order by id;
+
+          ID       MSISDN COUNTRY      SUBSCRIBER_N NAME_OF_REQ_ ACTIVATION_DT     REACTIVATION_DT   STATUS       DEACTIVATION_DT   DEACTIVATION CS_USERNAME  CREATED_BY   DT_CREATED      UPDATED_BY   DT_UPDATED        REQUEST_ REMARKS                   DAILY_BAL      MIN_BAL     DURATION     EXTENDED BREATHING_PERIOD LAST_DAILY_BAL_CH LAST_COUNTRY_CHK  HOT_COUNTRY_CNT IMSI                 LAST_DAILY_BAL LAST_DAILY_BAL_CTR CUSTOMER_TYPE    COUNTRY_NAME         BREATHING_PERIOD_ HOT_COUNTRY_DT    HOT_COUNTRY_DURATION DEACT_BASIS_DT    HOT_COUNTRY_MAX_DURATION ACTIVATION_TM   DEACTIVATION_TM   NOTIFY_DATE       DT_MIGRATED
+------------ ------------ ------------ ------------ ------------ ----------------- ----------------- ------------ ----------------- ------------ ------------ ------------ ----------------- ------------ ----------------- -------- ---------------------- ------------ ------------ ------------ ------------ ---------------- ----------------- ----------------- --------------- ---------------------- -------------- ------------------ ---------------- -------------------- ----------------- ----------------- -------------------- ----------------- ------------------------ ----------------- ----------------- ----------------- -----------------
+insert into sim_activation values (
+645458,639162900056,NULL,NULL,'FRAUD', '20141105 00:00:00', NULL, 'ACTIVE', to_date('20141106 00:00:00'), 'GROAM OFF', NULL, NULL, NULL, NULL, NULL, 'ARDS', NULL, 0, 100, 1, 0, 10, to_date('20141105 00:00:00'), NULL, NULL, '515022400246870', 0, 0, 'TRIGGER', NULL, NULL, NULL, NULL, to_date('20141105 00:00:00'), NULL, to_date('20141105 00:13:17'), to_date('20141106 00:13:17'), to_date('20141104 00:00:00'), to_date('20100303 18:12:43') 
+);
+
+select * from (
+select nvl(ID, -9) ID, 
+ nvl(MSISDN, -9) MSISDN,
+ nvl(COUNTRY, '^') COUNTRY,
+ nvl(SUBSCRIBER_NAME, '^') SUBSCRIBER_NAME,
+ nvl(NAME_OF_REQ_PARTY, '^') NAME_OF_REQ_PARTY,
+ nvl(ACTIVATION_DT, to_date('19000101', 'YYYYMMDD')) ACTIVATION_DT,
+ nvl(REACTIVATION_DT, to_date('19000101', 'YYYYMMDD')) REACTIVATION_DT,
+ nvl(STATUS, '^') STATUS,
+ nvl(DEACTIVATION_DT, to_date('19000101', 'YYYYMMDD')) DEACTIVATION_DT,
+ nvl(DEACTIVATION_REASON, '^') DEACTIVATION_REASON,
+ nvl(CS_USERNAME, '^') CS_USERNAME,
+ nvl(CREATED_BY, '^') CREATED_BY,
+ nvl(DT_CREATED, to_date('19000101', 'YYYYMMDD')) DT_CREATED,
+ nvl(UPDATED_BY, '^') UPDATED_BY,
+ nvl(DT_UPDATED, to_date('19000101', 'YYYYMMDD')) DT_UPDATED,
+ nvl(REQUEST_ORIGIN, '^') REQUEST_ORIGIN,
+ nvl(REMARKS, '^') REMARKS,
+ nvl(DAILY_BAL, -9) DAILY_BAL,
+ nvl(MIN_BAL, -9) MIN_BAL,
+ nvl(DURATION, -9) DURATION,
+ nvl(EXTENDED, -9) EXTENDED,
+ nvl(BREATHING_PERIOD, -9) BREATHING_PERIOD,
+ nvl(LAST_DAILY_BAL_CHK, to_date('19000101', 'YYYYMMDD')) LAST_DAILY_BAL_CHK,
+ nvl(LAST_COUNTRY_CHK, to_date('19000101', 'YYYYMMDD')) LAST_COUNTRY_CHK,
+ nvl(HOT_COUNTRY_CNT, -9) HOT_COUNTRY_CNT,
+ nvl(IMSI, '^') IMSI,
+ nvl(LAST_DAILY_BAL, -9) LAST_DAILY_BAL,
+ nvl(LAST_DAILY_BAL_CTR, -9) LAST_DAILY_BAL_CTR,
+ nvl(CUSTOMER_TYPE, '^') CUSTOMER_TYPE,
+ nvl(COUNTRY_NAME, '^') COUNTRY_NAME,
+ nvl(BREATHING_PERIOD_DT, to_date('19000101', 'YYYYMMDD')) BREATHING_PERIOD_DT,
+ nvl(HOT_COUNTRY_DT, to_date('19000101', 'YYYYMMDD')) HOT_COUNTRY_DT,
+ nvl(HOT_COUNTRY_DURATION, -9) HOT_COUNTRY_DURATION,
+ nvl(DEACT_BASIS_DT, to_date('19000101', 'YYYYMMDD')) DEACT_BASIS_DT,
+ nvl(HOT_COUNTRY_MAX_DURATION, -9) HOT_COUNTRY_MAX_DURATION,
+ nvl(ACTIVATION_TM, to_date('19000101', 'YYYYMMDD')) ACTIVATION_TM,
+ nvl(DEACTIVATION_TM, to_date('19000101', 'YYYYMMDD')) DEACTIVATION_TM,
+ nvl(NOTIFY_DATE, to_date('19000101', 'YYYYMMDD')) NOTIFY_DATE,
+ nvl(DT_MIGRATED, to_date('19000101', 'YYYYMMDD')) DT_MIGRATED
+from sim_activation where status ='ACTIVE' order by activation_dt desc
+)  where rownum < 2;
+
+
