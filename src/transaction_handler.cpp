@@ -113,7 +113,7 @@ static void process_tran (OraDBRequest& conn, request_t& request)
 #endif
                                     }
                                 }
-                            } else {
+                            } else if (request.tran_type == TRAN_TYPE_GROAM_ON) {
                                 if (! request.silent) {
                                     //-- pre activation
                                     send_system_msg(request.customer_type, request.tran_type, request.id,
@@ -1198,7 +1198,8 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 break;
                             case TRAN_TYPE_ROAM_USURF_STATUS:
                                 send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_W_ACTIVE_ROAM, 1);
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_W_ACTIVE_ROAM, 1,
+                                        request.partner, request.exptime, request.expdate);
                                 break;
                         }
                     }
