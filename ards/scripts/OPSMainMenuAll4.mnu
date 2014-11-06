@@ -1,0 +1,19 @@
+header_location_xy=3,5
+items_location_xy=3,8
+line_spaces=1
+input_prompt_location_xy=11,14
+input_location_xy=24,14
+input_prompt=Enter Choice:
+enclosed_brackets=[,]
+menu_title=Fun2 WebServer Management Console
+parent_menu=
+<header>
+---------------------------------------------------------
+		     Fun2 Main Menu 
+---------------------------------------------------------
+</header>
+<items_list>
+1~m~Application Startup and Shutdown~menu2.mnu
+2~c~Application Monitoring~/appl/fun2/scripts/fun2.sh status~24,25
+3~c~Log Management~/appl/fun2/scripts/tomcat_logarchive.sh~24,25
+</items_list>

@@ -1,0 +1,23 @@
+header_location_xy=3,4
+items_location_xy=3,8
+line_spaces=1
+input_prompt_location_xy=11,15,date
+input_location_xy=24,15,date
+input_prompt=Enter Choice:
+enclosed_brackets=[,]
+menu_title=Fun2 Startup and Shutdown 
+parent_menu=/appl/fun2/scripts/OPSMainMenuAll4.mnu
+<header>
+---------------------------------------------------------
+		Fun2 Startup and Shutdown 
+---------------------------------------------------------
+</header>
+<items_list>
+1~c~Startup All Applications daemon~/appl/fun2/scripts/fun2.sh start~24,15
+2~c~Shutdown All Applications daemon~/appl/fun2/scripts/fun2.sh stop~24,15
+3~c~Startup ARDSRequest Tomcat ~/appl/fun2/tomcat/bin/startup.sh~24,15
+4~c~Shutdown ARDSRequest Tomcat~/appl/fun2/tomcat/bin/shutdown.sh~24,15
+5~c~Startup ARDSResponse Daemon~/appl/fun2/ARDSResponse/ARDSResponse.sh~24,15
+6~c~Shutdown ARDSResponse Daemon~/appl/fun2/ARDSResponse/shutdown.sh~24,15
+7~m~Return to Fun2 Main Menu~/appl/fun2/scripts/OPSMainMenuAll4.mnu
+</items_list>

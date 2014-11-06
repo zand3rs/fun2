@@ -1757,15 +1757,45 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_GET_USURF_STATUS"(
-   p_retr   out number, 
+   p_retr    out number, 
+   p_partner out varchar2,
+   p_exptime out varchar2,
+   p_expdate out varchar2,
    p_msisdn in  varchar2) as
    nRetr Number;
    -- possible out p_retr
    --    0 - No Subscription
    --    1 - With active Subscription
    --    2 - With Pending activation   
+   vPartner Varchar2(30);
+   vCountry Varchar2(30);
+   vTz      Varchar2(10);
+   vStatus  Varchar2(30);
+   dActivation Date;
+   nDuration Number;
 begin
-   nRetr := sf_check_usurf_status(p_msisdn);
+   -- nRetr := sf_check_usurf_status(p_msisdn);
+   begin
+      select  a.activation_dt, a.country, b.roaming_partner, b.tz, a.status, a.denom
+      into    dActivation, vCountry, vPartner, vTz, vStatus, nDuration
+      from    usurf_activation a, usurf_countries b
+      where   a.country = b.country
+      and     a.status = 'ACTIVE'
+      and     a.msisdn = p_msisdn;
+      if vStatus = 'ACTIVE' then
+         nRetr := 1;
+      elsif vStatus = 'PENDING' then
+         nRetr := 2;
+      else
+         nRetr := 0;
+      end if;
+   exception
+      when no_data_found then
+         nRetr := 0;
+   end;
+   p_partner := '';
+   p_exptime := nvl(to_char(dActivation+nDuration, 'HH24:MI') || ' ' || vTz, '');
+   p_expdate := nvl(to_char(trunc(dActivation+nDuration), 'MM-DD-YYYY'), '');
    p_retr := nvl(nRetr,0);
 end sp_get_usurf_status;
 /
@@ -2531,7 +2561,7 @@ begin
          when others then null;
       end;
       if nRoamerStatus = 0 then
-         nRetr := 2;
+         nRetr := 151;
       else
          nRetr := 1;
       end if;
@@ -2542,7 +2572,7 @@ begin
    elsif (p_trantype = 22) then
       nRoamerStatus := sf_check_usurf_status(p_msisdn);
       if nRoamerStatus = 1 then
-         nRetr := 1;
+         nRetr := 145;
          p_retr := nRetr;
       elsif nRoamerStatus = 0 then
          nRetr := 148;
