@@ -442,14 +442,27 @@ int OraDBRequest::initTran(request_t* request)
         return -1;
     }
 
-    request->min_bal = strtol(_var_extra_o_1, NULL, 10);
-    snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
+    switch (request->tran_type) {
+        case TRAN_TYPE_ROAM_USURF_STATUS:
+            snprintf(request->partner, sizeof(request->partner), "%s", _var_extra_o_1);
+            snprintf(request->exptime, sizeof(request->exptime), "%s", _var_extra_o_2);
+            snprintf(request->expdate, sizeof(request->expdate), "%s", _var_extra_o_3);
 
-    LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-            ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, country: %s, others: %s", __func__
-            , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
-            , request->min_bal, request->activation_date, request->deactivation_date
-            , request->duration, request->country, request->others);
+            LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
+                    ", partner: %s, exptime: %s, expdate: %s", __func__
+                    , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
+                    , request->partner, request->exptime, request->expdate);
+            break;
+        default:
+            request->min_bal = strtol(_var_extra_o_1, NULL, 10);
+            snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
+
+            LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
+                    ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, country: %s, others: %s", __func__
+                    , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
+                    , request->min_bal, request->activation_date, request->deactivation_date
+                    , request->duration, request->country, request->others);
+    }
 
     return 0;
 }
