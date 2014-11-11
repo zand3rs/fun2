@@ -71,7 +71,6 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                     //-- send successful message here...
                     switch (request.tran_type) {
                         case TRAN_TYPE_GROAM_ON:
-                        case TRAN_TYPE_ROAM_USURF_ON:
                             if (request.last_step_no > 0) {
                                 //-- insert to ccb queue for processing...
                                 ccb_insert(request.a_no, CCB_ACTION_ACTIVATE);
@@ -119,22 +118,6 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                     send_system_msg(request.customer_type, request.tran_type, request.id,
                                             Config::getAccessCode(), request.a_no, SYSMSG_GROAM_ON_PRE_ACT_SUCCESSFUL, 1,
                                             request.activation_date);
-                                }
-                            }
-
-                            if (request.tran_type == TRAN_TYPE_ROAM_USURF_ON) {
-                                //--- call NF here...
-                                if (0 == nf_provision(request.a_no)) {
-                                    if (conn.usurfActivation(&request) < 0) {
-                                        LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
-                                                request.id, request.tran_type, request.a_no, request.country, request.duration);
-                                        send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_UNSUCCESSFUL, 1);
-                                    } else {
-                                        send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_SUCCESSFUL, 1,
-                                                request.partner, request.exptime, request.expdate);
-                                    }
                                 }
                             }
                             break;
@@ -285,6 +268,26 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                 send_system_msg(request.customer_type, request.tran_type, request.id,
                                         Config::getAccessCode(), request.gsm_num, SYSMSG_YES_SUCCESSFUL_B, 1,
                                         request.a_no);
+                            }
+                            break;
+                    }
+                    break;
+                case DB_RETR_USURF_OK:
+                    //-- send successful message here...
+                    switch (request.tran_type) {
+                        case TRAN_TYPE_ROAM_USURF_ON:
+                            //--- call NF here...
+                            if (0 == nf_provision(request.a_no)) {
+                                if (conn.usurfActivation(&request) < 0) {
+                                    LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
+                                            request.id, request.tran_type, request.a_no, request.country, request.duration);
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_UNSUCCESSFUL, 1);
+                                } else {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_SUCCESSFUL, 1,
+                                            request.partner, request.exptime, request.expdate);
+                                }
                             }
                             break;
                     }
@@ -1241,10 +1244,12 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                     }
                     break;
                 case DB_RETR_USURF_OK:
-                    request.status = TXN_STATUS_PENDING;
+                    request.status = TXN_STATUS_SUCCESSFUL;
                     break;
                 case DB_RETR_USURF_PRE_ACT:
                     request.status = TXN_STATUS_SUCCESSFUL;
+                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_PRE_ACT_SUCCESSFUL, 1);
                     break;
                 default:
                     request.status = TXN_STATUS_ERROR;
@@ -1752,7 +1757,6 @@ void* transaction_handler (void* arg)
 
             switch (request.tran_type) {
                 case TRAN_TYPE_GROAM_ON:
-                case TRAN_TYPE_ROAM_USURF_ON:
                     strcpy(tran_type, "Activation");
 
                     for (int i = 0; i < max_retry; ++i) {
