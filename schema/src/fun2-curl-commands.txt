@@ -21,7 +21,7 @@ curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROA
 
 
 
-curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12331&SMS_Message_String=ROAM%20USURF%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639162900056'
+curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12331&SMS_Message_String=ROAM%20USURF%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639162900058'
 curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12345&SMS_Message_String=GROAM%20ON%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639271002251'
 
 insert into USURF_COUNTRIES values (USURF_COUNTRIES_SEQ.nextval, 'AUSTRALIA', 'ACTIVE', user, sysdate, null, null);
@@ -49,7 +49,17 @@ values (manual_enrollment_log_seq.nextval, '639162900000', 'DEACTIVATION', 1, tr
 commit;
 
 insert into keywords values (keywords_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'ACTIVE', user, sysdate, null, null);
+insert into keywords values (keywords_seq.nextval, 'ROAM USURF', 'STATUS', 'USURF ACTIVATION', 'ACTIVE', user, sysdate, null, null);
+
 insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Thank you for subscribing to Roam UnliSurf. Enjoy unlimited mobile browsing with %s until %s on %s. Please note that you may need to restart your phone to begin surfing.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_SUCCESSFUL');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'You''re still subscribed to Roam UnliSurf. Please wait for your subscription to expire before registering to the promo in the same country again. Thank you.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_W_ACTIVE_ROAM');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Sorry, you''re currently registered to a promo that can''t be used with Roam Unlisurf. You can try to register again after your promo expires, or you may unsubscribe from your existing offer. Thank you.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_W_DIFF_ACTIVE_ROAM');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Sorry, but you currently don''t have enough load to subscribe to Roam UnliSurf. Please reload immediately to be able to register to the service. Thank you.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_DUE_TO_INSUFF_BAL');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Sorry, the keyword you''ve entered is invalid. To register to Roam UnliSurf, dial *143# toll-free even when roaming.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_INVALID_COUNTRY');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Sorry, the keyword you''ve entered is invalid. To register to Roam UnliSurf, dial *143# toll-free even when roaming.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_INVALID_DURATION');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'ON', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'Sorry, we are unable to process your request at this time. Please try again later. Thank you.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_ON_UNSUCCESSFUL');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'STATUS', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'You''re currently subscribed to Roam UnliSurf valid until %s%s on %s.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_STATUS_W_ACTIVE_ROAM');
+insert into KEYWORD_MSG values (KEYWORD_MSG_seq.nextval, 'ROAM USURF', 'STATUS', 'USURF ACTIVATION', 'TRIGGER', 'ALERT', 'You''re not subscribed to Roam UnliSurf. To register, dial *143# toll-free even when roaming.', null, null, 'ACTIVE', user, sysdate, null, null, 'ROAM_USURF_STATUS_WO_ACTIVE_ROAM');
 
 
 col msg form a30

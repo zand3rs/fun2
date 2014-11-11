@@ -1849,6 +1849,11 @@ CREATE OR REPLACE PROCEDURE "SP_INIT_TRAN" (
    nLinkTo              Number;
    vOtherType           Varchar2(30);
    vIMSI                Varchar2(30);
+   -- Bluemoon
+   nUsurfStatus         Varchar2(30);
+   vPartner             Varchar2(30);
+   vExptime             Varchar2(30);
+   vExpdate             Varchar2(30);
 begin
    --  For All tran type
    --    100 - Blacklisted
@@ -1881,6 +1886,7 @@ begin
    --    147 - USURF ON Error - invalid duration
    --    148 - USURF STATUS for no subscription
    --    149 - USURF STATUS with pending subscription
+   --    152 - USURF ON Error - Already subscribe to USURF
 
    --  0    TRAN_TYPE_UNKNOWN,
    --  1    TRAN_TYPE_HELP,
@@ -2531,8 +2537,8 @@ begin
       return;
    -- 20    TRAN_TYPE_USURF_ON
    elsif (p_trantype = 20) then
-      nRoamerStatus := sf_check_usurf_status(p_msisdn);
-      if nRoamerStatus > 1 then
+      nUsurfStatus := sf_check_usurf_status(p_msisdn);
+      if nUsurfStatus = 1 then
          nRetr := 145;
          p_retr := nRetr;
          sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
@@ -2552,37 +2558,44 @@ begin
          return;
       end if;
 
-      nRoamerStatus := sf_check_roamer_status(p_msisdn);
-      begin
-         insert into usurf_activation (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-         values (usurf_activation_seq.nextval, p_msisdn, p_extra_i_4, p_extra_i_2, sysdate, 'PENDING', sysdate, user);
-      exception
-         when dup_val_on_index then null;
-         when others then null;
-      end;
-      if nRoamerStatus = 0 then
-         nRetr := 151;
-      else
-         nRetr := 1;
+      if nUsurfStatus = 0 then
+         begin
+            insert into usurf_activation (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
+            values (usurf_activation_seq.nextval, p_msisdn, p_extra_i_4, p_extra_i_2, sysdate, 'PENDING', sysdate, user);
+         exception
+            when dup_val_on_index then null;
+            when others then null;
+         end;
       end if;
-
+      nRoamerStatus := sf_check_roamer_status(p_msisdn);
+      if nRoamerStatus = 0 then
+         if nUsurfStatus = 2 then
+            nRetr := 149;
+         else
+            nRetr := 151;
+         end if;
+      else
+         nRetr := 150;
+      end if;
       p_retr := nRetr;
+      sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
       return;
+
    -- 22    TRAN_TYPE_USURF_STATUS
    elsif (p_trantype = 22) then
-      nRoamerStatus := sf_check_usurf_status(p_msisdn);
+      sp_get_usurf_status(nRoamerStatus, vPartner, vExptime, vExpdate, p_msisdn);
       if nRoamerStatus = 1 then
          nRetr := 145;
-         p_retr := nRetr;
       elsif nRoamerStatus = 0 then
          nRetr := 148;
-         p_retr := nRetr;
       elsif nRoamerStatus = 2 then
          nRetr := 149;
-         p_retr := nRetr;
       end if;
       sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
       p_retr := nRetr;
+      p_extra_o_1 := '';
+      p_extra_o_2 := nvl(vExptime,'');
+      p_extra_o_3 := nvl(vExpdate,'');
       return;
    end if;
 
@@ -2610,6 +2623,7 @@ begin
       p_extra_o_2 := '';
    --end if;
    p_extra_o_3 := '';
+
    p_retr      := nRetr;
    sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) ||
                       ' p_msisdn:'          || p_msisdn            ||
@@ -4672,6 +4686,12 @@ begin
 
    --  20    TRAN_TYPE_USURF_ON
    elsif (p_trantype = 20) then
+      nRoamerStatus := sf_check_roamer_status(p_msisdn);
+      if nRoamerStatus = 1 then
+         nRetr := 150;
+      end if;
+   --  22    TRAN_TYPE_USURF_STATUS
+   elsif (p_trantype = 22) then
       null;
    end if;
    commit;
@@ -4691,6 +4711,17 @@ begin
    elsif (p_trantype = 8) and (not bPreAct) then
       --p_extra_o_2 := to_char(nActivationDt, 'MM/DD/YYYY');
       p_extra_o_1 := to_char(sysdate, 'MM/DD/YYYY');
+      -- bluemoon update
+      if sf_check_usurf_status(p_msisdn)=2 then
+         update request_log 
+         set    status=0, step_no=0
+         where  a_no =p_msisdn
+         and    status=2
+         and    step_no = -1
+         and    tran_type = 20
+         and    tran_dt >= trunc(sysdate)-7
+         and    rownum = 1;
+      end if;
    elsif (p_trantype = 17) then
       p_extra_o_1 := to_char(nMsisdn);
    elsif (p_trantype = 18) then
