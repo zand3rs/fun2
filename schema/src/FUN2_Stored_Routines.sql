@@ -4044,6 +4044,8 @@ CREATE OR REPLACE PROCEDURE "SP_PROCESS_TRAN" (
    nLinkCnt                Number;
    vCS_Username            Varchar2(30);
    vIMSI                   Varchar2(30);
+   nRoamerStatus           Number;
+   vServiceId              Varchar2(30);
 begin
    --  1 - ACTIVATION
    --  2 - DEACTIVATION
@@ -4689,6 +4691,15 @@ begin
       nRoamerStatus := sf_check_roamer_status(p_msisdn);
       if nRoamerStatus = 1 then
          nRetr := 150;
+         begin
+            select service_id
+            into   vServiceId
+            from   usurf_countries
+            where  country = p_extra_i_1;
+         exception
+            when no_data_found then 
+               vServiceId := 1333;
+          end;
       end if;
    --  22    TRAN_TYPE_USURF_STATUS
    elsif (p_trantype = 22) then
@@ -4745,6 +4756,12 @@ begin
       p_extra_o_3 := to_char(nCustDuration);
    else
       p_extra_o_3 := '';
+   end if;
+
+   if (p_trantype = 20) then
+      p_extra_o_1 := p_extra_i_1;
+      p_extra_o_2 := p_extra_i_2;
+      p_extra_o_3 := vServiceId;
    end if;
 
    p_retr := nRetr;

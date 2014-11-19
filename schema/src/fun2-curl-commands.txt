@@ -19,6 +19,9 @@ GROAM OFF
 curl 'http://10.226.153.84:8080/?CSP_Txid=test0917200910&SMS_Message_String=GROAM%20OFF&SMS_SourceAddr=2884&SUB_Mobtel=639271010328'
 
 
+http://10.226.144.66:5082?Operation=1&Origin=9002&ServiceID=1333&Param=1&Silent=0&SUB_Mobtel=639271050875&ReturnExpiryDate=1&ReturnVN=1
+curl 'http://10.225.12.45:8080/usurf?msisdn=639171250021&opt=2&service_id=1333&denom=&opt_time=20141114110920&brand=1'
+
 
 
 curl 'http://10.225.12.45:8080/?CSP_Txid=UNIQUE_12331&SMS_Message_String=ROAM%20USURF%20HONGKONG%201D%20ON&SMS_SourceAddr=2205&SUB_Mobtel=639162900058'
