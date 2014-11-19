@@ -534,6 +534,10 @@ int OraDBRequest::processTran(request_t* request)
         case TRAN_TYPE_GLIST_ZONE:
             snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%d", request->zone);
             break;
+        case TRAN_TYPE_ROAM_USURF_ON:
+            snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->country);
+            snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%d", request->duration);
+            break;
         default:
             snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->gsm_num);
     }
@@ -580,6 +584,11 @@ int OraDBRequest::processTran(request_t* request)
             snprintf(request->gsm_num, sizeof(request->gsm_num), "%s", _var_extra_o_1);
             LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d: gsm_num: %s", __func__,
                     request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id, request->gsm_num);
+            break;
+        case TRAN_TYPE_ROAM_USURF_ON:
+            snprintf(request->country, sizeof(request->country), "%s", _var_extra_o_1);
+            request->duration = strtol(_var_extra_o_2, NULL, 10);
+            snprintf(request->service_id, sizeof(request->service_id), "%s", _var_extra_o_3);
             break;
         default:
             snprintf(request->activation_date, sizeof(request->activation_date), "%s", _var_extra_o_1);

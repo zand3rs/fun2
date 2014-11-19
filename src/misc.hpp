@@ -35,8 +35,8 @@ void send_system_msg (const char* customer_type, int tran_type, int ref_id,
 
 int csp_charge (const char* msisdn);
 
-int nf_provision (const char* msisdn);
-int nf_deprovision (const char* msisdn);
+int nf_provision (const char* msisdn, const char* service_id, int duration);
+int nf_deprovision (const char* msisdn, const char* service_id);
 
 #endif
 

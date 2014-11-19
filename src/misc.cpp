@@ -278,19 +278,15 @@ int csp_charge (const char* msisdn)
 
 /*----------------------------------------------------------------------------*/
 
-int _nf_prov_deprov (const char* msisdn, int operation)
+int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, int duration)
 {
     char url[1024];
     char Origin[64];
-    char ServiceId[64];
-    char Param[64];
 
     url_encode(Config::getNfOrigin(), Origin, sizeof(Origin));
-    url_encode(Config::getNfServiceId(), ServiceId, sizeof(ServiceId));
-    url_encode(Config::getNfParam(), Param, sizeof(Param));
 
-    snprintf(url, sizeof(url), "%s?Operation=%d&Origin=%s&ServiceID=%s&Param=%s&Silent=%d&SUB_Mobtel=%s&ReturnExpiryDate=1&ReturnVN=1",
-            Config::getNfUrl(), operation, Origin, ServiceId, Param, Config::getNfSilent(), msisdn);
+    snprintf(url, sizeof(url), "%s?Operation=%d&Origin=%s&ServiceID=%s&Param=%d&Silent=%d&SUB_Mobtel=%s&ReturnExpiryDate=1&ReturnVN=1",
+            Config::getNfUrl(), operation, Origin, service_id, duration, Config::getNfSilent(), msisdn);
 
     HttpClient hc;
     int res_code;
@@ -320,16 +316,16 @@ int _nf_prov_deprov (const char* msisdn, int operation)
 
 /*----------------------------------------------------------------------------*/
 
-int nf_provision (const char* msisdn)
+int nf_provision (const char* msisdn, const char* service_id, int duration)
 {
-    return _nf_prov_deprov(msisdn, 1);
+    return _nf_prov_deprov(1, msisdn, service_id, duration);
 }
 
 /*----------------------------------------------------------------------------*/
 
-int nf_deprovision (const char* msisdn)
+int nf_deprovision (const char* msisdn, const char* service_id)
 {
-    return _nf_prov_deprov(msisdn, 2);
+    return _nf_prov_deprov(2, msisdn, service_id, 0);
 }
 
 /******************************************************************************/

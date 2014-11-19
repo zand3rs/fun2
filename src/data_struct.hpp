@@ -334,6 +334,7 @@ typedef struct request_t {
     char partner[32];
     char exptime[32];
     char expdate[32];
+    char service_id[32];
     char others[256];
 
     request_t () {
