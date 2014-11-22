@@ -129,7 +129,8 @@ show err
 
 
 CREATE OR REPLACE FUNCTION "SF_CHECK_USURF_STATUS" (
-   p_msisdn in number
+   p_msisdn in number,
+   p_country in varchar2
    ) return number is
    nUsurfer Number(1);
    nActivationPending  Number;
@@ -139,7 +140,8 @@ begin
    select status
    into   vStatus
    from   usurf_activation
-   where  msisdn = p_msisdn;
+   where  msisdn = p_msisdn
+   and    country =  p_country;
    if vStatus = 'ACTIVE' then
       nUsurfer := 1;
    elsif vStatus = 'PENDING' then
@@ -2537,7 +2539,7 @@ begin
       return;
    -- 20    TRAN_TYPE_USURF_ON
    elsif (p_trantype = 20) then
-      nUsurfStatus := sf_check_usurf_status(p_msisdn);
+      nUsurfStatus := sf_check_usurf_status(p_msisdn, p_extra_i_4);
       if nUsurfStatus = 1 then
          nRetr := 145;
          p_retr := nRetr;
@@ -4723,7 +4725,7 @@ begin
       --p_extra_o_2 := to_char(nActivationDt, 'MM/DD/YYYY');
       p_extra_o_1 := to_char(sysdate, 'MM/DD/YYYY');
       -- bluemoon update
-      if sf_check_usurf_status(p_msisdn)=2 then
+      if sf_check_usurf_status(p_msisdn,p_extra_i_1)=2 then
          update request_log 
          set    status=0, step_no=0
          where  a_no =p_msisdn
@@ -4793,9 +4795,9 @@ begin
    update usurf_activation
    set    status = 'ACTIVE',
           denom = p_duration,
-          country = p_country,
           activation_dt = sysdate
-   where  msisdn = p_msisdn;
+   where  msisdn = p_msisdn
+   and    country = p_country;
    if sql%notfound then
       begin
          insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
@@ -4828,15 +4830,22 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_DEACTIVATION" (
-    p_retr      out number,
-    p_msisdn    in  varchar2
+    p_retr       out number,
+    p_msisdn     in  varchar2,
+    p_service_id in  varchar2
    ) is
+   vCountry Varchar2(30);
 begin
+   select country
+   into   vCountry
+   from   usurf_countries
+   where  service_id = p_service_id;
    update usurf_activation
    set    status = 'INACTIVE',
           deactivation_dt = sysdate,
           deactivation_reason = 'NF'
-   where  msisdn = p_msisdn;
+   where  msisdn = p_msisdn
+   and    country = vCountry;
    commit;
    p_retr := 1;
 exception 
