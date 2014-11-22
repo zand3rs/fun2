@@ -75,6 +75,7 @@ class OraDBRequest : public OraDB
 
         char _var_msisdn[16];
         char _var_country[32];
+        char _var_service_id[32];
 
         char _var_extra_i_1[320];
         char _var_extra_i_2[320];

@@ -128,6 +128,7 @@ void HttpDB::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
 
         sKey = "service_id";
         sVal =  httpRequest->getFormValue(sKey);
+        snprintf(request.service_id, sizeof(request.service_id), "%s", sVal);
         snprintf(&htmlBody[strlen(htmlBody)], sizeof(htmlBody)-strlen(htmlBody),
                 "%s: %s <br>\n", sKey, sVal);
         LOG_DEBUG("%s: sKey=[%s], sVal=[%s]", __func__, sKey, sVal);

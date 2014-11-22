@@ -703,6 +703,7 @@ int OraDBRequest::usurfDeactivation(request_t* request)
     _var_retr = DB_RETR_INIT;
 
     snprintf(_var_msisdn, sizeof(_var_msisdn), "%s", request->a_no);
+    snprintf(_var_service_id, sizeof(_var_service_id), "%s", request->service_id);
 
     int ora_status = ora_force_execute(&_sth_ud, 0);
     request->db_retr = _var_retr;
@@ -717,7 +718,7 @@ int OraDBRequest::usurfDeactivation(request_t* request)
         return -1;
     }
 
-    LOG_DEBUG("%s: retr: %d, msisdn: %s", __func__, request->db_retr, request->a_no);
+    LOG_DEBUG("%s: retr: %d, msisdn: %s, service_id: %s", __func__, request->db_retr, request->a_no, request->service_id);
 
     return 0;
 }
@@ -725,7 +726,7 @@ int OraDBRequest::usurfDeactivation(request_t* request)
 int OraDBRequest::usurfDeactivationBind()
 {
     const char sql_stmt[] = "BEGIN"
-        " SP_USURF_DEACTIVATION(:p_retr, :p_msisdn);"
+        " SP_USURF_DEACTIVATION(:p_retr, :p_msisdn, :p_service_id);"
         " END;";
 
     _sth_ud = SQLO_STH_INIT;
@@ -738,6 +739,7 @@ int OraDBRequest::usurfDeactivationBind()
     if (SQLO_SUCCESS != (
                 sqlo_bind_by_name(_sth_ud, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
                 || sqlo_bind_by_name(_sth_ud, ":p_msisdn", SQLOT_STR, &_var_msisdn, sizeof(_var_msisdn), 0, 0)
+                || sqlo_bind_by_name(_sth_ud, ":p_service_id", SQLOT_STR, &_var_service_id, sizeof(_var_service_id), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SP_USURF_DEACTIVATION statement handle.", __func__);
         return -2;
