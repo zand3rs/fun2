@@ -291,6 +291,7 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
     HttpClient hc;
     int res_code;
 
+    int status = -1;
     bool done = false;
     for (int i=0; i<2 && !done; ++i) {
         LOG_DEBUG("%s: try: %d, url: %s, timeout: %d sec", __func__,
@@ -300,10 +301,18 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
 
         switch (res_code) {
             case 200:
+                status = 0;
+                done = true;
+                break;
+            case 403:
+                if (!strcasecmp(hc.getResponseBody(), "2104")) {
+                    status = -2;
+                }
                 done = true;
                 break;
             default:
                 //-- retry
+                status = -1;
                 break;
         }
     }
@@ -311,7 +320,7 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
     LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s", __func__,
             url, res_code, hc.getResponseBody(), hc.getError());
 
-    return (res_code == 200) ? 0 : -1;
+    return status;
 }
 
 /*----------------------------------------------------------------------------*/
