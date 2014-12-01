@@ -640,11 +640,12 @@ int OraDBRequest::processTranBind()
 
 int OraDBRequest::usurfActivation(request_t* request)
 {
-    _var_retr = request->result_code;
+    _var_retr = DB_RETR_INIT;
 
     snprintf(_var_msisdn, sizeof(_var_msisdn), "%s", request->a_no);
     snprintf(_var_country, sizeof(_var_country), "%s", request->country);
     _var_duration = request->duration;
+    _var_status = request->result_code;
 
     int ora_status = ora_force_execute(&_sth_ua, 0);
     request->db_retr = _var_retr;
@@ -672,7 +673,7 @@ int OraDBRequest::usurfActivation(request_t* request)
 int OraDBRequest::usurfActivationBind()
 {
     const char sql_stmt[] = "BEGIN"
-        " SP_USURF_ACTIVATION(:p_retr, :p_partner, :p_exptime, :p_expdate, :p_msisdn, :p_country, :p_duration);"
+        " SP_USURF_ACTIVATION(:p_retr, :p_partner, :p_exptime, :p_expdate, :p_msisdn, :p_country, :p_duration, :p_nf_status);"
         " END;";
 
     _sth_ua = SQLO_STH_INIT;
@@ -690,6 +691,7 @@ int OraDBRequest::usurfActivationBind()
                 || sqlo_bind_by_name(_sth_ua, ":p_msisdn", SQLOT_STR, &_var_msisdn, sizeof(_var_msisdn), 0, 0)
                 || sqlo_bind_by_name(_sth_ua, ":p_country", SQLOT_STR, &_var_country, sizeof(_var_country), 0, 0)
                 || sqlo_bind_by_name(_sth_ua, ":p_duration", SQLOT_INT, &_var_duration, sizeof(_var_duration), 0, 0)
+                || sqlo_bind_by_name(_sth_ua, ":p_nf_status", SQLOT_INT, &_var_status, sizeof(_var_status), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SP_USURF_ACTIVATION statement handle.", __func__);
         return -2;
