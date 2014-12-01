@@ -305,7 +305,8 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
                 done = true;
                 break;
             case 403:
-                if (!strcasecmp(hc.getResponseBody(), "2104")) {
+                if (strstr(hc.getResponseBody(), "2104")) {
+                    LOG_DEBUG("%s: Got error 2104 (insuff bal), setting status to -2...", __func__);
                     status = -2;
                 }
                 done = true;
