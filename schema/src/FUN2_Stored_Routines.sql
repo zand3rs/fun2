@@ -4781,7 +4781,7 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
-    p_retr      out number,
+    p_retr      in out number,
     p_partner   out varchar2,
     p_exptime   out varchar2,
     p_expdate   out varchar2,
@@ -4792,37 +4792,61 @@ CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
    vPartner Varchar2(30);
    vTz Varchar2(10);
 begin
-   update usurf_activation
-   set    status = 'ACTIVE',
-          denom = p_duration,
-          activation_dt = sysdate
-   where  msisdn = p_msisdn
-   and    country = p_country;
-   if sql%notfound then
-      begin
-         insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-         values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'ACTIVE', sysdate, user);
-      exception
-         when dup_val_on_index then null;
-         when others then null;
-      end;
-   end if;
-   commit;
+   sp_logger('USURF_ACTIVATION' , 'START =>'      ||
+                                   ' p_retr :' || to_char(p_retr) ||
+                                   ' p_msisdn:' || p_msisdn ||
+                                   ' p_country:' || p_country ||
+                                   ' p_duration:' || to_char(p_duration));
 
-   begin
-      select roaming_partner, tz
-      into   vPartner, vTz
-      from   usurf_countries
-      where  country = p_country;
-   exception
-      when others then
-         vPartner := 'Globe';
-         vTz := 'UTC';
-   end;
-   p_partner := vPartner;
-   p_exptime := to_char(sysdate+p_duration, 'HH24:MI') || ' ' || vTz;
-   p_expdate := to_char(trunc(sysdate+p_duration), 'MM-DD-YYYY');
-   p_retr := 1;
+   if p_retr < 0 then
+      delete from usurf_activation
+      where  msisdn = p_msisdn
+      and    country = p_country;
+      commit;
+      p_partner := '';
+      p_exptime := '';
+      p_expdate := '';
+      p_retr := 1;
+   else
+      update usurf_activation
+      set    status = 'ACTIVE',
+             denom = p_duration,
+             activation_dt = sysdate
+      where  msisdn = p_msisdn
+      and    country = p_country;
+      if sql%notfound then
+         begin
+            insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
+            values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'ACTIVE', sysdate, user);
+         exception
+            when dup_val_on_index then null;
+            when others then null;
+         end;
+      end if;
+      commit;
+      
+      begin
+         select roaming_partner, tz
+         into   vPartner, vTz
+         from   usurf_countries
+         where  country = p_country;
+      exception
+         when others then
+            vPartner := 'Globe';
+            vTz := 'UTC';
+      end;
+      p_partner := vPartner;
+      p_exptime := to_char(sysdate+p_duration, 'HH24:MI') || ' ' || vTz;
+      p_expdate := to_char(trunc(sysdate+p_duration), 'MM-DD-YYYY');
+      p_retr := 1;
+   end if;
+   sp_logger('USURF_ACTIVATION' , 'END =>'      ||
+                                  ' p_retr :  ' || to_char(p_retr) ||
+                                  ' p_msisdn: ' || p_msisdn ||
+                                  ' p_country:' || p_country ||
+                                  ' p_partner:' || p_partner ||
+                                  ' p_exptime:' || p_exptime ||
+                                  ' p_expdate:' || p_expdate);
 end sp_usurf_activation;
 /
 show err
