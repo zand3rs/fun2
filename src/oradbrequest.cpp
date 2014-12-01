@@ -640,7 +640,7 @@ int OraDBRequest::processTranBind()
 
 int OraDBRequest::usurfActivation(request_t* request)
 {
-    _var_retr = DB_RETR_INIT;
+    _var_retr = request->result_code;
 
     snprintf(_var_msisdn, sizeof(_var_msisdn), "%s", request->a_no);
     snprintf(_var_country, sizeof(_var_country), "%s", request->country);
