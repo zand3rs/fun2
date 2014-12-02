@@ -4781,24 +4781,25 @@ show err
 
 
 CREATE OR REPLACE PROCEDURE "SP_USURF_ACTIVATION" (
-    p_retr      in out number,
+    p_retr      out number,
     p_partner   out varchar2,
     p_exptime   out varchar2,
     p_expdate   out varchar2,
     p_msisdn    in  varchar2,
     p_country   in  varchar2,
-    p_duration  in  number
+    p_duration  in  number,
+    p_nf_status in  number
    ) is
    vPartner Varchar2(30);
    vTz Varchar2(10);
 begin
    sp_logger('USURF_ACTIVATION' , 'START =>'      ||
-                                   ' p_retr :' || to_char(p_retr) ||
+                                   ' p_nf_status :' || to_char(p_nf_status) ||
                                    ' p_msisdn:' || p_msisdn ||
                                    ' p_country:' || p_country ||
                                    ' p_duration:' || to_char(p_duration));
 
-   if p_retr < 0 then
+   if p_nf_status < 0 then
       delete from usurf_activation
       where  msisdn = p_msisdn
       and    country = p_country;
