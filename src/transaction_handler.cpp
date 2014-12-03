@@ -279,9 +279,17 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                             //--- call NF here...
                             request.result_code = nf_provision(request.a_no, request.service_id, request.duration);
                             LOG_DEBUG("%s: nf_provision: %d", __func__, request.result_code);
+                            int usurf_status = conn.usurfActivation(&request);
+                            LOG_DEBUG("%s: usurfActivation: %d", __func__, usurf_status);
+
+                            if (usurf_status < 0) {
+                                LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
+                                        request.id, request.tran_type, request.a_no, request.country, request.duration);
+                            }
+
                             switch (request.result_code) {
                                 case 0:
-                                    if (conn.usurfActivation(&request) < 0) {
+                                    if (usurf_status < 0) {
                                         LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
                                                 request.id, request.tran_type, request.a_no, request.country, request.duration);
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
@@ -294,10 +302,6 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                     break;
                                 case -2:
                                     LOG_DEBUG("%s: nf_provision: insufficient balance", __func__);
-                                    if (conn.usurfActivation(&request) < 0) {
-                                        LOG_ERROR("%s: usurf_activation failed request id: %d, tran_type: %d, msisdn: %s, country: %s, duration: %d.", __func__,
-                                                request.id, request.tran_type, request.a_no, request.country, request.duration);
-                                    }
                                     send_system_msg(request.customer_type, request.tran_type, request.id,
                                             Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_INSUFF_BAL, 1);
                                     break;
