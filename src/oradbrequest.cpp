@@ -596,9 +596,9 @@ int OraDBRequest::processTran(request_t* request)
             request->duration = strtol(_var_extra_o_3, NULL, 10);
 
             LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d, link_to: %s, "
-                    "activation_date: %s, deactivation_date: %s, duration: %d", __func__,
+                    "activation_date: %s, deactivation_date: %s, duration: %d, country: %s, service_id: %s", __func__,
                     request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id, request->gsm_num,
-                    request->activation_date, request->deactivation_date, request->duration);
+                    request->activation_date, request->deactivation_date, request->duration, request->country, request->service_id);
     }
 
     return 0;
