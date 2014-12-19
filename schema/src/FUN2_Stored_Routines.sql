@@ -1167,7 +1167,7 @@ begin
       select 1
       into   nRetr
       from   usurf_countries
-      where  country = p_country
+      where  country = upper(p_country)
       and    status = 'ACTIVE';
       if p_duration not in (1,3,5) then
          nRetr := 3;
