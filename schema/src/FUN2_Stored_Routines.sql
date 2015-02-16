@@ -50,6 +50,7 @@ PROMPT create PROCEDURE "SP_PROCESS_ODS"...
 PROMPT create PROCEDURE "SP_PROCESS_TRAN"...
 PROMPT create PROCEDURE "SP_USURF_ACTIVATION"...
 PROMPT create PROCEDURE "SP_USURF_DEACTIVATION"...
+PROMPT create PROCEDURE "SP_USURF_DEACTIVATE_ALL"...
 
 
 CREATE OR REPLACE FUNCTION "SF_CHECK_ROAMER_STATUS" (
@@ -1783,7 +1784,8 @@ begin
       from    usurf_activation a, usurf_countries b
       where   a.country = b.country
       and     a.status = 'ACTIVE'
-      and     a.msisdn = p_msisdn;
+      and     a.msisdn = p_msisdn
+      and     rownum = 1;
       if vStatus = 'ACTIVE' then
          nRetr := 1;
       elsif vStatus = 'PENDING' then
@@ -4697,7 +4699,7 @@ begin
             select service_id
             into   vServiceId
             from   usurf_countries
-            where  country = p_extra_i_1;
+            where  country = upper(p_extra_i_1);
          exception
             when no_data_found then 
                vServiceId := 1333;
@@ -4802,7 +4804,7 @@ begin
    if p_nf_status < 0 then
       delete from usurf_activation
       where  msisdn = p_msisdn
-      and    country = p_country;
+      and    country = upper(p_country);
       commit;
       p_partner := '';
       p_exptime := '';
@@ -4814,11 +4816,11 @@ begin
              denom = p_duration,
              activation_dt = sysdate
       where  msisdn = p_msisdn
-      and    country = p_country;
+      and    country = upper(p_country);
       if sql%notfound then
          begin
             insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-            values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'ACTIVE', sysdate, user);
+            values (usurf_activation_seq.nextval, p_msisdn, upper(p_country), p_duration, sysdate, 'ACTIVE', sysdate, user);
          exception
             when dup_val_on_index then null;
             when others then null;
@@ -4830,7 +4832,7 @@ begin
          select roaming_partner, tz
          into   vPartner, vTz
          from   usurf_countries
-         where  country = p_country;
+         where  country = upper(p_country);
       exception
          when others then
             vPartner := 'Globe';
@@ -4877,6 +4879,51 @@ exception
    when others then 
       p_retr := 1;
 end sp_usurf_deactivation;
+/
+show err
+
+
+
+CREATE OR REPLACE PROCEDURE "SP_USURF_DEACTIVATE_ALL" (
+    p_retr       out number,
+    p_service_id out varchar2,
+    p_duration   out varchar2,
+    p_msisdn     in  varchar2
+   ) is
+   vServiceID Varchar2(130);
+   vDuration  Varchar2(130);
+begin
+   for i in (select service_id, duration from usurf_activation where msisdn = p_msisdn and status = 'ACTIVE') loop
+      if vServiceId is null then
+         vServiceID := to_char(i.service_id);
+      else
+         vServiceID := vServiceID || ',' || to_char(i.service_id);
+      end if;
+      if vServiceId is null then
+         vDuration := to_char(i.duration);
+      else
+         vDuration := vDuration || ',' || to_char(i.duration);
+      end if;
+   end loop;
+
+   if vServiceId is not null then
+      update usurf_activation
+      set    status = 'INACTIVE',
+             deactivation_dt = sysdate,
+             deactivation_reason = 'GROAM OFF'
+      where  msisdn = p_msisdn
+      and    status = 'ACTIVE';
+      commit;
+      p_retr := 1;
+      p_service_id := vServiceID;
+      p_duration   := vDuration;
+   else
+      p_retr := 0;
+   end if;
+exception 
+   when others then 
+      p_retr := 0;
+end sp_usurf_deactivate_all;
 /
 show err
 
