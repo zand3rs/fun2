@@ -1783,7 +1783,8 @@ begin
       from    usurf_activation a, usurf_countries b
       where   a.country = b.country
       and     a.status = 'ACTIVE'
-      and     a.msisdn = p_msisdn;
+      and     a.msisdn = p_msisdn
+      and     rownum = 1;
       if vStatus = 'ACTIVE' then
          nRetr := 1;
       elsif vStatus = 'PENDING' then
@@ -4048,6 +4049,8 @@ CREATE OR REPLACE PROCEDURE "SP_PROCESS_TRAN" (
    vIMSI                   Varchar2(30);
    nRoamerStatus           Number;
    vServiceId              Varchar2(30);
+   vUsurfCountry           Varchar2(30);
+   nUsurfDenom             Number;
 begin
    --  1 - ACTIVATION
    --  2 - DEACTIVATION
@@ -4309,6 +4312,26 @@ begin
                  sp_logger('PROCESS' , 'ARDS DEACTIVATION Error: IMSI='  || vIMSI || ' ORA:' || SQLCODE);
          end;
       end if;
+
+      -- check for USURF Subscription
+      begin
+         select country, denom
+         into   vUsurfCountry, nUsurfDenom
+         from   usurf_activation
+         where  msisdn = p_msisdn
+         and    status <> 'INACTIVE'
+         and    rownum = 1;
+
+         select service_id
+         into   vServiceId
+         from   usurf_countries
+         where  country = vUsurfCountry;
+      exception
+         when no_data_found then
+            nUsurfDenom   := 0;
+            vUsurfCountry := '';
+            vServiceId    := 0;
+      end;
 
    -- 10    TRAN_TYPE_GROAM_EXTEND
    elsif (p_trantype = 10) then
@@ -4697,7 +4720,7 @@ begin
             select service_id
             into   vServiceId
             from   usurf_countries
-            where  country = p_extra_i_1;
+            where  country = upper(p_extra_i_1);
          exception
             when no_data_found then 
                vServiceId := 1333;
@@ -4735,6 +4758,10 @@ begin
          and    tran_dt >= trunc(sysdate)-7
          and    rownum = 1;
       end if;
+   elsif (p_trantype = 9) then
+      p_extra_o_1 := vUsurfCountry;
+      p_extra_o_2 := to_char(nUsurfDenom);
+      p_extra_o_3 := vServiceId;
    elsif (p_trantype = 17) then
       p_extra_o_1 := to_char(nMsisdn);
    elsif (p_trantype = 18) then
@@ -4802,7 +4829,7 @@ begin
    if p_nf_status < 0 then
       delete from usurf_activation
       where  msisdn = p_msisdn
-      and    country = p_country;
+      and    country = upper(p_country);
       commit;
       p_partner := '';
       p_exptime := '';
@@ -4814,11 +4841,11 @@ begin
              denom = p_duration,
              activation_dt = sysdate
       where  msisdn = p_msisdn
-      and    country = p_country;
+      and    country = upper(p_country);
       if sql%notfound then
          begin
             insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-            values (usurf_activation_seq.nextval, p_msisdn, p_country, p_duration, sysdate, 'ACTIVE', sysdate, user);
+            values (usurf_activation_seq.nextval, p_msisdn, upper(p_country), p_duration, sysdate, 'ACTIVE', sysdate, user);
          exception
             when dup_val_on_index then null;
             when others then null;
@@ -4830,7 +4857,7 @@ begin
          select roaming_partner, tz
          into   vPartner, vTz
          from   usurf_countries
-         where  country = p_country;
+         where  country = upper(p_country);
       exception
          when others then
             vPartner := 'Globe';
@@ -4857,21 +4884,24 @@ show err
 CREATE OR REPLACE PROCEDURE "SP_USURF_DEACTIVATION" (
     p_retr       out number,
     p_msisdn     in  varchar2,
-    p_service_id in  varchar2
+    p_service_id in  varchar2,
+    p_nf_status  in  number
    ) is
    vCountry Varchar2(30);
 begin
-   select country
-   into   vCountry
-   from   usurf_countries
-   where  service_id = p_service_id;
-   update usurf_activation
-   set    status = 'INACTIVE',
-          deactivation_dt = sysdate,
-          deactivation_reason = 'NF'
-   where  msisdn = p_msisdn
-   and    country = vCountry;
-   commit;
+   if p_nf_status > 0 then
+      select country
+      into   vCountry
+      from   usurf_countries
+      where  service_id = p_service_id;
+      update usurf_activation
+      set    status = 'INACTIVE',
+             deactivation_dt = sysdate,
+             deactivation_reason = 'NF'
+      where  msisdn = p_msisdn
+      and    country = vCountry;
+      commit;
+   end if;
    p_retr := 1;
 exception 
    when others then 
