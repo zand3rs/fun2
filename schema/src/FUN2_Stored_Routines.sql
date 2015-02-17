@@ -4330,7 +4330,7 @@ begin
          when no_data_found then
             nUsurfDenom   := 0;
             vUsurfCountry := '';
-            vServiceId    := 0;
+            vServiceId    := '';
       end;
 
    -- 10    TRAN_TYPE_GROAM_EXTEND
