@@ -4759,9 +4759,9 @@ begin
          and    rownum = 1;
       end if;
    elsif (p_trantype = 9) then
-      p_extra_o_1 := vUsurfCountry;
-      p_extra_o_2 := to_char(nUsurfDenom);
-      p_extra_o_3 := vServiceId;
+      p_extra_o_1 := vServiceId;
+      p_extra_o_2 := '';
+      p_extra_o_3 := '';
    elsif (p_trantype = 17) then
       p_extra_o_1 := to_char(nMsisdn);
    elsif (p_trantype = 18) then
