@@ -465,9 +465,10 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                 if (token) {
                     if (! strcasecmp(token, "USURF")) {
                         //-- get country
-                        token = strtok_r(NULL, " ", &pbuf);
-                        if (token) {
-                            snprintf(request.country, sizeof(request.country), "%s", token);
+                        //-- token = strtok_r(NULL, " ", &pbuf);
+                        //-- if (token) {
+                        //--     snprintf(request.country, sizeof(request.country), "%s", token);
+                            snprintf(request.country, sizeof(request.country), "ALL", token);
 
                             //-- get duration
                             token = strtok_r(NULL, " ", &pbuf);
@@ -499,7 +500,7 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 send_system_msg(request.customer_type, request.tran_type, request.id,
                                         Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
                             }
-                        }
+                        //-- }
                     } else {
                         request.tran_type = TRAN_TYPE_UNKNOWN;
                         request.status = TXN_STATUS_ERROR;
