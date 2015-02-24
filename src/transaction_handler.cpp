@@ -140,13 +140,11 @@ static void process_tran (OraDBRequest& conn, request_t& request)
                                     }
                                 }
 
-                                if (strlen(request.service_id)==0) {
-                                   request.result_code = nf_deprovision(request.a_no, request.service_id);
-                                   LOG_DEBUG("%s: nf_deprovision: %d", __func__, request.result_code);
-                                   int usurf_status = conn.usurfDeactivation(&request);
-                                   LOG_DEBUG("%s: usurfDeactivation: %d", __func__, usurf_status);
-                                }
-
+                                //--- call NF here...
+                                request.result_code = nf_deprovision(request.a_no, request.service_id);
+                                LOG_DEBUG("%s: nf_deprovision: %d", __func__, request.result_code);
+                                int usurf_status = conn.usurfDeactivation(&request);
+                                LOG_DEBUG("%s: usurfDeactivation: %d", __func__, usurf_status);
                             } else {
                                 if (! request.silent) {
                                     //-- pre activation

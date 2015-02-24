@@ -563,6 +563,9 @@ int OraDBRequest::processTran(request_t* request)
                     , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
                     , request->activation_date, request->deactivation_date, request->duration);
             break;
+        case TRAN_TYPE_GROAM_OFF:
+            snprintf(request->service_id, sizeof(request->service_id), "%s", _var_extra_o_1);
+            break;
         case TRAN_TYPE_GLIST:
             request->zone = strtol(_var_extra_o_1, NULL, 10);
             snprintf(request->rate, sizeof(request->rate), "%s", _var_extra_o_2);
