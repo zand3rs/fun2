@@ -468,41 +468,18 @@ static void init_tran (OraDBRequest& conn, request_t& request)
             } else if (! strcasecmp(token, "ROAM")) {
                 //-- get USURF
                 token = strtok_r(NULL, " ", &pbuf);
-                if (token) {
-                    if (! strcasecmp(token, "USURF")) {
-                        //-- set country
-                        snprintf(request.country, sizeof(request.country), "ALL", token);
+                if (token && !strcasecmp(token, "SURF")) {
+                    //-- set country
+                    snprintf(request.country, sizeof(request.country), "ALL", token);
+
+                    token = strtok_r(NULL, " ", &pbuf);
+                    if (token && !strcasecmp(token, "STATUS")) {
+                        request.tran_type = TRAN_TYPE_ROAM_USURF_STATUS;
+                    } else if (token && (strchr(token, 'D') || strchr(token, 'd'))) {
+                        request.tran_type = TRAN_TYPE_ROAM_USURF_ON;
 
                         //-- get duration
-                        token = strtok_r(NULL, " ", &pbuf);
-                        if (token && (strchr(token, 'D') || strchr(token, 'd'))) {
-                            request.duration = strtol(token, NULL, 10);
-
-                            //-- get command
-                            token = strtok_r(NULL, " ", &pbuf);
-                            if (token) {
-                                if (! strcasecmp(token, "ON")) {
-                                    request.tran_type = TRAN_TYPE_ROAM_USURF_ON;
-                                } else if (! strcasecmp(token, "STATUS")) {
-                                    request.tran_type = TRAN_TYPE_ROAM_USURF_STATUS;
-                                } else {
-                                    request.tran_type = TRAN_TYPE_UNKNOWN;
-                                    request.status = TXN_STATUS_ERROR;
-                                    send_system_msg(request.customer_type, request.tran_type, request.id,
-                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
-                                }
-                            } else {
-                                request.tran_type = TRAN_TYPE_UNKNOWN;
-                                request.status = TXN_STATUS_ERROR;
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
-                            }
-                        } else {
-                            request.tran_type = TRAN_TYPE_UNKNOWN;
-                            request.status = TXN_STATUS_ERROR;
-                            send_system_msg(request.customer_type, request.tran_type, request.id,
-                                    Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_HELP, 1);
-                        }
+                        request.duration = strtol(token, NULL, 10);
                     } else {
                         request.tran_type = TRAN_TYPE_UNKNOWN;
                         request.status = TXN_STATUS_ERROR;
