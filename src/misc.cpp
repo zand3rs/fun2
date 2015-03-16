@@ -48,21 +48,25 @@ void string_replace (char* buf, int buf_size, char* search, char* replace)
 
 /*----------------------------------------------------------------------------*/
 
-float getBalance(const char *msisdn)
+float getBalance(const char *msisdn, int nsn_flag=0)
 {
     float retr = -1;
-    NSN nsnh(Config::getOraAuth());
 
-    int balance = nsnh.getBalance(msisdn);
-    if (balance >= 0) {
-        char buf[64];
-        char buf2[64];
-        snprintf(buf, sizeof(buf), "%d", balance);
-        snprintf(buf2, sizeof(buf2), "%d", balance);
-        if (strlen(buf) > 2) {
-            sprintf(&buf2[strlen(buf2)-2], ".%s", &buf[strlen(buf)-2]);
+    if (nsn_flag) {
+        retr = nsn_getBalance(msisdn);
+    } else {
+        NSN nsnh(Config::getOraAuth());
+        int balance = nsnh.getBalance(msisdn);
+        if (balance >= 0) {
+            char buf[64];
+            char buf2[64];
+            snprintf(buf, sizeof(buf), "%d", balance);
+            snprintf(buf2, sizeof(buf2), "%d", balance);
+            if (strlen(buf) > 2) {
+                sprintf(&buf2[strlen(buf2)-2], ".%s", &buf[strlen(buf)-2]);
+            }
+            retr = (float)strtod(buf2, NULL);
         }
-        retr = (float)strtod(buf2, NULL);
     }
 
     return retr;
@@ -336,6 +340,42 @@ int nf_provision (const char* msisdn, const char* service_id, int duration)
 int nf_deprovision (const char* msisdn, const char* service_id)
 {
     return _nf_prov_deprov(2, msisdn, service_id, 0);
+}
+
+/*----------------------------------------------------------------------------*/
+
+float nsn_getBalance(const char *msisdn)
+{
+    float balance = 0;
+    HttpClient hc;
+    std::string _msisdn(msisdn);
+    std::string req = "<?xml version='1.0' encoding='UTF-8'?>\n"
+                      "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>\n"
+                      "<soapenv:Header/>\n"
+                      "<soapenv:Body>\n"
+                      "  <ns1:BalanceInquiry xmlns:ns1='http://www.globe.com/warcraft/wsdl/replenishment/'>\n"
+                      "    <PrimaryResourceType>C</PrimaryResourceType>\n"
+                      "    <PrimaryResourceValue>" + _msisdn.substr(2) + "</PrimaryResourceValue>\n"
+                      "    <SendSMS>false</SendSMS>\n"
+                      "  </ns1:BalanceInquiry>\n"
+                      "</soapenv:Body>\n"
+                      "</soapenv:Envelope>\n";
+
+    int res_code = hc.httpPost(Config::getNsnUrl(), req.c_str(), "text/xml", Config::getNsnTimeoutSec());
+
+    if (200 == res_code) {
+        const char* body = hc.getResponseBody();
+        char elem[32] = "<BalanceAmount>";
+        char* found = strstr(body, elem);
+        if (found) {
+            balance = strtof(found + strlen(elem), NULL);
+        }
+    }
+
+    LOG_INFO("%s: url: %s, req: %s, res_code: %d, res_body: %s, res_error: %s, balance: %0.2f", __func__,
+            Config::getNsnUrl(), req.c_str(), res_code, hc.getResponseBody(), hc.getError(), balance);
+
+    return balance;
 }
 
 /******************************************************************************/

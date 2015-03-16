@@ -100,6 +100,7 @@ class OraDBRequest : public OraDB
         short _ind_gsm_num;
         short _ind_result_code;
         short _ind_silent;
+        short _ind_nsn_flag;
 
         short _ind_extra_1;
         short _ind_extra_2;

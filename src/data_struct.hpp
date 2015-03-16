@@ -332,6 +332,7 @@ typedef struct request_t {
     int result_code;
     int silent;
     int local_sim;
+    int nsn_flag;
     char partner[32];
     char exptime[32];
     char expdate[32];

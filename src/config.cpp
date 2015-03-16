@@ -61,6 +61,8 @@ std::string Config::_cart_password = "";
 std::string Config::_endpoint_url = "";
 int Config::_endpoint_timeout_sec = 0;
 
+std::string Config::_nsn_url = "";
+int Config::_nsn_timeout_sec = 0;
 std::string Config::_nsn_host = "";
 int Config::_nsn_port = 0;
 std::string Config::_nsn_name = "";
@@ -189,6 +191,12 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "endpoint_timeout_sec", buf, sizeof(buf));
         _endpoint_timeout_sec = strtol(buf, NULL, 10);
+
+        cfg_getval(&cfg, "", "nsn_url", buf, sizeof(buf));
+        _nsn_url = buf;
+
+        cfg_getval(&cfg, "", "nsn_timeout_sec", buf, sizeof(buf));
+        _nsn_timeout_sec = strtol(buf, NULL, 10);
 
         cfg_getval(&cfg, "", "nsn_host", buf, sizeof(buf));
         _nsn_host = buf;

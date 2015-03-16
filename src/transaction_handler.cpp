@@ -719,9 +719,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
             }
         } else {
             LOG_INFO("%s: retr: %d, request id: %d, tran_type: %d, a_no: %s, b_no: %s, gsm_num: %s"
-                    ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, silent: %d", __func__
+                    ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, silent: %d, nsn_flag: %d", __func__
                     , request.db_retr, request.id, request.tran_type, request.a_no, request.b_no, request.gsm_num
-                    , request.min_bal , request.activation_date, request.deactivation_date, request.duration, request.silent);
+                    , request.min_bal , request.activation_date, request.deactivation_date, request.duration, request.silent, request.nsn_flag);
 
             switch (request.db_retr) {
                 case DB_RETR_OK:
@@ -736,7 +736,7 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 }
                             } else {
                                 if (request.min_bal > 0) {
-                                    float balance = getBalance(request.a_no);
+                                    float balance = getBalance(request.a_no, request.nsn_flag);
                                     LOG_DEBUG("%s: GET BALANCE: bal: %0.2f, min_bal: %d", __func__, balance, request.min_bal);
                                     if (balance < (float)0) {
                                         next_step_no = -1;
@@ -791,7 +791,7 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 }
                             } else {
                                 if (request.min_bal > 0) {
-                                    float balance = getBalance(request.a_no);
+                                    float balance = getBalance(request.a_no, request.nsn_flag);
                                     LOG_DEBUG("%s: GET BALANCE: bal: %0.2f, min_bal: %d", __func__, balance, request.min_bal);
                                     if (balance < (float)0) {
                                         request.status = TXN_STATUS_ERROR;

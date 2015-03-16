@@ -128,6 +128,12 @@ class Config {
             return _endpoint_timeout_sec;
         }
 
+        static const char* getNsnUrl() {
+            return _nsn_url.c_str();
+        }
+        static int getNsnTimeoutSec() {
+            return _nsn_timeout_sec;
+        }
         static const char* getNsnHost() {
             return _nsn_host.c_str();
         }
@@ -215,6 +221,8 @@ class Config {
         static std::string _endpoint_url;
         static int _endpoint_timeout_sec;
 
+        static std::string _nsn_url;
+        static int _nsn_timeout_sec;
         static std::string _nsn_host;
         static int _nsn_port;
         static std::string _nsn_name;

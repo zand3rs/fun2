@@ -174,7 +174,7 @@ int OraDBRequest::selectBind()
     const char sql_stmt[] = "select id, msg, a_no, b_no, step_no, last_step_no"
         ", tran_type, cluster_node, customer_type, request_origin, ref_id, imsi"
         ", activation_date, deactivation_date, duration, gsm_num, result_code, silent"
-        " from request_log"
+        ", nsn_flag from request_log"
         " where cluster_node = :cluster_node and step_no = :step_no and status = :status"
         " and rownum < :limit order by id";
 
@@ -208,6 +208,7 @@ int OraDBRequest::selectBind()
                 || sqlo_define_by_pos(_sth_select, 16, SQLOT_STR, &_request.gsm_num, sizeof(_request.gsm_num), &_ind_gsm_num, 0, 0)
                 || sqlo_define_by_pos(_sth_select, 17, SQLOT_INT, &_request.result_code, sizeof(_request.result_code), &_ind_result_code, 0, 0)
                 || sqlo_define_by_pos(_sth_select, 18, SQLOT_INT, &_request.silent, sizeof(_request.silent), &_ind_silent, 0, 0)
+                || sqlo_define_by_pos(_sth_select, 19, SQLOT_INT, &_request.nsn_flag, sizeof(_request.nsn_flag), &_ind_nsn_flag, 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SELECT_REQUEST statement handle.", __func__);
         return -2;
@@ -259,7 +260,7 @@ int OraDBRequest::updateBind()
         ", status = :status, tran_type = :tran_type, customer_type = :customer_type, min_bal = :min_bal"
         ", error_code = :error_code, imsi = :imsi"
         ", activation_date = :activation_date, deactivation_date = :deactivation_date, duration = :duration"
-        ", gsm_num = :gsm_num, result_code = :result_code, silent = :silent"
+        ", gsm_num = :gsm_num, result_code = :result_code, silent = :silent, nsn_flag = :nsn_flag"
         ", dt_modified = sysdate where id = :id";
 
     _sth_update = SQLO_STH_INIT;
@@ -285,6 +286,7 @@ int OraDBRequest::updateBind()
                 || sqlo_bind_by_name(_sth_update, ":gsm_num", SQLOT_STR, &_request.gsm_num, sizeof(_request.gsm_num), 0, 0)
                 || sqlo_bind_by_name(_sth_update, ":result_code", SQLOT_INT, &_request.result_code, sizeof(_request.result_code), 0, 0)
                 || sqlo_bind_by_name(_sth_update, ":silent", SQLOT_INT, &_request.silent, sizeof(_request.silent), 0, 0)
+                || sqlo_bind_by_name(_sth_update, ":nsn_flag", SQLOT_INT, &_request.nsn_flag, sizeof(_request.nsn_flag), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for UPDATE_REQUEST statement handle.", __func__);
         return -2;
@@ -456,11 +458,13 @@ int OraDBRequest::initTran(request_t* request)
         default:
             request->min_bal = strtol(_var_extra_o_1, NULL, 10);
             snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
+            request->nsn_flag = strtol(_var_extra_o_3, NULL, 10);
 
             LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-                    ", min_bal: %d, activation_date: %s, deactivation_date: %s, duration: %d, country: %s, others: %s", __func__
+                    ", min_bal: %d, nsn_flag: %d, activation_date: %s, deactivation_date: %s"
+                    ", duration: %d, country: %s, others: %s", __func__
                     , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
-                    , request->min_bal, request->activation_date, request->deactivation_date
+                    , request->min_bal, request->nsn_flag, request->activation_date, request->deactivation_date
                     , request->duration, request->country, request->others);
     }
 
