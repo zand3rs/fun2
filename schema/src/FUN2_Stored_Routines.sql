@@ -26,6 +26,7 @@ PROMPT create FUNCTION "SF_IS_LOCAL_SIM_ACTIVE_LINK"...
 PROMPT create FUNCTION "SF_IS_MAX_LINK_REACHED"...
 PROMPT create FUNCTION "SF_IS_ROAMER_INFO"...
 PROMPT create FUNCTION "SF_IS_ROAMER_INFO_IMSI"...
+PROMPT create FUNCTION "SF_IS_SWEDEN_NSN_RANGE"...
 PROMPT create FUNCTION "SF_IS_VALID_ACTIVATION_DT"...
 PROMPT create FUNCTION "SF_IS_VALID_GLOBE_NUMBER"...
 PROMPT create FUNCTION "SF_IS_VALID_USURF"...
@@ -141,7 +142,7 @@ begin
    into   vStatus
    from   usurf_activation
    where  msisdn = p_msisdn
-   and    country =  p_country;
+   and    country =  nvl(p_country,'ALL');
    if vStatus = 'ACTIVE' then
       nUsurfer := 1;
    elsif vStatus = 'PENDING' then
@@ -1093,6 +1094,24 @@ begin
    p_imsi        := vIMSI;
    return nRoamer;
 end sf_is_roamer_info_imsi;
+/
+show err
+
+
+
+CREATE OR REPLACE FUNCTION "SF_IS_SWEDEN_NSN_RANGE" (
+   p_msisdn in number
+   ) return number is
+   nCnt Number(1);
+begin
+   nCnt  := 0;
+   select count(1)
+   into   nCnt
+   from   sweden_nsn_mapping
+   where  p_msisdn between msisdn_fr and msisdn_to
+   and    status = 'ACTIVE';
+   return nCnt ;
+end sf_is_sweden_nsn_range;
 /
 show err
 
@@ -2626,6 +2645,15 @@ begin
       p_extra_o_2 := '';
    --end if;
    p_extra_o_3 := '';
+
+   -- 2  - TRAN_TYPE_REG
+   -- 4  - TRAN_TYPE_LINK
+   -- 8  - TRAN_TYPE_GROAM_ON
+   -- 9  - TRAN_TYPE_GROAM_OFF
+   -- 10 - TRAN_TYPE_GROAM_EXTEND
+   if (p_trantype in (2,4,8,9,10)) then
+      p_extra_o_3 := sf_is_sweden_nsn_range(p_msisdn);
+   end if;
 
    p_retr      := nRetr;
    sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) ||
@@ -4829,7 +4857,7 @@ begin
    if p_nf_status < 0 then
       delete from usurf_activation
       where  msisdn = p_msisdn
-      and    country = upper(p_country);
+      and    country = nvl(p_country,'ALL');
       commit;
       p_partner := '';
       p_exptime := '';
@@ -4841,11 +4869,11 @@ begin
              denom = p_duration,
              activation_dt = sysdate
       where  msisdn = p_msisdn
-      and    country = upper(p_country);
+      and    country = nvl(p_country,'ALL');
       if sql%notfound then
          begin
             insert into USURF_ACTIVATION (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
-            values (usurf_activation_seq.nextval, p_msisdn, upper(p_country), p_duration, sysdate, 'ACTIVE', sysdate, user);
+            values (usurf_activation_seq.nextval, p_msisdn, nvl(p_country,'ALL'), p_duration, sysdate, 'ACTIVE', sysdate, user);
          exception
             when dup_val_on_index then null;
             when others then null;
@@ -4857,7 +4885,7 @@ begin
          select roaming_partner, tz
          into   vPartner, vTz
          from   usurf_countries
-         where  country = upper(p_country);
+         where  country = nvl(p_country,'ALL');
       exception
          when others then
             vPartner := 'Globe';
