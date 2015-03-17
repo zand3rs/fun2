@@ -18,6 +18,10 @@ class CCB : public Fun2RC {
         CCB() {};
         ~CCB() {};
 
+        virtual char* const moduleName() const {
+            return (char* const)__class__;
+        };
+
         virtual int initialize();
         virtual int deinitialize();
 

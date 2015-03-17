@@ -42,6 +42,10 @@ class NSN : public Fun2RC {
         NSN() : buffer(NULL) {};
         ~NSN() {};
 
+        virtual char* const moduleName() const {
+            return (char* const)__class__;
+        };
+
         virtual int initialize();
         virtual int deinitialize();
 

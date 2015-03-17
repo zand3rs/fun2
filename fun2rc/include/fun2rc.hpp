@@ -41,6 +41,8 @@ class Fun2RC {
         }
 
         //-- pure virtual functions...
+        virtual char* const moduleName() const = 0;
+
         virtual int initialize() = 0;
         virtual int deinitialize() = 0;
 

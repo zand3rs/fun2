@@ -23,6 +23,10 @@ class SSET : public Fun2RC {
         SSET() {};
         ~SSET() {};
 
+        virtual char* const moduleName() const {
+            return (char* const)__class__;
+        };
+
         virtual int initialize();
         virtual int deinitialize();
 

@@ -92,6 +92,10 @@ class HLR : public Fun2RC {
         HLR() {};
         ~HLR() {};
 
+        virtual char* const moduleName() const {
+            return (char* const)__class__;
+        };
+
         virtual int initialize();
         virtual int deinitialize();
 

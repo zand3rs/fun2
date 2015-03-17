@@ -26,6 +26,10 @@ class RBT : public Fun2RC {
         RBT() {};
         ~RBT() {};
 
+        virtual char* const moduleName() const {
+            return (char* const)__class__;
+        };
+
         virtual int initialize();
         virtual int deinitialize();
 
