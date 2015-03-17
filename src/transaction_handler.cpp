@@ -1737,10 +1737,11 @@ void* transaction_handler (void* arg)
         request_t request;
 
         while (! c2q_dequeue(Global::getTransactionQ(parent_id), &request, sizeof(request_t))) {
-            LOG_DEBUG("%s: %d-%d: request id: %d, msg: %s, a_no: %s, b_no: %s, tran_type: %d, step_no: %d", __func__, parent_id, proc_id,
-                    request.id, request.msg, request.a_no, request.b_no, request.tran_type, request.step_no);
+            LOG_DEBUG("%s: %d-%d: request id: %d, msg: %s, a_no: %s, b_no: %s, nsn_flag: %d, tran_type: %d, step_no: %d", __func__, parent_id, proc_id,
+                    request.id, request.msg, request.a_no, request.b_no, request.nsn_flag, request.tran_type, request.step_no);
 
             int res_code = -1;
+            short bypass = (request.nsn_flag && !strcasecmp(fun2rc->moduleName(), "NSN")) ? 1 : 0;
 
             char tran_type[32];
             char start_time[32];
@@ -1757,7 +1758,7 @@ void* transaction_handler (void* arg)
                     strcpy(tran_type, "Activation");
 
                     for (int i = 0; i < max_retry; ++i) {
-                        res_code = fun2rc->activate(request.a_no);
+                        res_code = (bypass) ? 0 : fun2rc->activate(request.a_no);
                         LOG_INFO("%s: %d-%d: %s: ACTIVATION: try: %d, return: %d", __func__, parent_id, proc_id, rc->description, i, res_code);
                         if (0 <= res_code) {
                             break;
@@ -1777,7 +1778,7 @@ void* transaction_handler (void* arg)
                     strcpy(tran_type, "Deactivation");
 
                     for (int i = 0; i < max_retry; ++i) {
-                        res_code = fun2rc->deactivate(request.a_no);
+                        res_code = (bypass) ? 0 : fun2rc->deactivate(request.a_no);
                         LOG_INFO("%s: %d-%d: %s: DEACTIVATION: try: %d, return: %d", __func__, parent_id, proc_id, rc->description, i, res_code);
                         if (0 <= res_code) {
                             break;
@@ -1797,7 +1798,7 @@ void* transaction_handler (void* arg)
                     strcpy(tran_type, "Deactivation");
 
                     for (int i = 0; i < max_retry; ++i) {
-                        res_code = fun2rc->deactivate(request.a_no);
+                        res_code = (bypass) ? 0 : fun2rc->deactivate(request.a_no);
                         LOG_INFO("%s: %d-%d: %s: DEACTIVATION: try: %d, return: %d", __func__, parent_id, proc_id, rc->description, i, res_code);
                         if (0 <= res_code) {
                             break;
