@@ -48,7 +48,7 @@ void string_replace (char* buf, int buf_size, char* search, char* replace)
 
 /*----------------------------------------------------------------------------*/
 
-float getBalance(const char *msisdn, int nsn_flag=0)
+float getBalance(const char *msisdn, int nsn_flag)
 {
     float retr = -1;
 
