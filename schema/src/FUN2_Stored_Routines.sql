@@ -2588,7 +2588,7 @@ begin
             when dup_val_on_index then 
                update usurf_activation
                set    denom = p_extra_i_2,
-                      county = p_extra_i_4,
+                      country = p_extra_i_4,
                       activation_dt = sysdate,
                       deactivation_dt = null, 
                       deactivation_reason = null,
