@@ -2585,7 +2585,17 @@ begin
             insert into usurf_activation (id, msisdn, country, denom, activation_dt, status, dt_created, created_by)
             values (usurf_activation_seq.nextval, p_msisdn, p_extra_i_4, p_extra_i_2, sysdate, 'PENDING', sysdate, user);
          exception
-            when dup_val_on_index then null;
+            when dup_val_on_index then 
+               update usurf_activation
+               set    denom = p_extra_i_2,
+                      county = p_extra_i_4,
+                      activation_dt = sysdate,
+                      deactivation_dt = null, 
+                      deactivation_reason = null,
+                      status = 'PENDING',
+                      dt_created = sysdate,
+                      created_by = user
+               where msisdn = p_msisdn;
             when others then null;
          end;
       end if;
@@ -4776,16 +4786,31 @@ begin
       --p_extra_o_2 := to_char(nActivationDt, 'MM/DD/YYYY');
       p_extra_o_1 := to_char(sysdate, 'MM/DD/YYYY');
       -- bluemoon update
-      if sf_check_usurf_status(p_msisdn,p_extra_i_1)=2 then
-         update request_log 
-         set    status=0, step_no=0
-         where  a_no =p_msisdn
-         and    status=2
-         and    step_no = -1
-         and    tran_type = 20
-         and    tran_dt >= trunc(sysdate)-7
-         and    rownum = 1;
-      end if;
+      begin
+         select denom
+         into   nDuration
+         from   usurf_activation
+         where  msisdn = p_msisdn
+         and    status = 'PENDING';
+         for i in (select id from request_log
+                   where  a_no = p_msisdn
+                   and    duration = nDuration
+                   and    error_code = 151
+                   and    status = 2
+                   and    step_no = -1
+                   and    tran_type = 20
+                   and    tran_dt >= trunc(sysdate)-7 
+                   order by id desc) 
+         loop
+            update request_log 
+            set    status=0, step_no=0
+            where  id = i.id;
+            exit;
+         end loop;
+      exception
+         when no_data_found then null;
+         when too_many_rows then null;
+      end;
    elsif (p_trantype = 9) then
       p_extra_o_1 := vServiceId;
       p_extra_o_2 := '';
