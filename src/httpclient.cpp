@@ -24,8 +24,8 @@ bool HttpClient::_global_init = (0 == curl_global_init(CURL_GLOBAL_ALL))
 
 /*============================================================================*/
 
-HttpClient::HttpClient(char const* cert_file) :
-    _out_buf(""), _err_buf(""), _cert_file(cert_file)
+HttpClient::HttpClient(char const* cert_path) :
+    _out_buf(""), _err_buf(""), _cert_path(cert_path)
 {
 }
 
@@ -63,7 +63,9 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
         }
 
         if (strncasecmp(url, "https", 5) == 0) {
-            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
+            curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -119,7 +121,9 @@ short HttpClient::httpPost(char const* url, char const* fields,
         }
 
         if (strncasecmp(url, "https", 5) == 0) {
-            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
+            curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -181,7 +185,9 @@ short HttpClient::httpPost(char const* url, char const* content,
         }
 
         if (strncasecmp(url, "https", 5) == 0) {
-            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
+            curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
