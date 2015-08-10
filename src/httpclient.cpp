@@ -66,6 +66,7 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
             curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -124,6 +125,7 @@ short HttpClient::httpPost(char const* url, char const* fields,
             curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -188,6 +190,7 @@ short HttpClient::httpPost(char const* url, char const* content,
             curl_easy_setopt(conn, CURLOPT_CAPATH, _cert_path.c_str());
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(conn, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(conn, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
