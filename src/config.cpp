@@ -68,6 +68,7 @@ int Config::_nsn_port = 0;
 std::string Config::_nsn_name = "";
 std::string Config::_nsn_user = "";
 std::string Config::_nsn_pass = "";
+std::string Config::_nsn_cert = "";
 
 int Config::_bypass_ards = 0;
 
@@ -212,6 +213,9 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "nsn_pass", buf, sizeof(buf));
         _nsn_pass = buf;
+
+        cfg_getval(&cfg, "", "nsn_cert", buf, sizeof(buf));
+        _nsn_cert = buf;
 
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);

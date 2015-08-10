@@ -347,7 +347,7 @@ int nf_deprovision (const char* msisdn, const char* service_id)
 float nsn_getBalance(const char *msisdn)
 {
     float balance = 0;
-    HttpClient hc;
+    HttpClient hc(Config::getNsnCert());
     std::string _msisdn(msisdn);
     std::string req = "<?xml version='1.0' encoding='UTF-8'?>\n"
                       "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>\n"

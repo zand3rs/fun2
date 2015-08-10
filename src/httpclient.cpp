@@ -24,7 +24,8 @@ bool HttpClient::_global_init = (0 == curl_global_init(CURL_GLOBAL_ALL))
 
 /*============================================================================*/
 
-HttpClient::HttpClient() : _out_buf(""), _err_buf("")
+HttpClient::HttpClient(char const* cert_file) :
+    _out_buf(""), _err_buf(""), _cert_file(cert_file)
 {
 }
 
@@ -59,6 +60,10 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
         if (timeout_sec > 0) {
             curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
             curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
+        }
+
+        if (strncasecmp(url, "https", 5) == 0) {
+            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -111,6 +116,10 @@ short HttpClient::httpPost(char const* url, char const* fields,
         if (timeout_sec > 0) {
             curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
             curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
+        }
+
+        if (strncasecmp(url, "https", 5) == 0) {
+            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
@@ -169,6 +178,10 @@ short HttpClient::httpPost(char const* url, char const* content,
         if (timeout_sec > 0) {
             curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
             curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
+        }
+
+        if (strncasecmp(url, "https", 5) == 0) {
+            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert_file.c_str());
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);

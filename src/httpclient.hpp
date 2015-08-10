@@ -26,7 +26,7 @@
 class HttpClient {
 
     public:
-        HttpClient();
+        HttpClient(char const* cert_file = "");
         ~HttpClient();
 
         //----------------------------------------------------------------------
@@ -47,6 +47,7 @@ class HttpClient {
     private:
         std::string _out_buf;
         std::string _err_buf;
+        std::string _cert_file;
 
         static bool _global_init;
         static size_t _writer(void *ptr, size_t size, size_t nmemb, void *stream);

@@ -149,6 +149,9 @@ class Config {
         static const char* getNsnPass() {
             return _nsn_pass.c_str();
         }
+        static const char* getNsnCert() {
+            return _nsn_cert.c_str();
+        }
 
         static int bypassARDS() {
             return _bypass_ards;
@@ -228,6 +231,7 @@ class Config {
         static std::string _nsn_name;
         static std::string _nsn_user;
         static std::string _nsn_pass;
+        static std::string _nsn_cert;
 
         static int _bypass_ards;
 
