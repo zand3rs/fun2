@@ -360,8 +360,13 @@ float nsn_getBalance(const char *msisdn)
                       "  </ns1:BalanceInquiry>\n"
                       "</soapenv:Body>\n"
                       "</soapenv:Envelope>\n";
+    char const* headers[] = {
+        "Content-Type: application/soap+xml; charset=utf-8",
+        "Authorization: Basic ZnVuMl91c2VyOlBhc3N3b3JkMTIzNA==",
+        "SOAPAction: RegularRecharge"
+    };
 
-    int res_code = hc.httpPost(Config::getNsnUrl(), req.c_str(), "text/xml", Config::getNsnTimeoutSec());
+    int res_code = hc.httpPost(Config::getNsnUrl(), req.c_str(), headers, Config::getNsnTimeoutSec());
 
     if (200 == res_code) {
         const char* body = hc.getResponseBody();

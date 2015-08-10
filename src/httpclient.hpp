@@ -36,6 +36,8 @@ class HttpClient {
                 unsigned short timeout_sec = 0);
         short httpPost(char const* url, char const* content,
                 char const* content_type, unsigned short timeout_sec = 0);
+        short httpPost(char const* url, char const* content,
+                char const* headers[], unsigned short timeout_sec = 0);
 
         char const* getResponseBody() const {
             return _out_buf.c_str();
