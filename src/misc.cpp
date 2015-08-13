@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sstream>
+#include <iterator>
+
 #include "global.hpp"
 #include "config.hpp"
 #include "sysmsg.hpp"
@@ -381,8 +384,11 @@ float nsn_getBalance(const char *msisdn)
         }
     }
 
-    LOG_INFO("%s: url: %s, req: %s, res_code: %d, res_body: %s, res_error: %s, balance: %0.2f", __func__,
-            Config::getNsnUrl(), req.c_str(), res_code, hc.getResponseBody(), hc.getError(), balance);
+    std::ostringstream osheaders;
+    std::copy(headers.begin(), headers.end(), std::ostream_iterator<std::string>(osheaders, ";"));
+
+    LOG_INFO("%s: url: %s, headers: %s, req: %s, res_code: %d, res_body: %s, res_error: %s, balance: %0.2f", __func__,
+            Config::getNsnUrl(), osheaders.str().c_str(), req.c_str(), res_code, hc.getResponseBody(), hc.getError(), balance);
 
     return balance;
 }
