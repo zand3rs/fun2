@@ -29,6 +29,7 @@
 #include "httpclient.hpp"
 #include "httputils.hpp"
 #include "nsn.hpp"
+#include "base64.hpp"
 
 /*============================================================================*/
 
@@ -347,7 +348,7 @@ int nf_deprovision (const char* msisdn, const char* service_id)
 float nsn_getBalance(const char *msisdn)
 {
     float balance = 0;
-    HttpClient hc(Config::getNsnCert());
+    HttpClient hc(Config::getNsnKey(), Config::getNsnCert(), Config::getNsnCacert());
     std::string _msisdn(msisdn);
     std::string req = "<?xml version='1.0' encoding='UTF-8'?>\n"
                       "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>\n"
@@ -360,11 +361,14 @@ float nsn_getBalance(const char *msisdn)
                       "  </ns1:BalanceInquiry>\n"
                       "</soapenv:Body>\n"
                       "</soapenv:Envelope>\n";
-    char const* headers[] = {
-        "Content-Type: application/soap+xml; charset=utf-8",
-        "Authorization: Basic ZnVuMl91c2VyOlBhc3N3b3JkMTIzNA==",
-        "SOAPAction: RegularRecharge"
-    };
+    std::string user_pass = Config::getNsnUser();
+                user_pass.append(":");
+                user_pass.append(Config::getNsnPass());
+    std::string auth = "Authorization: Basic " + base64_encode(user_pass.c_str(), user_pass.length());
+    std::vector<string> headers;
+                        headers.push_back(auth);
+                        headers.push_back("Content-Type: application/soap+xml; charset=utf-8");
+                        headers.push_back("SOAPAction: RegularRecharge");
 
     int res_code = hc.httpPost(Config::getNsnUrl(), req.c_str(), headers, Config::getNsnTimeoutSec());
 

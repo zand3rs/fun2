@@ -29,6 +29,7 @@ fun2_response_SOURCES = \
                        fun2_response.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        oradb.cpp oradb.hpp \
@@ -47,6 +48,7 @@ fun2_notification_SOURCES = \
                        fun2_notification.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        oradb.cpp oradb.hpp \
@@ -68,6 +70,7 @@ fun2_transaction_SOURCES = \
                        geoprobe_handler.cpp geoprobe_handler.hpp \
                        global.cpp global.hpp \
                        hlr.cpp hlr.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        misc.cpp misc.hpp \
@@ -95,6 +98,7 @@ fun2_broadcast_SOURCES = \
                        fun2_broadcast.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        misc.cpp misc.hpp \

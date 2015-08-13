@@ -53,12 +53,12 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_fun2_broadcast_OBJECTS = fun2_broadcast.$(OBJEXT) config.$(OBJEXT) \
-	global.$(OBJEXT) httpclient.$(OBJEXT) httputils.$(OBJEXT) \
-	misc.$(OBJEXT) nsn.$(OBJEXT) oradb.$(OBJEXT) \
-	oradbdailybal.$(OBJEXT) oradbbroadcast.$(OBJEXT) \
-	oradbresponse.$(OBJEXT) oradbsimple.$(OBJEXT) \
-	broadcast_handler.$(OBJEXT) signal_handler.$(OBJEXT) \
-	sysmsg.$(OBJEXT)
+	global.$(OBJEXT) base64.$(OBJEXT) httpclient.$(OBJEXT) \
+	httputils.$(OBJEXT) misc.$(OBJEXT) nsn.$(OBJEXT) \
+	oradb.$(OBJEXT) oradbdailybal.$(OBJEXT) \
+	oradbbroadcast.$(OBJEXT) oradbresponse.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) broadcast_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
 fun2_broadcast_OBJECTS = $(am_fun2_broadcast_OBJECTS)
 fun2_broadcast_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_default_unli_OBJECTS = fun2_default_unli.$(OBJEXT) \
@@ -73,8 +73,8 @@ am_fun2_geoprobe_OBJECTS = fun2_geoprobe.$(OBJEXT) ecsv.$(OBJEXT) \
 fun2_geoprobe_OBJECTS = $(am_fun2_geoprobe_OBJECTS)
 fun2_geoprobe_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_notification_OBJECTS = fun2_notification.$(OBJEXT) \
-	config.$(OBJEXT) global.$(OBJEXT) httpclient.$(OBJEXT) \
-	httputils.$(OBJEXT) oradb.$(OBJEXT) \
+	config.$(OBJEXT) global.$(OBJEXT) base64.$(OBJEXT) \
+	httpclient.$(OBJEXT) httputils.$(OBJEXT) oradb.$(OBJEXT) \
 	oradbnotification.$(OBJEXT) oradbsimple.$(OBJEXT) \
 	notification_handler.$(OBJEXT) signal_handler.$(OBJEXT)
 fun2_notification_OBJECTS = $(am_fun2_notification_OBJECTS)
@@ -92,21 +92,22 @@ am_fun2_request_OBJECTS = fun2_request.$(OBJEXT) config.$(OBJEXT) \
 fun2_request_OBJECTS = $(am_fun2_request_OBJECTS)
 fun2_request_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_response_OBJECTS = fun2_response.$(OBJEXT) config.$(OBJEXT) \
-	global.$(OBJEXT) httpclient.$(OBJEXT) httputils.$(OBJEXT) \
-	oradb.$(OBJEXT) oradbresponse.$(OBJEXT) oradbsimple.$(OBJEXT) \
-	response_handler.$(OBJEXT) signal_handler.$(OBJEXT)
+	global.$(OBJEXT) base64.$(OBJEXT) httpclient.$(OBJEXT) \
+	httputils.$(OBJEXT) oradb.$(OBJEXT) oradbresponse.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) response_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT)
 fun2_response_OBJECTS = $(am_fun2_response_OBJECTS)
 fun2_response_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_transaction_OBJECTS = fun2_transaction.$(OBJEXT) \
 	config.$(OBJEXT) ccb_handler.$(OBJEXT) \
 	geoprobe_handler.$(OBJEXT) global.$(OBJEXT) hlr.$(OBJEXT) \
-	httpclient.$(OBJEXT) httputils.$(OBJEXT) misc.$(OBJEXT) \
-	nsn.$(OBJEXT) ods_handler.$(OBJEXT) oradb.$(OBJEXT) \
-	oradbccb.$(OBJEXT) oradbgeoprobe.$(OBJEXT) oradbods.$(OBJEXT) \
-	oradbrequest.$(OBJEXT) oradbresponse.$(OBJEXT) \
-	oradbnotification.$(OBJEXT) oradbsimple.$(OBJEXT) \
-	transaction_handler.$(OBJEXT) signal_handler.$(OBJEXT) \
-	sysmsg.$(OBJEXT)
+	base64.$(OBJEXT) httpclient.$(OBJEXT) httputils.$(OBJEXT) \
+	misc.$(OBJEXT) nsn.$(OBJEXT) ods_handler.$(OBJEXT) \
+	oradb.$(OBJEXT) oradbccb.$(OBJEXT) oradbgeoprobe.$(OBJEXT) \
+	oradbods.$(OBJEXT) oradbrequest.$(OBJEXT) \
+	oradbresponse.$(OBJEXT) oradbnotification.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) transaction_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
 fun2_transaction_OBJECTS = $(am_fun2_transaction_OBJECTS)
 fun2_transaction_DEPENDENCIES = ../libfuc/lib/libfuc.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -242,6 +243,7 @@ fun2_response_SOURCES = \
                        fun2_response.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        oradb.cpp oradb.hpp \
@@ -260,6 +262,7 @@ fun2_notification_SOURCES = \
                        fun2_notification.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        oradb.cpp oradb.hpp \
@@ -281,6 +284,7 @@ fun2_transaction_SOURCES = \
                        geoprobe_handler.cpp geoprobe_handler.hpp \
                        global.cpp global.hpp \
                        hlr.cpp hlr.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        misc.cpp misc.hpp \
@@ -308,6 +312,7 @@ fun2_broadcast_SOURCES = \
                        fun2_broadcast.cpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       base64.cpp base64.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
                        misc.cpp misc.hpp \
@@ -453,6 +458,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/broadcast_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ccb_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
