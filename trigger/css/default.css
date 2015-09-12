@@ -1,0 +1,277 @@
+@charset "utf-8";
+body {
+	margin:0;
+	padding:0;
+}
+form {
+	margin:0;
+	padding:0;
+}
+#topinner {
+	background-color: #fff;
+	padding-bottom:40px;
+}
+#TopX {
+	background-color: #fff;
+	background-position: 0px 70px;
+	padding-bottom:40px;
+}
+#bodyinner {
+	background-color: #f1f1f1;
+	padding-bottom:40px;
+}
+#Splash {
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+}
+#intro {
+	font-family: Arial;
+	font-size: 10pt;
+	color: #006600;
+	margin-left: 20px;
+}
+#container {
+	float: left;
+}
+#header {
+	float: left;
+	padding-top:28px;
+	margin-bottom: 10px;
+}
+#innerheader {
+	float: left;
+}
+#titlehead {
+	margin-left:20px;
+	font-family: Arial;
+	font-size: 18pt;
+	font-style: italic;
+	color: #666;
+}
+#box1 {
+	float: left;
+	width: 534px;
+}
+#box1 img {
+	border-style:none;
+}
+#box2 {
+	float: left;
+	width: 246px;
+	padding-top: 80px;
+}
+#box2 img {
+	border-style:none;
+}
+#signin {
+	height: 153px;
+	padding-top: 35px;
+	font-family: Tahoma;
+	color: #000000;
+	font-size: 10pt;
+	padding-left: 40px;
+}
+#footer {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #eaeaea;
+	background-color: #FFFFFF;
+}
+#content {
+	float: left;
+	background-color: #FFFFFF;
+	font-family: Arial;
+}
+#X3footHolder {
+	height: 30px;
+}
+#X3footL {
+	font-size: 12px;
+	color: #99cc66;
+	padding-bottom: 8px;
+}
+#X3footL a {
+	color: #99cc66;
+}
+#X3footL a:hover {
+	color: #99FF66;
+}
+#X3Copy {
+	font-family: Verdana;
+	color: #99cc66;
+	font-size: 11px;
+	margin-top: 5px;
+	height: 50px;
+	padding-bottom:2px;
+}
+#table1 tr {
+	vertical-align:top;
+}
+#table1 tr div {
+	margin-bottom:8px;
+}
+
+#tabler {
+	border: #bfdfff 1px solid;
+}
+#tabler tr {
+	vertical-align:top;
+}
+#tabler tr div {
+	margin-bottom:8px;
+}
+#tabler td {
+	border-right: 1px;
+	border-right-style:solid;
+	border-right-color: #CCC;
+	border-bottom: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCC;
+}
+#tabler .head {
+	font-weight: bold;
+	border-right: 1px;
+	border-right-style:solid;
+	border-right-color: #999;
+	border-bottom: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #999;
+	background-color: #CCC;
+	color: #333;
+}
+#desc {
+	margin-bottom: 8px;
+	color:#333333;
+	font-size: 10pt;
+	margin-left: 20px;
+}
+
+#subhead {
+	color: #00CC00;
+	font-size: 14pt;
+	margin-left: 20px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #32baea;
+	height: 25px;
+	width: 1000px;
+}
+#subhead2 {
+	color: #32baea;
+	font-size: 14pt;
+	margin-left: 20px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #32baea;
+	height: 25px;
+	padding-left: 8px;
+}
+#body1 {
+	float: left;
+	width: 200px;
+}
+#body2 {
+	float: left;
+	width: 580px;
+}
+
+#errorbox{
+	color: #32baea;
+	font-size: 14pt;
+	margin-left: 12px;
+	font-weight: italic;
+	color: #aaa0a0;
+	margin-bottom: 10px;
+        width:  500px;
+	height: 50px;
+	padding-left: 8px;
+}
+
+#bluboxmenu {
+	font-family:Arial;
+	background-color: #32baea;
+	margin-bottom:8px;
+	height: 30px;
+	margin-left: 20px;
+}
+#bluboxmenu ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+	
+}
+#bluboxmenu li {
+	float: left;
+	margin-right:15px;
+	margin-top: 5px;
+	margin-left: 8px;
+	
+}
+#bluboxmenu li img {
+	border: 1px solid #baddf0;
+}
+#bluboxmenu a {
+	color: #FFFFFF;
+	
+}
+#bluboxmenu a:hover {
+	color: #000066;
+}
+
+
+#dropmenudiv{
+position:absolute;
+border:1px solid #ffffff;
+border-bottom-width: 0;
+font:normal 12px Verdana;
+line-height:18px;
+z-index:100;
+}
+
+#dropmenudiv a{
+width: 100%;
+display: block;
+text-indent: 3px;
+border-bottom: 1px solid #ffffff;
+padding: 1px 0;
+text-decoration: none;
+font-weight: normal;
+color: #FFFFFF;
+}
+
+#dropmenudiv a:hover{ /*hover background color*/
+background-color: #FFCC99;
+}
+
+
+.bhref{
+border-bottom-width: 0;
+font:normal 12px Verdana;
+text-decoration: none;
+color: white;
+}
+
+.bhref a:hover{ /*hover background color*/
+background-color: #FFCC99;
+}
+
+
+
+.hhref {
+	font-weight: bold;
+	background-color: #e5f2ff;
+	color: #2291b8;
+	text-decoration: hover;
+}
+
+.hhref a:hover{ /*hover background color*/
+       background-color: #FFCC99;
+}
+
+

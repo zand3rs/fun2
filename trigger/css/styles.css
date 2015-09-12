@@ -1,0 +1,238 @@
+@charset "utf-8";
+
+body {
+	font-family: Tahoma, Arial;
+	font-size:12px;
+	margin:20px;
+}
+#logo {
+	margin-bottom:10px;
+}
+#nav  {
+	background-image:url(http://10.226.153.87:8089/trigger/images/navbg.jpg);
+	background-repeat:repeat-x;
+	margin-bottom:8px;
+}
+#nav div {
+	padding:10px;
+	background-image:url(http://10.226.153.87:8089/trigger/images/navbg.jpg);
+	background-repeat:repeat-x;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #999;
+}
+#nav div:hover {
+	background-image:url(http://10.226.153.87:8089/trigger/images/navbgon.jpg);
+	background-repeat:repeat-x;
+	border-right: #012b5d solid 1px;
+	cursor:pointer;
+}
+#nav a:link {
+	color: white;
+	font-weight:normal;
+	text-decoration:none;
+}
+#title {
+	color: #999;
+	font-size:26px;
+	font-family: Calibri, Arial, Tahoma;
+	text-decoration:none;
+	padding-left:15px;
+	padding-bottom:3px;
+	border-bottom: #194779 solid 3px;
+	margin-bottom:20px;	
+}
+#titledataentry {
+	color: #999;
+	font-size:26px;
+	font-family: Calibri, Arial, Tahoma;
+	text-decoration:none;
+	padding-left:15px;
+	padding-bottom:3px;
+	border-bottom: #194779 solid 3px;
+	margin-bottom:8px;	
+}
+#wrapper {
+	padding:20px;
+}
+#wrapper2 {
+	padding:20px;
+	border:#CCCCCC 1px solid;
+}
+#wrapper3 {
+	padding-left:20px;
+	padding-top:10px;
+	padding-bottom:10px;
+	font-size:14px;
+	border: #bcce91 1px solid;
+	background-color:#CCC;
+	margin-bottom:8px;
+}
+#tip {
+	float:right;
+	height:auto;
+	width: 200px;
+	padding:20px;
+}
+#tablestyle {
+	padding:20px;
+}
+#tablestyle .label {
+	padding:8px;
+	font-size:14px;
+	color:#666;
+	background-image:url(http://10.226.153.87:8089/trigger/images/table_lable.jpg);
+	background-repeat:repeat-x;
+	border-right: #FFFFFF 1px solid;
+}
+#tablestyle .child {
+	padding:8px;
+	font-size:14px;
+	color:#333333;
+	background-image:url(http://10.226.153.87:8089/trigger/images/table_child.jpg);
+	background-repeat:repeat-x;
+	border-right: #FFFFFF 1px solid;
+}
+#tablestyle .child a {
+	font-size:14px;
+	color:#333333;
+}
+#buttonh {
+	padding:20px;
+}
+#buttonh td{
+	padding-right:5px;
+}
+#buttonh input {
+	padding-right:5px;
+	padding-left:5px;
+}
+#copyright {
+	padding:20px;
+	font-size:11px;
+	color:#666666;
+}
+#tablestyle2 {
+	width:100%;
+}
+#tablestyle2 .label {
+	vertical-align:top;
+	padding:8px;
+	font-size:14px;
+	color:#999;
+	background-image:url(http://10.226.153.87:8089/trigger/images/table_lable.jpg);
+	background-repeat:repeat-x;
+	border-right: #FFFFFF 1px solid;
+}
+#tablestyle2 .child {
+	vertical-align:top;
+	padding:8px;
+	font-size:14px;
+	color:#333333;
+	background-image:url(http://10.226.153.87:8089/trigger/images/table_child.jpg);
+	background-repeat:repeat-x;
+	border-right: #FFFFFF 1px solid;
+}
+#tablestyle2 .child:hover {
+	vertical-align:top;
+	padding:8px;
+	font-size:14px;
+	color:#333333;
+	background-image:url(http://10.226.153.87:8089/trigger/images/table_focus.jpg);
+	background-repeat:repeat-x;
+	border-right: #FFFFFF 1px solid;
+}
+#tablestyle3 td {
+	padding:5px;
+}
+#rightbutton input {
+
+	width: 100px;
+}
+#tablestyle2 .child input {
+
+	width: 200px;
+}
+#tablestyle2 .child textarea {
+
+	width: 200px;
+}
+#whitespace{
+	background-color:#FFFFFF;
+	height:10px;
+}
+
+
+
+
+#dropmenudiv{
+position:absolute;
+border:1px solid #ffffff;
+border-bottom-width: 0;
+font:normal 12px Verdana;
+line-height:18px;
+z-index:100;
+}
+
+#dropmenudiv a{
+width: 100%;
+display: block;
+text-indent: 3px;
+border-bottom: 1px solid #ffffff;
+padding: 1px 0;
+text-decoration: none;
+font-weight: normal;
+color: #FFFFFF;
+}
+
+#dropmenudiv a:hover { /*hover background color*/
+	background-color: #999;
+}
+
+
+.bhref{
+border-bottom-width: 0;
+font:normal 12px Verdana;
+text-decoration: hover;
+color: #FFFFFF;
+}
+
+.bhref a:hover { /*hover background color*/
+}
+
+
+.bhref a:visited { /*hover background color*/
+color: #FFFFFF;
+}
+
+
+
+.hhref {
+	font-weight: bold;
+	color: #333333;
+	text-decoration: hover;
+}
+
+.hhref a:hover { /*hover background color*/
+}
+
+.hhref a:visited { /*hover background color*/
+color: #FFFFFF;
+}
+
+
+#errorbox {
+	color: #ea1500;
+	font-size:20px;
+	font-family: Calibri, Arial, Tahoma;
+	text-decoration:none;
+	padding-left:15px;
+	padding-bottom:3px;
+	margin-bottom:20px;
+}
+
+.FLLeft { float:left }
+.W30 { width:50%;padding:2px; }
+.W70 { width: 45%; padding: 2px;}
+.CLR { clear:both }
+.Fit {width:100%}
