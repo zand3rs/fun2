@@ -354,7 +354,7 @@ float nsn_getBalance(const char *msisdn)
     HttpClient hc(Config::getNsnKey(), Config::getNsnCert(), Config::getNsnCacert());
     std::string _msisdn(msisdn);
     std::string req = "<?xml version='1.0' encoding='UTF-8'?>\n"
-                      "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>\n"
+                      "<soapenv:Envelope xmlns:soapenv='http://www.w3.org/2003/05/soap-envelope'>\n"
                       "<soapenv:Header/>\n"
                       "<soapenv:Body>\n"
                       "  <ns1:BalanceInquiry xmlns:ns1='http://www.globe.com/warcraft/wsdl/replenishment/'>\n"
