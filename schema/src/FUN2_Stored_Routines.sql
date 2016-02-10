@@ -2053,30 +2053,31 @@ begin
    end if;
 
    -- GROAM ON - validate start date
-   if (p_trantype = 8) and (p_extra_i_1 is not null) then
-      begin
-         if length(p_extra_i_1) < 10 then
-            nRetr  := 104;
-            p_retr := nRetr;
-            sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-            return;
-         end if;
-
-         dActivation := to_date(p_extra_i_1, 'MM/DD/YYYY');
-         if dActivation < trunc(sysdate) then
-            nRetr  := 105;
-            p_retr := nRetr;
-            sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-            return;
-         end if;
-      exception
-         when others then
-            nRetr  := 104;
-            p_retr := nRetr;
-            sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-            return;
-      end;
-   end if;
+   -- Remove GROAM ON pre activation date (CR 2016-02-10)
+   -- if (p_trantype = 8) and (p_extra_i_1 is not null) then
+   --    begin
+   --       if length(p_extra_i_1) < 10 then
+   --          nRetr  := 104;
+   --          p_retr := nRetr;
+   --          sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
+   --          return;
+   --       end if;
+   -- 
+   --       dActivation := to_date(p_extra_i_1, 'MM/DD/YYYY');
+   --       if dActivation < trunc(sysdate) then
+   --          nRetr  := 105;
+   --          p_retr := nRetr;
+   --          sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
+   --          return;
+   --       end if;
+   --    exception
+   --       when others then
+   --          nRetr  := 104;
+   --          p_retr := nRetr;
+   --          sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
+   --          return;
+   --    end;
+   -- end if;
 
    -- GROAM ON and GROAM EXTEND - validate duration
    if (p_trantype in (8,10)) and (p_extra_i_2 is not null) and (nvl(p_ref_id, 0) = 0) then
@@ -2133,11 +2134,14 @@ begin
       end if;
 
       -- GROAM ON - validate activation date
+      -- Remove GROAM ON pre activation date (CR 2016-02-10)
       if (p_trantype = 8) and (dActivation is null) then
-         nRetr  := 104;
-         p_retr := nRetr;
-         sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-         return;
+         -- manually set dActivation to 6 days for pre-act checking
+         dActivation := trunc(sysdate)+ (nCustPre_act_day-6);
+         -- nRetr  := 104;
+         -- p_retr := nRetr;
+         -- sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
+         -- return;
       end if;
 
       -- get customer type info
@@ -2172,12 +2176,13 @@ begin
       end if;
 
       -- GROAM ON - validate past pre act days
-      if (p_trantype = 8) and (dActivation > (trunc(sysdate)+nCustPre_act_day)) then
-         nRetr  := 105;
-         p_retr := nRetr;
-         sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
-         return;
-      end if;
+      -- Remove GROAM ON pre activation date (CR 2016-02-10)
+      -- if (p_trantype = 8) and (dActivation > (trunc(sysdate)+nCustPre_act_day)) then
+      --    nRetr  := 105;
+      --    p_retr := nRetr;
+      --    sp_logger('INIT' , 'END => p_trantype :' || to_char(p_trantype) || ' p_msisdn:' || p_msisdn || ' p_req_id:' || to_char(p_req_id) || ' p_ref_id:' || to_char(p_ref_id) || ' p_retr:' || to_char(p_retr) || ' p_extra_o_1: ' || p_extra_o_1 || ', p_extra_o_2:' || p_extra_o_2 || ', p_extra_o_3:' || p_extra_o_3);
+      --    return;
+      -- end if;
 
       -- GROAM ON
       if (p_trantype = 8) and (sf_is_roamer_info_imsi(p_msisdn, dSubsActDt, dSubsDeactDt, nSubsHotDur, nSubsInHot, dSubsHotDt, vStatus, vIMSI ) > 0) then
@@ -4141,17 +4146,19 @@ begin
    if (p_trantype = 8) then
 
       -- check if process is pre activation
+      dActivation := NULL;
       bPreAct := FALSE;
-      if p_extra_i_1 is not null then
-         begin
-            dPreAct := to_date(p_extra_i_1, 'MM/DD/YYYY');
-            if dPreAct > trunc(sysdate) then
-               bPreAct := TRUE;
-            end if;
-         exception
-            when others then null;
-         end;
-      end if;
+      -- Remove GROAM ON pre activation date (CR 2016-02-10)
+      -- if p_extra_i_1 is not null then
+      --    begin
+      --       dPreAct := to_date(p_extra_i_1, 'MM/DD/YYYY');
+      --       if dPreAct > trunc(sysdate) then
+      --          bPreAct := TRUE;
+      --       end if;
+      --    exception
+      --       when others then null;
+      --    end;
+      -- end if;
 
       if not bPreAct then
          -- get customer type info
