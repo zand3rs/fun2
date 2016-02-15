@@ -48,6 +48,7 @@ class Global {
         static rc_t* getNextRC(const int step_no);
         static int getNextStepNo(const int step_no);
         static int getNextStepNo(const int step_no, const int tran_type);
+        static int getNextStepNo(const int step_no, const int tran_type, const int status);
 
         static int getRCSize() {
             return (int)_rc_map.size();

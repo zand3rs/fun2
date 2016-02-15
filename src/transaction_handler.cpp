@@ -431,6 +431,8 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 request.duration = strtol(token, NULL, 10);
                             }
                         }
+                        //-- set status to successful
+                        request.status = TXN_STATUS_SUCCESSFUL;
                     } else if (! strcasecmp(token, "OFF")) {
                         request.tran_type = TRAN_TYPE_GROAM_OFF;
                     } else if (! strcasecmp(token, "EXTEND")) {
@@ -701,7 +703,7 @@ static void init_tran (OraDBRequest& conn, request_t& request)
     }
 
     int last_step_no = request.step_no;
-    int next_step_no = Global::getNextStepNo(last_step_no, request.tran_type);
+    int next_step_no = Global::getNextStepNo(last_step_no, request.tran_type, request.status);
 
     if (TXN_STATUS_PROCESSED == request.status) {
         int itStatus = conn.initTran(&request);
