@@ -175,7 +175,7 @@ int OraDBRequest::selectBind()
         ", tran_type, cluster_node, customer_type, request_origin, ref_id, imsi"
         ", activation_date, deactivation_date, duration, gsm_num, result_code, silent"
         ", nsn_flag from request_log"
-        " where cluster_node = :cluster_node and step_no = :step_no and status = :status"
+        " where tran_dt > trunc(sysdate-3) and cluster_node = :cluster_node and step_no = :step_no and status = :status"
         " and rownum < :limit order by id";
 
     _sth_select = SQLO_STH_INIT;
