@@ -1297,6 +1297,10 @@ static bool pending_tran (request_t& request)
 
                         //-- modify msg for enrollment_type
                         snprintf(request.msg, sizeof(request.msg), "ACTIVATION");
+
+                        //-- set status to successful
+                        request.status = TXN_STATUS_SUCCESSFUL;
+
                         retr = true;
 #if 0
                     } else if (! strcasecmp(token, "OFF")) {
@@ -1417,6 +1421,9 @@ void* raw_handler (void* arg)
                     request.id, request.msg, request.a_no, request.b_no, request.tran_type, request.request_origin);
 
             if (pending_tran(request)) {
+                if (conn.updateRequest(&request) < 0) {
+                    LOG_ERROR("%s: Unable to update request id: %d, status: %d.", __func__, request.id, request.status);
+                }
                 if (conn.insertKeywordRequest(&request) < 0) {
                     LOG_ERROR("%s: %d: Unable to insert pending request id: %d.", __func__, proc_id, request.id);
                 }
