@@ -210,11 +210,4 @@ int Global::getNextStepNo(const int step_no, const int tran_type)
     return retr;
 }
 
-/*----------------------------------------------------------------------------*/
-
-int Global::getNextStepNo(const int step_no, const int tran_type, const int status)
-{
-    return (TXN_STATUS_SUCCESSFUL == status) ? -1 : getNextStepNo(step_no, tran_type);
-}
-
 /******************************************************************************/
