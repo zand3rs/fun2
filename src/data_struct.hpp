@@ -339,6 +339,14 @@ typedef struct request_t {
     char service_id[32];
     char others[256];
 
+#define svc_txid         CSP_Txid
+#define svc_txcode       msg_id
+#define svc_msisdn       gsm_num
+#define svc_soc          service_id
+#define svc_type         customer_type
+#define svc_bill_cycle   exptime
+#define svc_eff_date     expdate
+
     request_t () {
     }
     request_t (const request_t& right) {

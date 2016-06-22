@@ -90,7 +90,7 @@ am_fun2_request_OBJECTS = fun2_request.$(OBJEXT) config.$(OBJEXT) \
 	request_handler.$(OBJEXT) signal_handler.$(OBJEXT) \
 	sysmsg.$(OBJEXT)
 fun2_request_OBJECTS = $(am_fun2_request_OBJECTS)
-fun2_request_DEPENDENCIES = ../libfuc/lib/libfuc.a
+fun2_request_DEPENDENCIES = ../ezxml/libezxml.a ../libfuc/lib/libfuc.a
 am_fun2_response_OBJECTS = fun2_response.$(OBJEXT) config.$(OBJEXT) \
 	global.$(OBJEXT) base64.$(OBJEXT) httpclient.$(OBJEXT) \
 	httputils.$(OBJEXT) oradb.$(OBJEXT) oradbresponse.$(OBJEXT) \
@@ -234,6 +234,7 @@ fun2_request_SOURCES = \
                        sysmsg.cpp sysmsg.hpp
 
 fun2_request_LDADD = \
+             ../ezxml/libezxml.a \
              ../libfuc/lib/libfuc.a \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@

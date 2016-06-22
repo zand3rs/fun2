@@ -88,6 +88,10 @@ class HttpRequest : public Http {
             return _service.c_str();
         }
 
+        const char* getBody() {
+            return _body.c_str();
+        }
+
         const char* getParam(const char* param) {
             return _form_value_map[std::string(param)].c_str();
         }

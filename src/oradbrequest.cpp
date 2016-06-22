@@ -44,6 +44,9 @@ int OraDBRequest::_do_bind()
     if ((res = insertKeywordBind()) < 0)
         return res;
 
+    if ((res = processMlpBind()) < 0)
+        return res;
+
     return res;
 }
 
@@ -797,6 +800,58 @@ int OraDBRequest::insertKeywordBind()
                 || sqlo_bind_by_name(_sth_insert_kw, ":enrollment_type", SQLOT_STR, &_request.msg, sizeof(_request.msg), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for INSERT_KEYWORD_REQUEST statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
+
+/*============================================================================*/
+
+int OraDBRequest::processMlp(const request_t* request)
+{
+    memcpy(&_request, request, sizeof(request_t));
+
+    if (ora_force_execute(&_sth_process_mlp, 0, 1) < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE SP_PROCESS_MLP."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_process_mlp), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        processMlpBind();
+        return -1;
+    }
+    LOG_DEBUG("%s: retr: %d, msisdn: %s, transaction_code: %s, transaction_id: %s, bill_cycle: %s, type: %s, soc: %s, effdate: %s", __func__
+            , request->db_retr, request->svc_msisdn, request->svc_txcode, request->svc_txid, request->svc_bill_cycle
+            , request->svc_type, request->svc_soc, request->svc_eff_date);
+
+    return 0;
+}
+
+int OraDBRequest::processMlpBind()
+{
+    const char sql_stmt[] = "BEGIN"
+        " SP_PROCESS_MLP(:p_retr, :p_msisdn, :p_transaction_code, :p_transaction_id, :p_bill_cycle, :p_type, :p_soc, :p_effdate);"
+        " END;";
+
+    _sth_process_mlp = SQLO_STH_INIT;
+
+    if ((_sth_process_mlp = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for SP_PROCESS_MLP.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_process_mlp, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_msisdn", SQLOT_STR, &_request.svc_msisdn, sizeof(_request.svc_msisdn), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_transaction_code", SQLOT_STR, &_request.svc_txcode, sizeof(_request.svc_txcode), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_transaction_id", SQLOT_STR, &_request.svc_txid, sizeof(_request.svc_txid), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_bill_cycle", SQLOT_STR, &_request.svc_bill_cycle, sizeof(_request.svc_bill_cycle), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_type", SQLOT_STR, &_request.svc_type, sizeof(_request.svc_type), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_soc", SQLOT_STR, &_request.svc_soc, sizeof(_request.svc_soc), 0, 0)
+                || sqlo_bind_by_name(_sth_process_mlp, ":p_effdate", SQLOT_STR, &_request.svc_eff_date, sizeof(_request.svc_eff_date), 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for SP_PROCESS_MLP statement handle.", __func__);
         return -2;
     }
 

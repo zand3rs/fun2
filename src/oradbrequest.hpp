@@ -27,6 +27,7 @@ class OraDBRequest : public OraDB
         int usurfDeactivation(request_t* request);
 
         int insertKeywordRequest(const request_t* request);
+        int processMlp(const request_t* request);
 
     private:
         int _do_bind();
@@ -44,6 +45,7 @@ class OraDBRequest : public OraDB
         int usurfDeactivationBind();
 
         int insertKeywordBind();
+        int processMlpBind();
 
         sqlo_stmt_handle_t _sth_select;
         sqlo_stmt_handle_t _sth_insert;
@@ -58,6 +60,7 @@ class OraDBRequest : public OraDB
         sqlo_stmt_handle_t _sth_ud;
 
         sqlo_stmt_handle_t _sth_insert_kw;
+        sqlo_stmt_handle_t _sth_process_mlp;
 
         int _var_id;
         int _var_cluster_node;

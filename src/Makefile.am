@@ -20,6 +20,7 @@ fun2_request_SOURCES = \
                        sysmsg.cpp sysmsg.hpp
 
 fun2_request_LDADD = \
+             ../ezxml/libezxml.a \
              ../libfuc/lib/libfuc.a \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@
