@@ -215,8 +215,8 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include
-AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include
+AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
+AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
 fun2_request_SOURCES = \
                        data_struct.hpp \
                        fun2_request.cpp \

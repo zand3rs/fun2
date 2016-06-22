@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ROOTDIR="`pwd`"
+EZXMLDIR="ezxml"
 LIBFUCDIR="libfuc"
 FUN2RCDIR="fun2rc"
 SUBDIRS="$LIBFUCDIR $FUN2RCDIR"

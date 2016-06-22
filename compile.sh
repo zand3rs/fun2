@@ -1,15 +1,18 @@
 #!/bin/bash
 
 ROOTDIR="`pwd`"
+EZXMLDIR="ezxml"
 LIBFUCDIR="libfuc"
 FUN2RCDIR="fun2rc"
-SUBDIRS="$LIBFUCDIR $FUN2RCDIR"
+SUBDIRS="$LIBFUCDIR $EZXMLDIR $FUN2RCDIR"
 
 for SUBDIR in $SUBDIRS; do
     cd $SUBDIR
-    ./configure
-    if [ $? != 0 ]; then
-        exit 1
+    if [ -x "configure" ]; then
+        ./configure
+        if [ $? != 0 ]; then
+            exit 1
+        fi
     fi
     make
     if [ $? != 0 ]; then
