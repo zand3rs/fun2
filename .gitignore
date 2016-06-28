@@ -45,6 +45,7 @@ dist-install
 fun2_broadcast
 fun2_default_unli
 fun2_geoprobe
+fun2_mlp
 fun2_notification
 fun2_ods
 fun2_request
