@@ -2,6 +2,7 @@
 
 ROOTDIR="`pwd`"
 EZXMLDIR="ezxml"
+MXMLDIR="mxml"
 LIBFUCDIR="libfuc"
 FUN2RCDIR="fun2rc"
 SUBDIRS="$LIBFUCDIR $FUN2RCDIR"
