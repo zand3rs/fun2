@@ -33,21 +33,22 @@
 /*============================================================================*/
 
 const char* Http::responsePhrase[] = {
-    "INVALID", 
-    "OK", 
-    "Moved Permanently", 
-    "Found", 
-    "Unauthorized", 
-    "Forbidden", 
-    "Not Found", 
+    "INVALID",
+    "OK",
+    "Moved Permanently",
+    "Found",
+    "Bad Request",
+    "Unauthorized",
+    "Forbidden",
+    "Not Found",
     "Internal Server Error"
 };
 
 /*----------------------------------------------------------------------------*/
 
 const char* Http::contentTypeString[] = {
-    "text/html", 
-    "text/xml", 
+    "text/html",
+    "text/xml",
     "application/json",
     "application/x-www-form-urlencoded"
 };
@@ -68,17 +69,20 @@ const char* Http::getResponsePhrase(HttpResponseCode_t responseCode)
         case HTTPRESPONSECODE_302_FOUND:
             retr = responsePhrase [ 3 ];
             break;
-        case HTTPRESPONSECODE_401_UNAUTHORIZED:
+        case HTTPRESPONSECODE_400_BADREQUEST:
             retr = responsePhrase [ 4 ];
             break;
-        case HTTPRESPONSECODE_403_FORBIDDEN:
+        case HTTPRESPONSECODE_401_UNAUTHORIZED:
             retr = responsePhrase [ 5 ];
             break;
-        case HTTPRESPONSECODE_404_NOTFOUND:
+        case HTTPRESPONSECODE_403_FORBIDDEN:
             retr = responsePhrase [ 6 ];
             break;
-        case HTTPRESPONSECODE_500_INTERNALSERVERERROR:
+        case HTTPRESPONSECODE_404_NOTFOUND:
             retr = responsePhrase [ 7 ];
+            break;
+        case HTTPRESPONSECODE_500_INTERNALSERVERERROR:
+            retr = responsePhrase [ 8 ];
             break;
         default:
             retr = responsePhrase [ 0 ];
@@ -226,7 +230,7 @@ int HttpRequest::_parseHeaders(const char* buf)
         }
     }
 
-    return 0; 
+    return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -241,7 +245,7 @@ int HttpRequest::_parseBody(const char* buf)
 
     //std::cout <<  __func__ << ": _contentType=" << _contentType << ", _body" << std::endl << _body << std::endl;
 
-    return 0; 
+    return 0;
 }
 
 /*----------------------------------------------------------------------------*/
