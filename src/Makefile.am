@@ -1,5 +1,5 @@
-AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
-AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
+AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
+AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
 
 bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli fun2_mlp
 
@@ -171,7 +171,7 @@ fun2_mlp_SOURCES = \
                        signal_handler.cpp signal_handler.hpp
 
 fun2_mlp_LDADD = \
-             ../ezxml/libezxml.a \
+             ../mxml/libmxml.a \
              ../libfuc/lib/libfuc.a \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@

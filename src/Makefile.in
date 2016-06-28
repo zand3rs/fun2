@@ -78,7 +78,7 @@ am_fun2_mlp_OBJECTS = fun2_mlp.$(OBJEXT) config.$(OBJEXT) \
 	oradbrequest.$(OBJEXT) oradbsimple.$(OBJEXT) \
 	signal_handler.$(OBJEXT)
 fun2_mlp_OBJECTS = $(am_fun2_mlp_OBJECTS)
-fun2_mlp_DEPENDENCIES = ../ezxml/libezxml.a ../libfuc/lib/libfuc.a
+fun2_mlp_DEPENDENCIES = ../mxml/libmxml.a ../libfuc/lib/libfuc.a
 am_fun2_notification_OBJECTS = fun2_notification.$(OBJEXT) \
 	config.$(OBJEXT) global.$(OBJEXT) base64.$(OBJEXT) \
 	httpclient.$(OBJEXT) httputils.$(OBJEXT) oradb.$(OBJEXT) \
@@ -224,8 +224,8 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
-AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
+AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
+AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
 fun2_request_SOURCES = \
                        data_struct.hpp \
                        fun2_request.cpp \
@@ -394,7 +394,7 @@ fun2_mlp_SOURCES = \
                        signal_handler.cpp signal_handler.hpp
 
 fun2_mlp_LDADD = \
-             ../ezxml/libezxml.a \
+             ../mxml/libmxml.a \
              ../libfuc/lib/libfuc.a \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@

@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include "ezxml.h"
+#include "mxml.h"
 #include "libfuc.h"
 
 #include "config.hpp"
@@ -97,8 +97,6 @@ int MlpService::stop()
 void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
 {
     char htmlBody[1024*4];
-    const char* sKey;
-    const char* sVal;
     request_t request;
 
     snprintf(htmlBody, sizeof(htmlBody), "*** -- FUN2 MLP Handler -- *** <br><br>\n\n");
@@ -107,24 +105,39 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
 
     //-- check if client is requesting for the correct service...
     if (strcmp(httpRequest->getService(), "/subscribe") && strcmp(httpRequest->getService(), "/subscribe/")) {
+        LOG_ERROR("%s: Service not found: %s", __func__, httpRequest->getService());
         httpResponse->setResponseCode(HTTPRESPONSECODE_404_NOTFOUND);
+        return;
+    }
+
+    //-- check for valid content-type
+    if (httpRequest->getContentType() != HTTPCONTENTTYPE_XML) {
+        LOG_ERROR("%s: Content-Type not supported: %s", __func__, httpRequest->getContentTypeString(httpRequest->getContentType()));
+        httpResponse->setResponseCode(HTTPRESPONSECODE_400_BADREQUEST);
         return;
     }
 
     memset(&request, 0, sizeof(request_t));
     request.cluster_node = Config::getClusterNode();
 
-    snprintf(htmlBody, sizeof(htmlBody), "%s", httpRequest->getBody());
-
     //-- parse xml
-    ezxml_t xml = ezxml_parse_str(htmlBody, strlen(htmlBody));
-    ezxml_t head = ezxml_child(xml, "Header");
-    ezxml_t body = ezxml_child(xml, "Body");
+    mxml_node_t *tree = mxmlLoadString(NULL, httpRequest->getBody(), MXML_NO_CALLBACK);
+    mxml_node_t *head = mxmlFindElement(tree, tree, "Header", NULL, NULL, MXML_DESCEND);
+    mxml_node_t *body = mxmlFindElement(tree, tree, "Body", NULL, NULL, MXML_DESCEND);
 
-    const char* TransactionCode = ezxml_child(head, "TransactionCode")->txt;
-    const char* TransactionID = ezxml_child(head, "TransactionID")->txt;
-    const char* MSISDN = ezxml_child(head, "MSISDN")->txt;
-    const char* BillCycleNo = ezxml_child(head, "BillCycleNo")->txt;
+    mxml_node_t *node;
+
+    node = mxmlFindElement(head, tree, "TransactionCode", NULL, NULL, MXML_DESCEND);
+    const char* TransactionCode = mxmlGetText(node, NULL);
+
+    node = mxmlFindElement(head, tree, "TransactionID", NULL, NULL, MXML_DESCEND);
+    const char* TransactionID = mxmlGetText(node, NULL);
+
+    node = mxmlFindElement(head, tree, "MSISDN", NULL, NULL, MXML_DESCEND);
+    const char* MSISDN = mxmlGetText(node, NULL);
+
+    node = mxmlFindElement(head, tree, "BillCycleNo", NULL, NULL, MXML_DESCEND);
+    const char* BillCycleNo = mxmlGetText(node, NULL);
 
     LOG_DEBUG("%s: TransactionCode=[%s], TransactionID=[%s], MSISDN=[%s], BillCycleNo=[%s]", __func__,
             TransactionCode, TransactionID, MSISDN, BillCycleNo);
@@ -134,10 +147,18 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     snprintf(request.svc_msisdn, sizeof(request.svc_msisdn), "%s", MSISDN);
     snprintf(request.svc_bill_cycle, sizeof(request.svc_bill_cycle), "%s", BillCycleNo);
 
-    for (ezxml_t service = ezxml_child(body, "Service"); service; service = service->next) {
-        const char* Type = ezxml_child(service, "Type")->txt;
-        const char* Soc = ezxml_child(service, "Soc")->txt;
-        const char* EffectiveDate = ezxml_child(service, "EffectiveDate")->txt;
+    for (mxml_node_t *service = mxmlFindElement(body, tree, "Service", NULL, NULL, MXML_DESCEND); 
+         service != NULL;
+         service = mxmlFindElement(service, body, "Service", NULL, NULL, MXML_DESCEND)) {
+
+        node = mxmlFindElement(service, body, "Type", NULL, NULL, MXML_DESCEND);
+        const char* Type = mxmlGetText(node, NULL);
+
+        node = mxmlFindElement(service, body, "Soc", NULL, NULL, MXML_DESCEND);
+        const char* Soc = mxmlGetText(node, NULL);
+
+        node = mxmlFindElement(service, body, "EffectiveDate", NULL, NULL, MXML_DESCEND);
+        const char* EffectiveDate = mxmlGetText(node, NULL);
 
         LOG_DEBUG("%s: Service: Type=[%s], Soc=[%s], EffectiveDate=[%s]", __func__,
                 Type, Soc, EffectiveDate);
@@ -157,7 +178,7 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     }
 
     //-- free xml
-    ezxml_free(xml);
+    mxmlDelete(tree);
 
     //httpResponse->setBody(htmlBody);
     httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
