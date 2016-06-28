@@ -1,7 +1,7 @@
 AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
 AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../ezxml
 
-bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli
+bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli fun2_mlp
 
 fun2_request_SOURCES = \
                        data_struct.hpp \
@@ -20,7 +20,6 @@ fun2_request_SOURCES = \
                        sysmsg.cpp sysmsg.hpp
 
 fun2_request_LDADD = \
-             ../ezxml/libezxml.a \
              ../libfuc/lib/libfuc.a \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@
@@ -156,6 +155,27 @@ fun2_default_unli_LDADD = \
              ../libfuc/lib/libfuc.a \
              @LIBSQLORA8_LIBS@ \
              @LIBCURL@
+             
+fun2_mlp_SOURCES = \
+                       data_struct.hpp \
+                       fun2_mlp.cpp \
+                       config.cpp config.hpp \
+                       global.cpp global.hpp \
+                       httpserver.cpp httpserver.hpp \
+                       httputils.cpp httputils.hpp \
+                       mlp_handler.cpp mlp_handler.hpp \
+                       mlp_service.cpp mlp_service.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbrequest.cpp oradbrequest.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       signal_handler.cpp signal_handler.hpp
+
+fun2_mlp_LDADD = \
+             ../ezxml/libezxml.a \
+             ../libfuc/lib/libfuc.a \
+             -L/usr/local/lib -lpme -lssl -lpcre \
+             @LIBSQLORA8_LIBS@
+
 
 noinst_HEADERS =
 

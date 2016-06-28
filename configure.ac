@@ -4,11 +4,11 @@ dnl
 dnl $Id$
 dnl
 
-AC_INIT([fun2], [1.6.2], [zand3rs@gmail.com])
+AC_INIT([fun2], [1.7.0], [zand3rs@gmail.com])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
-RELEASE_DATE="02/2016"
+RELEASE_DATE="06/2016"
 COPYRIGHT="2009-2016"
 
 PACKAGE_MAJOR_VERSION="${PACKAGE_VERSION%%.*}"

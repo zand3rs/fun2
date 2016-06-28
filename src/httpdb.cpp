@@ -24,7 +24,6 @@
 
 #include <string>
 
-#include "ezxml.h"
 #include "libfuc.h"
 
 #include "config.hpp"
@@ -107,59 +106,6 @@ void HttpDB::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
     LOG_INFO("%s: Request URI: %s", __func__, httpRequest->getUri());
 
     //-- check if client is requesting for the correct service...
-    if (!strcmp(httpRequest->getService(), "/subscribe") || !strcmp(httpRequest->getService(), "/subscribe/")) {
-        //-- MLP Handler...
-        memset(&request, 0, sizeof(request_t));
-        request.cluster_node = Config::getClusterNode();
-
-        snprintf(htmlBody, sizeof(htmlBody), "%s", httpRequest->getBody());
-
-        //-- parse xml
-        ezxml_t xml = ezxml_parse_str(htmlBody, strlen(htmlBody));
-        ezxml_t head = ezxml_child(xml, "Header");
-        ezxml_t body = ezxml_child(xml, "Body");
-
-        const char* TransactionCode = ezxml_child(head, "TransactionCode")->txt;
-        const char* TransactionID = ezxml_child(head, "TransactionID")->txt;
-        const char* MSISDN = ezxml_child(head, "MSISDN")->txt;
-        const char* BillCycleNo = ezxml_child(head, "BillCycleNo")->txt;
-
-        LOG_DEBUG("%s: TransactionCode=[%s], TransactionID=[%s], MSISDN=[%s], BillCycleNo=[%s]", __func__,
-                TransactionCode, TransactionID, MSISDN, BillCycleNo);
-
-        snprintf(request.svc_txcode, sizeof(request.svc_txcode), "%s", TransactionCode);
-        snprintf(request.svc_txid, sizeof(request.svc_txid), "%s", TransactionID);
-        snprintf(request.svc_msisdn, sizeof(request.svc_msisdn), "%s", MSISDN);
-        snprintf(request.svc_bill_cycle, sizeof(request.svc_bill_cycle), "%s", BillCycleNo);
-
-        for (ezxml_t service = ezxml_child(body, "Service"); service; service = service->next) {
-            const char* Type = ezxml_child(service, "Type")->txt;
-            const char* Soc = ezxml_child(service, "Soc")->txt;
-            const char* EffectiveDate = ezxml_child(service, "EffectiveDate")->txt;
-
-            LOG_DEBUG("%s: Service: Type=[%s], Soc=[%s], EffectiveDate=[%s]", __func__,
-                    Type, Soc, EffectiveDate);
-
-            snprintf(request.svc_type, sizeof(request.svc_type), "%s", Type);
-            snprintf(request.svc_soc, sizeof(request.svc_soc), "%s", Soc);
-            snprintf(request.svc_eff_date, sizeof(request.svc_eff_date), "%s", EffectiveDate);
-
-            //-- check for required params
-            if (! *(request.svc_msisdn)) {
-                LOG_ERROR("%s: Invalid request.", __func__);
-            } else {
-                if (_conn.processMlp(&request) < 0) {
-                    LOG_ERROR("%s: process_mlp failed msisdn: %s.", __func__, request.svc_msisdn);
-                }
-            }
-        }
-
-        //-- free xml
-        ezxml_free(xml);
-
-        httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
-        return;
-    }
 
     if (!strcmp(httpRequest->getService(), "/usurf") || !strcmp(httpRequest->getService(), "/usurf/")) {
         //-- USURF Handler...
