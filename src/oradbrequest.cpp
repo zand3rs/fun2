@@ -47,6 +47,9 @@ int OraDBRequest::_do_bind()
     if ((res = processMlpBind()) < 0)
         return res;
 
+    if ((res = processShampooBind()) < 0)
+        return res;
+
     return res;
 }
 
@@ -852,6 +855,56 @@ int OraDBRequest::processMlpBind()
                 || sqlo_bind_by_name(_sth_process_mlp, ":p_effdate", SQLOT_STR, &_request.svc_eff_date, sizeof(_request.svc_eff_date), 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SP_PROCESS_MLP statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
+
+/*============================================================================*/
+
+int OraDBRequest::processShampoo(const request_t* request)
+{
+    memcpy(&_request, request, sizeof(request_t));
+
+    if (ora_force_execute(&_sth_process_shampoo, 0, 1) < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE SP_PROCESS_SHAMPOO."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_process_shampoo), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        processShampooBind();
+        return -1;
+    }
+    LOG_DEBUG("%s: retr: %d, msisdn: %s, type: %s, plan: %s, start: %s, end: %s", __func__
+            , request->db_retr, request->svc_msisdn, request->svc_type, request->svc_plan
+            , request->svc_start, request->svc_end);
+
+    return 0;
+}
+
+int OraDBRequest::processShampooBind()
+{
+    const char sql_stmt[] = "BEGIN"
+        " SP_PROCESS_SHAMPOO(:p_retr, :p_type, :p_msisdn, :p_plan, :p_start, :p_end);"
+        " END;";
+
+    _sth_process_shampoo = SQLO_STH_INIT;
+
+    if ((_sth_process_shampoo = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for SP_PROCESS_SHAMPOO.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_process_shampoo, ":p_retr", SQLOT_INT, &_var_retr, sizeof(_var_retr), 0, 0)
+                || sqlo_bind_by_name(_sth_process_shampoo, ":p_type", SQLOT_STR, &_request.svc_type, sizeof(_request.svc_type), 0, 0)
+                || sqlo_bind_by_name(_sth_process_shampoo, ":p_msisdn", SQLOT_STR, &_request.svc_msisdn, sizeof(_request.svc_msisdn), 0, 0)
+                || sqlo_bind_by_name(_sth_process_shampoo, ":p_plan", SQLOT_STR, &_request.svc_plan, sizeof(_request.svc_plan), 0, 0)
+                || sqlo_bind_by_name(_sth_process_shampoo, ":p_start", SQLOT_STR, &_request.svc_start, sizeof(_request.svc_start), 0, 0)
+                || sqlo_bind_by_name(_sth_process_shampoo, ":p_end", SQLOT_STR, &_request.svc_end, sizeof(_request.svc_end), 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for SP_PROCESS_SHAMPOO statement handle.", __func__);
         return -2;
     }
 

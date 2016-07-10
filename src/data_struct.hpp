@@ -347,6 +347,10 @@ typedef struct request_t {
 #define svc_bill_cycle   exptime
 #define svc_eff_date     expdate
 
+#define svc_plan         service_id
+#define svc_start        exptime
+#define svc_end          expdate
+
     request_t () {
     }
     request_t (const request_t& right) {

@@ -38,7 +38,8 @@ POST_UNINSTALL = :
 bin_PROGRAMS = fun2_request$(EXEEXT) fun2_response$(EXEEXT) \
 	fun2_notification$(EXEEXT) fun2_transaction$(EXEEXT) \
 	fun2_broadcast$(EXEEXT) fun2_geoprobe$(EXEEXT) \
-	fun2_ods$(EXEEXT) fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT)
+	fun2_ods$(EXEEXT) fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT) \
+	fun2_shampoo$(EXEEXT)
 subdir = src
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -105,6 +106,13 @@ am_fun2_response_OBJECTS = fun2_response.$(OBJEXT) config.$(OBJEXT) \
 	signal_handler.$(OBJEXT)
 fun2_response_OBJECTS = $(am_fun2_response_OBJECTS)
 fun2_response_DEPENDENCIES = ../libfuc/lib/libfuc.a
+am_fun2_shampoo_OBJECTS = fun2_shampoo.$(OBJEXT) config.$(OBJEXT) \
+	global.$(OBJEXT) httpserver.$(OBJEXT) httputils.$(OBJEXT) \
+	shampoo_handler.$(OBJEXT) shampoo_service.$(OBJEXT) \
+	oradb.$(OBJEXT) oradbrequest.$(OBJEXT) oradbsimple.$(OBJEXT) \
+	signal_handler.$(OBJEXT)
+fun2_shampoo_OBJECTS = $(am_fun2_shampoo_OBJECTS)
+fun2_shampoo_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_transaction_OBJECTS = fun2_transaction.$(OBJEXT) \
 	config.$(OBJEXT) ccb_handler.$(OBJEXT) \
 	geoprobe_handler.$(OBJEXT) global.$(OBJEXT) hlr.$(OBJEXT) \
@@ -133,12 +141,12 @@ SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
 	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
 	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
 	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_transaction_SOURCES)
+	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES)
 DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
 	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
 	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
 	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_transaction_SOURCES)
+	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -399,6 +407,25 @@ fun2_mlp_LDADD = \
              -L/usr/local/lib -lpme -lssl -lpcre \
              @LIBSQLORA8_LIBS@
 
+fun2_shampoo_SOURCES = \
+                       data_struct.hpp \
+                       fun2_shampoo.cpp \
+                       config.cpp config.hpp \
+                       global.cpp global.hpp \
+                       httpserver.cpp httpserver.hpp \
+                       httputils.cpp httputils.hpp \
+                       shampoo_handler.cpp shampoo_handler.hpp \
+                       shampoo_service.cpp shampoo_service.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbrequest.cpp oradbrequest.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       signal_handler.cpp signal_handler.hpp
+
+fun2_shampoo_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             -L/usr/local/lib -lpme -lssl -lpcre \
+             @LIBSQLORA8_LIBS@
+
 noinst_HEADERS = 
 all: all-am
 
@@ -480,6 +507,9 @@ fun2_request$(EXEEXT): $(fun2_request_OBJECTS) $(fun2_request_DEPENDENCIES)
 fun2_response$(EXEEXT): $(fun2_response_OBJECTS) $(fun2_response_DEPENDENCIES) 
 	@rm -f fun2_response$(EXEEXT)
 	$(CXXLINK) $(fun2_response_LDFLAGS) $(fun2_response_OBJECTS) $(fun2_response_LDADD) $(LIBS)
+fun2_shampoo$(EXEEXT): $(fun2_shampoo_OBJECTS) $(fun2_shampoo_DEPENDENCIES) 
+	@rm -f fun2_shampoo$(EXEEXT)
+	$(CXXLINK) $(fun2_shampoo_LDFLAGS) $(fun2_shampoo_OBJECTS) $(fun2_shampoo_LDADD) $(LIBS)
 fun2_transaction$(EXEEXT): $(fun2_transaction_OBJECTS) $(fun2_transaction_DEPENDENCIES) 
 	@rm -f fun2_transaction$(EXEEXT)
 	$(CXXLINK) $(fun2_transaction_LDFLAGS) $(fun2_transaction_OBJECTS) $(fun2_transaction_LDADD) $(LIBS)
@@ -504,6 +534,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_ods.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_request.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_response.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_shampoo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fun2_transaction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/geoprobe_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/global.Po@am__quote@
@@ -531,6 +562,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oradbsimple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/request_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/response_handler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shampoo_handler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shampoo_service.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sysmsg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transaction_handler.Po@am__quote@
