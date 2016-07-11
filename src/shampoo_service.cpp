@@ -95,6 +95,7 @@ int ShampooService::stop()
 
 void ShampooService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpResponse)
 {
+    HttpResponseCode_t statusCode;
     char htmlBody[1024*4];
     const char* sKey;
     const char* sVal;
@@ -138,17 +139,51 @@ void ShampooService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpR
     snprintf(request.svc_end, sizeof(request.svc_end), "%s", sVal);
     LOG_DEBUG("%s: sKey=[%s], sVal=[%s], %s=[%s]", __func__, sKey, sVal, sKey, request.svc_end);
 
-    //-- check for required params
-    if (! *(request.svc_msisdn)) {
-        LOG_ERROR("%s: Invalid request.", __func__);
+    //-- execute
+    if (_conn.processShampoo(&request) < 0) {
+        LOG_ERROR("%s: process_shampoo failed: retr: %d,  msisdn: %s, tran_type: %s", __func__,
+                request.db_retr, request.svc_msisdn, request.svc_type);
+        statusCode = HTTPRESPONSECODE_500_INTERNALSERVERERROR;
+        snprintf(htmlBody, sizeof(htmlBody), "Internal Server Error");
     } else {
-        if (_conn.processShampoo(&request) < 0) {
-            LOG_ERROR("%s: process_shampoo failed msisdn: %s, tran_type: %s", __func__, request.svc_msisdn, request.svc_type);
+        switch (request.db_retr) {
+            case 1:
+                statusCode = HTTPRESPONSECODE_200_OK;
+                snprintf(htmlBody, sizeof(htmlBody), "OK");
+                break;
+            case 100:
+                statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+                snprintf(htmlBody, sizeof(htmlBody), "Invalid msisdn");
+                break;
+            case 101:
+                statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+                snprintf(htmlBody, sizeof(htmlBody), "Invalid plan");
+                break;
+            case 102:
+                statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+                snprintf(htmlBody, sizeof(htmlBody), "Invalid start_date");
+                break;
+            case 103:
+                statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+                snprintf(htmlBody, sizeof(htmlBody), "Invalid end_date");
+                break;
+            case 104:
+                statusCode = HTTPRESPONSECODE_403_FORBIDDEN;
+                snprintf(htmlBody, sizeof(htmlBody), "Already exists");
+                break;
+            case 110:
+                statusCode = HTTPRESPONSECODE_404_NOTFOUND;
+                snprintf(htmlBody, sizeof(htmlBody), "Not Found");
+                break;
+            default:
+                statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+                snprintf(htmlBody, sizeof(htmlBody), "Bad Request");
+                break;
         }
     }
 
-    //httpResponse->setBody(htmlBody);
-    httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
+    httpResponse->setResponseCode(statusCode);
+    httpResponse->setBody(htmlBody);
 }
 
 /******************************************************************************/
