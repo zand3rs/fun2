@@ -222,7 +222,7 @@ int HttpRequest::_parseHeaders(const char* buf)
 
             if (0 == strcasecmp(key.c_str(), "Content-Type")) {
                 for (short i = 0; i < (short)(sizeof(contentTypeString)/sizeof(char*)); ++i) {
-                    if (0 == strcasecmp(val.c_str(), contentTypeString[i])) {
+                    if (0 == strncasecmp(val.c_str(), contentTypeString[i], sizeof(contentTypeString[i]))) {
                         _contentType = (HttpContentType_t)i;
                     }
                 }
