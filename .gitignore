@@ -52,3 +52,10 @@ fun2_request
 fun2_response
 fun2_shampoo
 fun2_transaction
+
+# others
+mxml/doc/mxml.man
+mxml/mxmldoc
+mxml/mxmldoc-static
+mxml/testmxml
+
