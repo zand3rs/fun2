@@ -811,11 +811,15 @@ int OraDBRequest::insertKeywordBind()
 
 /*============================================================================*/
 
-int OraDBRequest::processMlp(const request_t* request)
+int OraDBRequest::processMlp(request_t* request)
 {
+    _var_retr = DB_RETR_INIT;
     memcpy(&_request, request, sizeof(request_t));
 
-    if (ora_force_execute(&_sth_process_mlp, 0, 1) < 0) {
+    int ora_status = ora_force_execute(&_sth_process_mlp, 0);
+    request->db_retr = _var_retr;
+
+    if (ora_status < 0) {
         LOG_CRITICAL("%s: Failed to EXECUTE SP_PROCESS_MLP."
                 " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
                 __func__, sqlo_command(_sth_process_mlp), sqlo_geterror(_dbh));
@@ -863,11 +867,15 @@ int OraDBRequest::processMlpBind()
 
 /*============================================================================*/
 
-int OraDBRequest::processShampoo(const request_t* request)
+int OraDBRequest::processShampoo(request_t* request)
 {
+    _var_retr = DB_RETR_INIT;
     memcpy(&_request, request, sizeof(request_t));
 
-    if (ora_force_execute(&_sth_process_shampoo, 0, 1) < 0) {
+    int ora_status = ora_force_execute(&_sth_process_shampoo, 0);
+    request->db_retr = _var_retr;
+
+    if (ora_status < 0) {
         LOG_CRITICAL("%s: Failed to EXECUTE SP_PROCESS_SHAMPOO."
                 " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
                 __func__, sqlo_command(_sth_process_shampoo), sqlo_geterror(_dbh));

@@ -27,8 +27,9 @@ class OraDBRequest : public OraDB
         int usurfDeactivation(request_t* request);
 
         int insertKeywordRequest(const request_t* request);
-        int processMlp(const request_t* request);
-        int processShampoo(const request_t* request);
+
+        int processMlp(request_t* request);
+        int processShampoo(request_t* request);
 
     private:
         int _do_bind();
