@@ -2,7 +2,7 @@
  *    ____  |
  *         /     Author  : Alexander A. Magtipon
  *       /       Created : 2014-03-03
- *     /         Updated : 2014-03-03
+ *     /         Updated : 2016-07-26
  *  _______|     Remarks : boy - zand3rs@gmail.com
  *
  *
@@ -28,11 +28,16 @@
 #include <glob.h>
 #include <errno.h>
 
+#include <sstream>
+#include <iterator>
+
 #include "global.hpp"
 #include "config.hpp"
 #include "ecsv.hpp"
 #include "oradbdefaultunli.hpp"
 #include "default_unli_handler.hpp"
+#include "httpclient.hpp"
+#include "httputils.hpp"
 
 /*============================================================================*/
 
@@ -130,6 +135,34 @@ static int load_default_unli(std::vector<default_unli_t>& default_unlis, const s
     return 0;
 }
 
+/*----------------------------------------------------------------------------*/
+
+float doMatrix(default_unli_t* default_unli)
+{
+    HttpClient hc;
+    std::string req = "{"
+                      "  \"productName\" : \"ROAMSURF599\","
+                      "  \"msisdn\" : \"" + std::string(default_unli->msisdn) + "\","
+                      "  \"startDate\" : \"" + std::string(default_unli->start_date) + "\","
+                      "  \"endDate\" : \"" + std::string(default_unli->end_date) + "\","
+                      "  \"country\" : \"" + std::string(default_unli->mcc) + "\","
+                      "  \"roamingPartner\" : \"" + std::string(default_unli->mnc) + "\""
+                      "}";
+    std::vector<string> headers;
+                        headers.push_back("Authorization: Bearer c2lNUjRSVEN2SWFzZUMwdjdXM0dkd2hHVHl0VTJMS3c6eUE4OGRzYmxnVGFhWEtXbQ=");
+                        headers.push_back("TransactionCode: FUN2_ROAMING");
+                        headers.push_back("Content-Type: application/json");
+
+    int res_code = hc.httpPost(Config::getMatrixUrl(), req.c_str(), headers, Config::getMatrixTimeoutSec());
+
+    std::ostringstream osheaders;
+    std::copy(headers.begin(), headers.end(), std::ostream_iterator<std::string>(osheaders, ";"));
+
+    LOG_INFO("%s: url: %s, headers: %s, req: %s, res_code: %d, res_body: %s, res_error: %s", __func__,
+            Config::getMatrixUrl(), osheaders.str().c_str(), req.c_str(), res_code, hc.getResponseBody(), hc.getError());
+
+    return 0;
+}
 /*============================================================================*/
 
 void* default_unli_fetcher (void* arg)
@@ -280,6 +313,9 @@ void* default_unli_handler (void* arg)
                 LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
                         , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc
                         , default_unli.sgsn_ip, default_unli.date, default_unli.filename);
+            } else {
+                //-- call matrix api...
+                doMatrix(&default_unli);
             }
         }
 

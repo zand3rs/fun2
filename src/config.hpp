@@ -2,7 +2,7 @@
  *    ____  |
  *         /     Author  : Alexander A. Magtipon
  *       /       Created : 2009-07-27
- *     /         Updated : 2009-07-27
+ *     /         Updated : 2016-07-26
  *  _______|     Remarks : boy - zand3rs@gmail.com
  *
  *
@@ -159,6 +159,13 @@ class Config {
             return _nsn_cacert.c_str();
         }
 
+        static const char* getMatrixUrl() {
+            return _matrix_url.c_str();
+        }
+        static int getMatrixTimeoutSec() {
+            return _matrix_timeout_sec;
+        }
+
         static int bypassARDS() {
             return _bypass_ards;
         }
@@ -240,6 +247,9 @@ class Config {
         static std::string _nsn_key;
         static std::string _nsn_cert;
         static std::string _nsn_cacert;
+
+        static std::string _matrix_url;
+        static int _matrix_timeout_sec;
 
         static int _bypass_ards;
 

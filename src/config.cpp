@@ -2,7 +2,7 @@
  *    ____  |
  *         /     Author  : Alexander A. Magtipon
  *       /       Created : 2009-07-27
- *     /         Updated : 2009-07-27
+ *     /         Updated : 2016-07-26
  *  _______|     Remarks : boy - zand3rs@gmail.com
  *
  *
@@ -71,6 +71,9 @@ std::string Config::_nsn_pass = "";
 std::string Config::_nsn_key = "";
 std::string Config::_nsn_cert = "";
 std::string Config::_nsn_cacert = "";
+
+std::string Config::_matrix_url = "";
+int Config::_matrix_timeout_sec = 0;
 
 int Config::_bypass_ards = 0;
 
@@ -224,6 +227,12 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "nsn_cacert", buf, sizeof(buf));
         _nsn_cacert = buf;
+
+        cfg_getval(&cfg, "", "matrix_url", buf, sizeof(buf));
+        _matrix_url = buf;
+
+        cfg_getval(&cfg, "", "matrix_timeout_sec", buf, sizeof(buf));
+        _matrix_timeout_sec = strtol(buf, NULL, 10);
 
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);
