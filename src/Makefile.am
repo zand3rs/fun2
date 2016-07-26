@@ -145,6 +145,8 @@ fun2_default_unli_SOURCES = \
                        ecsv.cpp ecsv.hpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
+                       httpclient.cpp httpclient.hpp \
+                       httputils.cpp httputils.hpp \
                        oradb.cpp oradb.hpp \
                        oradbdefaultunli.cpp oradbdefaultunli.hpp \
                        oradbsimple.cpp oradbsimple.hpp \
