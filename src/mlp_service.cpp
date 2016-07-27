@@ -124,19 +124,20 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     mxml_node_t *tree = mxmlLoadString(NULL, httpRequest->getBody(), MXML_NO_CALLBACK);
     mxml_node_t *head = mxmlFindElement(tree, tree, "Header", NULL, NULL, MXML_DESCEND);
     mxml_node_t *body = mxmlFindElement(tree, tree, "Body", NULL, NULL, MXML_DESCEND);
+    mxml_node_t *services = mxmlFindElement(body, body, "Services", NULL, NULL, MXML_DESCEND);
 
     mxml_node_t *node;
 
-    node = mxmlFindElement(head, tree, "TransactionCode", NULL, NULL, MXML_DESCEND);
+    node = mxmlFindElement(head, head, "TransactionCode", NULL, NULL, MXML_DESCEND);
     const char* TransactionCode = mxmlGetText(node, NULL);
 
-    node = mxmlFindElement(head, tree, "TransactionID", NULL, NULL, MXML_DESCEND);
+    node = mxmlFindElement(head, head, "TransactionID", NULL, NULL, MXML_DESCEND);
     const char* TransactionID = mxmlGetText(node, NULL);
 
-    node = mxmlFindElement(head, tree, "MSISDN", NULL, NULL, MXML_DESCEND);
+    node = mxmlFindElement(head, head, "MSISDN", NULL, NULL, MXML_DESCEND);
     const char* MSISDN = mxmlGetText(node, NULL);
 
-    node = mxmlFindElement(head, tree, "BillCycleNo", NULL, NULL, MXML_DESCEND);
+    node = mxmlFindElement(head, head, "BillCycleNo", NULL, NULL, MXML_DESCEND);
     const char* BillCycleNo = mxmlGetText(node, NULL);
 
     LOG_DEBUG("%s: TransactionCode=[%s], TransactionID=[%s], MSISDN=[%s], BillCycleNo=[%s]", __func__,
@@ -147,17 +148,17 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     snprintf(request.svc_msisdn, sizeof(request.svc_msisdn), "%s", MSISDN);
     snprintf(request.svc_bill_cycle, sizeof(request.svc_bill_cycle), "%s", BillCycleNo);
 
-    for (mxml_node_t *service = mxmlFindElement(body, tree, "Service", NULL, NULL, MXML_DESCEND); 
+    for (mxml_node_t *service = mxmlFindElement(services, services, "Service", NULL, NULL, MXML_DESCEND_FIRST);
          service != NULL;
-         service = mxmlFindElement(service, body, "Service", NULL, NULL, MXML_DESCEND)) {
+         service = mxmlFindElement(service, services, "Service", NULL, NULL, MXML_NO_DESCEND)) {
 
-        node = mxmlFindElement(service, body, "Type", NULL, NULL, MXML_DESCEND);
+        node = mxmlFindElement(service, service, "Type", NULL, NULL, MXML_DESCEND);
         const char* Type = mxmlGetText(node, NULL);
 
-        node = mxmlFindElement(service, body, "Soc", NULL, NULL, MXML_DESCEND);
+        node = mxmlFindElement(service, service, "Soc", NULL, NULL, MXML_DESCEND);
         const char* Soc = mxmlGetText(node, NULL);
 
-        node = mxmlFindElement(service, body, "EffectiveDate", NULL, NULL, MXML_DESCEND);
+        node = mxmlFindElement(service, service, "EffectiveDate", NULL, NULL, MXML_DESCEND);
         const char* EffectiveDate = mxmlGetText(node, NULL);
 
         LOG_DEBUG("%s: Service: Type=[%s], Soc=[%s], EffectiveDate=[%s]", __func__,
