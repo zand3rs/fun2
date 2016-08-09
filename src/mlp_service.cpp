@@ -99,7 +99,7 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     char htmlBody[1024*4];
     request_t request;
 
-    snprintf(htmlBody, sizeof(htmlBody), "*** -- FUN2 MLP Handler -- *** <br><br>\n\n");
+    memset(htmlBody, 0, sizeof(htmlBody));
 
     LOG_INFO("%s: Request URI: %s", __func__, httpRequest->getUri());
 
@@ -148,6 +148,8 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     snprintf(request.svc_msisdn, sizeof(request.svc_msisdn), "%s", MSISDN);
     snprintf(request.svc_bill_cycle, sizeof(request.svc_bill_cycle), "%s", BillCycleNo);
 
+    HttpResponseCode_t statusCode = HTTPRESPONSECODE_200_OK;
+
     for (mxml_node_t *service = mxmlFindElement(services, services, "Service", NULL, NULL, MXML_DESCEND_FIRST);
          service != NULL;
          service = mxmlFindElement(service, services, "Service", NULL, NULL, MXML_NO_DESCEND)) {
@@ -168,21 +170,22 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
         snprintf(request.svc_soc, sizeof(request.svc_soc), "%s", Soc);
         snprintf(request.svc_eff_date, sizeof(request.svc_eff_date), "%s", EffectiveDate);
 
-        //-- check for required params
-        if (! *(request.svc_msisdn)) {
-            LOG_ERROR("%s: Invalid request.", __func__);
-        } else {
-            if (_conn.processMlp(&request) < 0) {
-                LOG_ERROR("%s: process_mlp failed msisdn: %s.", __func__, request.svc_msisdn);
-            }
+        //-- execute
+        if (_conn.processMlp(&request) < 0 || request.db_retr != 1) {
+            LOG_ERROR("%s: process_mlp failed: retr: %d, msisdn: %s, txcode: %s, txid: %s, "
+                    "bill_cycle: %s, type: %s, soc: %s, eff_date: %s" , __func__,
+                    request.db_retr, request.svc_msisdn, request.svc_txcode, request.svc_txid,
+                    request.svc_bill_cycle, request.svc_type, request.svc_soc, request.svc_eff_date);
+            statusCode = HTTPRESPONSECODE_400_BADREQUEST;
+            break;
         }
     }
 
     //-- free xml
     mxmlDelete(tree);
 
-    //httpResponse->setBody(htmlBody);
-    httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
+    httpResponse->setResponseCode(statusCode);
+    httpResponse->setBody(htmlBody);
 }
 
 /******************************************************************************/
