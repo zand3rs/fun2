@@ -27,7 +27,7 @@
 #define HTTPSERVER_DEFAULT_PORT   80
 #define HTTPSERVER_LISTEN_TIMEOUT 1000
 #define HTTPSERVER_CLIENT_TIMEOUT 60000
-#define HTTPSERVER_MAX_PACKET_LEN 1024*8
+#define HTTPSERVER_MAX_PACKET_LEN 1024*64
 #define HTTPSERVER_STACK_SIZE     0x00040000
 
 /*-functions------------------------------------------------------------------*/
