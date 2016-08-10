@@ -122,6 +122,11 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
 
     //-- parse xml
     mxml_node_t *tree = mxmlLoadString(NULL, httpRequest->getBody(), MXML_NO_CALLBACK);
+    if (NULL == tree) {
+        httpResponse->setResponseCode(HTTPRESPONSECODE_400_BADREQUEST);
+        return;
+    }
+
     mxml_node_t *head = mxmlFindElement(tree, tree, "Header", NULL, NULL, MXML_DESCEND);
     mxml_node_t *body = mxmlFindElement(tree, tree, "Body", NULL, NULL, MXML_DESCEND);
     mxml_node_t *services = mxmlFindElement(body, body, "Services", NULL, NULL, MXML_DESCEND);
@@ -147,8 +152,6 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
     snprintf(request.svc_txid, sizeof(request.svc_txid), "%s", TransactionID);
     snprintf(request.svc_msisdn, sizeof(request.svc_msisdn), "%s", MSISDN);
     snprintf(request.svc_bill_cycle, sizeof(request.svc_bill_cycle), "%s", BillCycleNo);
-
-    HttpResponseCode_t statusCode = HTTPRESPONSECODE_200_OK;
 
     for (mxml_node_t *service = mxmlFindElement(services, services, "Service", NULL, NULL, MXML_DESCEND_FIRST);
          service != NULL;
@@ -176,16 +179,13 @@ void MlpService::handleRequest(HttpRequest *httpRequest, HttpResponse *httpRespo
                     "bill_cycle: %s, type: %s, soc: %s, eff_date: %s" , __func__,
                     request.db_retr, request.svc_msisdn, request.svc_txcode, request.svc_txid,
                     request.svc_bill_cycle, request.svc_type, request.svc_soc, request.svc_eff_date);
-            statusCode = HTTPRESPONSECODE_400_BADREQUEST;
-            break;
         }
     }
 
     //-- free xml
     mxmlDelete(tree);
 
-    httpResponse->setResponseCode(statusCode);
-    httpResponse->setBody(htmlBody);
+    httpResponse->setResponseCode(HTTPRESPONSECODE_200_OK);
 }
 
 /******************************************************************************/
