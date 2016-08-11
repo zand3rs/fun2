@@ -63,10 +63,15 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
         }
 
         if (strncasecmp(url, "https", 5) == 0) {
-            curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-
+            if (_key.length() > 0) {
+                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
+            }
+            if (_cert.length() > 0) {
+                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
+            }
+            if (_cacert.length() > 0) {
+                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
+            }
             if (_ignore_cert) {
                 curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
             }
