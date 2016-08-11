@@ -139,7 +139,7 @@ static int load_default_unli(std::vector<default_unli_t>& default_unlis, const s
 
 float doMatrix(default_unli_t* default_unli)
 {
-    HttpClient hc;
+    HttpClient hc(Config::getMatrixKey(), Config::getMatrixCert(), Config::getMatrixCacert(), Config::getMatrixIgnoreCert());
     std::string req = "{"
                       "  \"productName\" : \"ROAMSURF599\","
                       "  \"msisdn\" : \"" + std::string(default_unli->msisdn) + "\","
@@ -149,8 +149,8 @@ float doMatrix(default_unli_t* default_unli)
                       "  \"roamingPartner\" : \"" + std::string(default_unli->mnc) + "\""
                       "}";
     std::vector<string> headers;
-                        headers.push_back("Authorization: Bearer c2lNUjRSVEN2SWFzZUMwdjdXM0dkd2hHVHl0VTJMS3c6eUE4OGRzYmxnVGFhWEtXbQ=");
-                        headers.push_back("TransactionCode: FUN2_ROAMING");
+                        headers.push_back(std::string("Authorization: Bearer ") + Config::getMatrixAuthToken());
+                        headers.push_back(std::string("TransactionCode: ") + Config::getMatrixTranCode());
                         headers.push_back("Content-Type: application/json");
 
     int res_code = hc.httpPost(Config::getMatrixUrl(), req.c_str(), headers, Config::getMatrixTimeoutSec());

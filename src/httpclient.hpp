@@ -27,7 +27,7 @@
 class HttpClient {
 
     public:
-        HttpClient(char const* key = "", char const* cert = "", char const* cacert = "");
+        HttpClient(char const* key = "", char const* cert = "", char const* cacert = "", bool ignore_cert = false);
         ~HttpClient();
 
         //----------------------------------------------------------------------
@@ -55,6 +55,7 @@ class HttpClient {
         std::string _key;
         std::string _cert;
         std::string _cacert;
+        bool _ignore_cert;
 
         static bool _global_init;
         static size_t _writer(void *ptr, size_t size, size_t nmemb, void *stream);

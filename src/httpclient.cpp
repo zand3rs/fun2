@@ -24,8 +24,8 @@ bool HttpClient::_global_init = (0 == curl_global_init(CURL_GLOBAL_ALL))
 
 /*============================================================================*/
 
-HttpClient::HttpClient(char const* key, char const* cert, char const* cacert) :
-    _out_buf(""), _err_buf(""), _key(key), _cert(cert), _cacert(cacert)
+HttpClient::HttpClient(char const* key, char const* cert, char const* cacert, bool ignore_cert) :
+    _out_buf(""), _err_buf(""), _key(key), _cert(cert), _cacert(cacert), _ignore_cert(ignore_cert)
 {
 }
 
@@ -66,6 +66,10 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
             curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
             curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
             curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
+
+            if (_ignore_cert) {
+                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
+            }
         }
 
         curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);

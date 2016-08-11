@@ -74,6 +74,12 @@ std::string Config::_nsn_cacert = "";
 
 std::string Config::_matrix_url = "";
 int Config::_matrix_timeout_sec = 0;
+std::string Config::_matrix_auth_token = "";
+std::string Config::_matrix_tran_code = "";
+std::string Config::_matrix_key = "";
+std::string Config::_matrix_cert = "";
+std::string Config::_matrix_cacert = "";
+bool Config::_matrix_ignore_cert = false;
 
 int Config::_bypass_ards = 0;
 
@@ -233,6 +239,24 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "matrix_timeout_sec", buf, sizeof(buf));
         _matrix_timeout_sec = strtol(buf, NULL, 10);
+
+        cfg_getval(&cfg, "", "matrix_auth_token", buf, sizeof(buf));
+        _matrix_auth_token = buf;
+
+        cfg_getval(&cfg, "", "matrix_tran_code", buf, sizeof(buf));
+        _matrix_tran_code = buf;
+
+        cfg_getval(&cfg, "", "matrix_key", buf, sizeof(buf));
+        _matrix_key = buf;
+
+        cfg_getval(&cfg, "", "matrix_cert", buf, sizeof(buf));
+        _matrix_cert = buf;
+
+        cfg_getval(&cfg, "", "matrix_cacert", buf, sizeof(buf));
+        _matrix_cacert = buf;
+
+        cfg_getval(&cfg, "", "matrix_ignore_cert", buf, sizeof(buf));
+        _matrix_ignore_cert = (!strcasecmp(buf, "true") || !strcasecmp(buf, "1")) ? true : false;
 
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);

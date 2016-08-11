@@ -165,6 +165,24 @@ class Config {
         static int getMatrixTimeoutSec() {
             return _matrix_timeout_sec;
         }
+        static const char* getMatrixAuthToken() {
+            return _matrix_auth_token.c_str();
+        }
+        static const char* getMatrixTranCode() {
+            return _matrix_tran_code.c_str();
+        }
+        static const char* getMatrixKey() {
+            return _matrix_key.c_str();
+        }
+        static const char* getMatrixCert() {
+            return _matrix_cert.c_str();
+        }
+        static const char* getMatrixCacert() {
+            return _matrix_cacert.c_str();
+        }
+        static bool getMatrixIgnoreCert() {
+            return _matrix_ignore_cert;
+        }
 
         static int bypassARDS() {
             return _bypass_ards;
@@ -250,6 +268,12 @@ class Config {
 
         static std::string _matrix_url;
         static int _matrix_timeout_sec;
+        static std::string _matrix_auth_token;
+        static std::string _matrix_tran_code;
+        static std::string _matrix_key;
+        static std::string _matrix_cert;
+        static std::string _matrix_cacert;
+        static bool _matrix_ignore_cert;
 
         static int _bypass_ards;
 
