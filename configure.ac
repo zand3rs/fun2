@@ -4,7 +4,7 @@ dnl
 dnl $Id$
 dnl
 
-AC_INIT([fun2], [1.9.3], [zand3rs@gmail.com])
+AC_INIT([fun2], [1.9.4], [zand3rs@gmail.com])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADER([config.h])
 
