@@ -39,6 +39,9 @@ int OraDBDefaultUnli::processDefaultUnli(default_unli_t* default_unli)
                 " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
                 __func__, sqlo_command(_sth_pdu), sqlo_geterror(_dbh));
 
+        LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
+                , default_unli->msisdn, default_unli->mnc, default_unli->mcc , default_unli->sgsn_ip, default_unli->date, default_unli->filename);
+
         //-- try to re-bind...
         defaultUnliBind();
         return -1;
