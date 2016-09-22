@@ -35,6 +35,9 @@ void* response_handler (void* arg);
 void notification_insert (int tran_type, int ref_id, const char* msisdn);
 void* notification_handler (void* arg);
 
+void* conditioner_fetcher (void* arg);
+void* conditioner_handler (void* arg);
+
 #endif
 
 /******************************************************************************/

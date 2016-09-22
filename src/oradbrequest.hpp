@@ -31,6 +31,9 @@ class OraDBRequest : public OraDB
         int processMlp(request_t* request);
         int processShampoo(request_t* request);
 
+        int getConditionerRequests(std::vector<request_t>* requests, int cluster_node, int status, int limit=100);
+        int updateConditionerRequest(const request_t* request);
+
     private:
         int _do_bind();
 
@@ -50,6 +53,9 @@ class OraDBRequest : public OraDB
         int processMlpBind();
         int processShampooBind();
 
+        int selectConditionerBind();
+        int updateConditionerBind();
+
         sqlo_stmt_handle_t _sth_select;
         sqlo_stmt_handle_t _sth_insert;
         sqlo_stmt_handle_t _sth_update;
@@ -65,6 +71,9 @@ class OraDBRequest : public OraDB
         sqlo_stmt_handle_t _sth_insert_kw;
         sqlo_stmt_handle_t _sth_process_mlp;
         sqlo_stmt_handle_t _sth_process_shampoo;
+
+        sqlo_stmt_handle_t _sth_select_conditioner;
+        sqlo_stmt_handle_t _sth_update_conditioner;
 
         int _var_id;
         int _var_cluster_node;
@@ -108,6 +117,10 @@ class OraDBRequest : public OraDB
         short _ind_result_code;
         short _ind_silent;
         short _ind_nsn_flag;
+        short _ind_promo_code;
+        short _ind_promo_value;
+        short _ind_promo_name;
+        short _ind_service_id;
 
         short _ind_extra_1;
         short _ind_extra_2;

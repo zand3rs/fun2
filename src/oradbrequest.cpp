@@ -50,6 +50,12 @@ int OraDBRequest::_do_bind()
     if ((res = processShampooBind()) < 0)
         return res;
 
+    if ((res = selectConditionerBind()) < 0)
+        return res;
+
+    if ((res = updateConditionerBind()) < 0)
+        return res;
+
     return res;
 }
 
@@ -432,10 +438,17 @@ int OraDBRequest::initTran(request_t* request)
     memset(_var_extra_o_2, 0, sizeof(_var_extra_o_2));
     memset(_var_extra_o_3, 0, sizeof(_var_extra_o_3));
 
-    snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->activation_date);
-    snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%d", request->duration);
-    snprintf(_var_extra_i_3, sizeof(_var_extra_i_3), "%s", request->gsm_num);
-    snprintf(_var_extra_i_4, sizeof(_var_extra_i_4), "%s", request->country);
+    switch (request->tran_type) {
+        case TRAN_TYPE_ROAM_USURF_ON:
+            snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->promo_code);
+            snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%s", request->promo_value);
+            break;
+        default:
+            snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->activation_date);
+            snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%d", request->duration);
+            snprintf(_var_extra_i_3, sizeof(_var_extra_i_3), "%s", request->gsm_num);
+            break;
+    }
 
     int ora_status = ora_force_execute(&_sth_it, 0);
     request->db_retr = _var_retr;
@@ -450,29 +463,16 @@ int OraDBRequest::initTran(request_t* request)
         return -1;
     }
 
-    switch (request->tran_type) {
-        case TRAN_TYPE_ROAM_USURF_STATUS:
-            snprintf(request->partner, sizeof(request->partner), "%s", _var_extra_o_1);
-            snprintf(request->exptime, sizeof(request->exptime), "%s", _var_extra_o_2);
-            snprintf(request->expdate, sizeof(request->expdate), "%s", _var_extra_o_3);
+    request->min_bal = strtol(_var_extra_o_1, NULL, 10);
+    snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
+    request->nsn_flag = strtol(_var_extra_o_3, NULL, 10);
 
-            LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-                    ", partner: %s, exptime: %s, expdate: %s", __func__
-                    , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
-                    , request->partner, request->exptime, request->expdate);
-            break;
-        default:
-            request->min_bal = strtol(_var_extra_o_1, NULL, 10);
-            snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
-            request->nsn_flag = strtol(_var_extra_o_3, NULL, 10);
-
-            LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-                    ", min_bal: %d, nsn_flag: %d, activation_date: %s, deactivation_date: %s"
-                    ", duration: %d, country: %s, others: %s", __func__
-                    , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
-                    , request->min_bal, request->nsn_flag, request->activation_date, request->deactivation_date
-                    , request->duration, request->country, request->others);
-    }
+    LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
+            ", min_bal: %d, nsn_flag: %d, activation_date: %s, deactivation_date: %s"
+            ", duration: %d, country: %s, promo_code: %s, promo_value: %s, others: %s", __func__
+            , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
+            , request->min_bal, request->nsn_flag, request->activation_date, request->deactivation_date
+            , request->duration, request->country, request->promo_code, request->promo_value, request->others);
 
     return 0;
 }
@@ -919,3 +919,113 @@ int OraDBRequest::processShampooBind()
     return 0;
 }
 
+/*============================================================================*/
+
+int OraDBRequest::selectConditionerBind()
+{
+    const char sql_stmt[] = "select id, tran_type, msisdn, promo_code, promo_value, promo_name, service_id, cluster_node"
+        " from conditioner_log where cluster_node = :cluster_node and status = :status"
+        " and rownum < :limit order by id";
+
+    _sth_select_conditioner = SQLO_STH_INIT;
+
+    if ((_sth_select_conditioner = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for SELECT_CONDITIONER.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_select_conditioner, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
+                || sqlo_bind_by_name(_sth_select_conditioner, ":status", SQLOT_INT, &_var_status, sizeof(_var_status), 0, 0)
+                || sqlo_bind_by_name(_sth_select_conditioner, ":limit", SQLOT_INT, &_var_limit, sizeof(_var_limit), 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 1, SQLOT_INT, &_request.id, sizeof(_request.id), 0, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 2, SQLOT_INT, &_request.tran_type, sizeof(_request.tran_type), 0, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 3, SQLOT_STR, &_request.a_no, sizeof(_request.a_no), &_ind_a_no, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 4, SQLOT_STR, &_request.promo_code, sizeof(_request.promo_code), &_ind_promo_code, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 5, SQLOT_STR, &_request.promo_value, sizeof(_request.promo_value), &_ind_promo_value, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 6, SQLOT_STR, &_request.promo_name, sizeof(_request.promo_name), &_ind_promo_name, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 7, SQLOT_STR, &_request.service_id, sizeof(_request.service_id), &_ind_service_id, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 8, SQLOT_INT, &_request.cluster_node, sizeof(_request.cluster_node), 0, 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for SELECT_CONDITIONER statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
+
+int OraDBRequest::getConditionerRequests(std::vector<request_t>* requests, int cluster_node, int status, int limit)
+{
+    _var_cluster_node = cluster_node;
+    _var_status = status;
+    _var_limit = limit;
+
+    if (ora_force_execute(&_sth_select_conditioner, 0) < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE SELECT_CONDITIONER_REQUEST."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_select_conditioner), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        selectConditionerBind();
+        return -1;
+    }
+    if(_result == 0) {
+        return 0;
+    }
+
+    int n_fetched = 0;
+
+    n_fetched++;
+    requests->push_back(_request);
+    LOG_DEBUG("%s: request \"%d\" fetched from db.", __func__, _request.id);
+
+    while(n_fetched < limit && (ora_force_fetch(&_sth_select_conditioner) == 1)) {
+        requests->push_back(_request);
+    }
+
+    return requests->size();
+}
+
+/*============================================================================*/
+
+int OraDBRequest::updateConditionerBind()
+{
+    const char sql_stmt[] = "update conditioner_log set"
+        " status = :status, dt_modified = sysdate where id = :id";
+
+    _sth_update_conditioner = SQLO_STH_INIT;
+
+    if ((_sth_update_conditioner = sqlo_prepare(_dbh, sql_stmt)) < 0) {
+        LOG_CRITICAL("%s: Failed to prepare statement handle for UPDATE_CONDITIONER.", __func__);
+        return -1;
+    }
+
+    if (SQLO_SUCCESS != (
+                sqlo_bind_by_name(_sth_update_conditioner, ":id", SQLOT_INT, &_request.id, sizeof(_request.id), 0, 0)
+                || sqlo_bind_by_name(_sth_update_conditioner, ":status", SQLOT_INT, &_request.status, sizeof(_request.status), 0, 0)
+                )) {
+        LOG_CRITICAL("%s: Failed to bind variables for UPDATE_CONDITIONER statement handle.", __func__);
+        return -2;
+    }
+
+    return 0;
+}
+
+int OraDBRequest::updateConditionerRequest(const request_t* request)
+{
+    memcpy(&_request, request, sizeof(request_t));
+
+    if (ora_force_execute(&_sth_update_conditioner, 0, 1) < 0) {
+        LOG_CRITICAL("%s: Failed to EXECUTE UPDATE_CONDITIONER_REQUEST."
+                " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
+                __func__, sqlo_command(_sth_update_conditioner), sqlo_geterror(_dbh));
+
+        //-- try to re-bind...
+        updateConditionerBind();
+        return -1;
+    }
+    LOG_DEBUG("%s: request %d updated status: %d",
+            __func__, request->id, request->status);
+
+    return 0;
+}

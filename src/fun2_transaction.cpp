@@ -161,6 +161,13 @@ int main (int argc, char *argv[])
         exit(-1);
     }
 
+    /* -- initialize conditioner queue -- */
+    if (0 != c2q_init(Global::getConditionerQ())) {
+        LOG_CRITICAL("%s: Unable to initialize conditioner queue!", app_name);
+        exit(-1);
+    }
+
+
     /* -- run in background -- */
     sys_daemon();
 
@@ -304,6 +311,24 @@ int main (int argc, char *argv[])
         thrs.push_back(ccb_thr);
     }
 
+    // conditioner fetcher
+    pthread_t conditioner_fetcher_thr;
+    if (0 != pthread_create(&conditioner_fetcher_thr, &pthread_attr_norm, conditioner_fetcher, NULL)) {
+        LOG_CRITICAL("%s: Unable to create conditioner_fetcher thread!!!", app_name);
+        abort();
+    }
+    thrs.push_back(conditioner_fetcher_thr);
+
+    // conditioner handler
+    for (int i=0; i<Config::getThreadCount(); ++i) {
+        pthread_t conditioner_thr;
+        if (0 != pthread_create(&conditioner_thr, &pthread_attr_norm, conditioner_handler, (void*)i)) {
+            LOG_CRITICAL("%s: Unable to create conditioner_handler thread (%d)!!!", app_name, i);
+            abort();
+        }
+        thrs.push_back(conditioner_thr);
+    }
+
     LOG_INFO("%s: Started.", app_name);
 
     if (Config::bypassARDS()) {
@@ -339,6 +364,7 @@ int main (int argc, char *argv[])
     c2q_deinit(Global::getGeoProbeQ());
     c2q_deinit(Global::getODSQ());
     c2q_deinit(Global::getCCBQ());
+    c2q_deinit(Global::getConditionerQ());
 
     /* -- deinitialize log -- */
     LOG_DEINIT();

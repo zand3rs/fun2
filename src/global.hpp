@@ -137,6 +137,10 @@ class Global {
             return &_default_unli_q;
         }
 
+        static C2q_t* getConditionerQ() {
+            return &_conditioner_q;
+        }
+
     private:
         typedef std::map<int, rc_t> rc_map_t;
         static rc_map_t _rc_map;
@@ -155,6 +159,7 @@ class Global {
         static C2q_t _ods_q;
         static C2q_t _ccb_q;
         static C2q_t _default_unli_q;
+        static C2q_t _conditioner_q;
 };
 
 #endif
