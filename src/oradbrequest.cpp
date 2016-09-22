@@ -440,6 +440,8 @@ int OraDBRequest::initTran(request_t* request)
 
     switch (request->tran_type) {
         case TRAN_TYPE_ROAM_USURF_ON:
+        case TRAN_TYPE_ROAM_USURF_OFF:
+        case TRAN_TYPE_ROAM_USURF_STATUS:
             snprintf(_var_extra_i_1, sizeof(_var_extra_i_1), "%s", request->promo_code);
             snprintf(_var_extra_i_2, sizeof(_var_extra_i_2), "%s", request->promo_value);
             break;
