@@ -286,7 +286,7 @@ int csp_charge (const char* msisdn)
 
 /*----------------------------------------------------------------------------*/
 
-int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, int duration)
+int do_nf (int operation, const char* msisdn, const char* service_id, int param)
 {
     char url[1024];
     char Origin[64];
@@ -294,7 +294,7 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
     url_encode(Config::getNfOrigin(), Origin, sizeof(Origin));
 
     snprintf(url, sizeof(url), "%s?Operation=%d&Origin=%s&ServiceID=%s&Param=%d&Silent=%d&SUB_Mobtel=%s&ReturnExpiryDate=1&ReturnVN=1",
-            Config::getNfUrl(), operation, Origin, service_id, duration, Config::getNfSilent(), msisdn);
+            Config::getNfUrl(), operation, Origin, service_id, param, Config::getNfSilent(), msisdn);
 
     HttpClient hc;
     int res_code;
@@ -330,20 +330,6 @@ int _nf_prov_deprov (int operation, const char* msisdn, const char* service_id, 
             url, res_code, hc.getResponseBody(), hc.getError());
 
     return status;
-}
-
-/*----------------------------------------------------------------------------*/
-
-int nf_provision (const char* msisdn, const char* service_id, int duration)
-{
-    return _nf_prov_deprov(1, msisdn, service_id, duration);
-}
-
-/*----------------------------------------------------------------------------*/
-
-int nf_deprovision (const char* msisdn, const char* service_id)
-{
-    return _nf_prov_deprov(2, msisdn, service_id, 0);
 }
 
 /*----------------------------------------------------------------------------*/

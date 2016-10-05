@@ -2032,18 +2032,23 @@ void* conditioner_handler (void* arg)
 
             switch (request.tran_type) {
                 case TRAN_TYPE_ROAM_USURF_ON:
-                    //--- call NF here...
                     request.duration = strtol(request.promo_value, NULL, 10);
-                    request.result_code = nf_provision(request.msisdn, request.service_id, request.duration);
-                    LOG_DEBUG("%s: nf_provision: %d", __func__, request.result_code);
+                    request.result_code = do_nf(NF_OP_ON, request.msisdn, request.service_id, request.duration);
+                    LOG_DEBUG("%s: NF_OP_ON: %d", __func__, request.result_code);
                     break;
                 case TRAN_TYPE_ROAM_USURF_OFF:
-                    request.result_code = nf_deprovision(request.msisdn, request.service_id);
-                    LOG_DEBUG("%s: nf_deprovision: %d", __func__, request.result_code);
+                    request.duration = strtol(request.promo_value, NULL, 10);
+                    request.result_code = do_nf(NF_OP_OFF, request.msisdn, request.service_id, request.duration);
+                    LOG_DEBUG("%s: NF_OP_OFF: %d", __func__, request.result_code);
+                    break;
+                case TRAN_TYPE_ROAM_USURF_STATUS:
+                    request.duration = strtol(request.promo_value, NULL, 10);
+                    request.result_code = do_nf(NF_OP_STATUS, request.msisdn, request.service_id, request.duration);
+                    LOG_DEBUG("%s: NF_OP_STATUS: %d", __func__, request.result_code);
                     break;
                 default:
                     request.result_code = -1;
-                    LOG_DEBUG("%s: invalid tran_type: %d", __func__, request.tran_type);
+                    LOG_ERROR("%s: invalid tran_type: %d", __func__, request.tran_type);
                     break;
             }
 
