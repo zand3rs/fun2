@@ -1194,7 +1194,8 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                         switch (request.tran_type) {
                             case TRAN_TYPE_ROAM_USURF_ON:
                                 send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_PRE_ACT_SUCCESSFUL, 1);
+                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_PRE_ACT_SUCCESSFUL, 1,
+                                        request.promo_code, request.promo_value);
                                 break;
                             case TRAN_TYPE_ROAM_USURF_OFF:
                                 send_system_msg(request.customer_type, request.tran_type, request.id,
