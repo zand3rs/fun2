@@ -1183,6 +1183,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_OFF_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_OFF_INVALID, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_OFF_INVALID, 1);
@@ -1209,6 +1212,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_STATUS_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_STATUS_INVALID, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_STATUS_INVALID, 1);
@@ -1242,6 +1248,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_ON_INVALID_COEX, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_ON_INVALID_COEX, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_ON_INVALID_COEX, 1);
@@ -1278,6 +1287,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_ON_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_ON_SUCCESSFUL, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_ON_SUCCESSFUL, 1);
@@ -1304,6 +1316,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_OFF_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_OFF_SUCCESSFUL, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_OFF_SUCCESSFUL, 1);
@@ -1330,6 +1345,9 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_STATUS_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "399")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF399_STATUS_SUCCESSFUL, 1);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
                                                 Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_STATUS_SUCCESSFUL, 1);
