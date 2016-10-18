@@ -433,11 +433,13 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                 if (token) {
                     //-- set promo_code
                     snprintf(request.promo_code, sizeof(request.promo_code), "%s", token);
+                    str_toupper(request.promo_code);
 
                     token = strtok_r(NULL, " ", &pbuf);
                     if (token) {
                         //-- set promo_value
                         snprintf(request.promo_value, sizeof(request.promo_value), "%s", token);
+                        str_toupper(request.promo_value);
 
                         //-- set tran_type
                         token = strtok_r(NULL, " ", &pbuf);
@@ -1168,12 +1170,56 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                     if (! request.silent) {
                         switch (request.tran_type) {
                             case TRAN_TYPE_ROAM_USURF_OFF:
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_OFF_WO_ACTIVE_ROAM, 1);
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_OFF_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_OFF_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_OFF_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_OFF_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_OFF_INVALID, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_OFF_INVALID, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_OFF_INVALID, 1);
+                                }
                                 break;
                             case TRAN_TYPE_ROAM_USURF_STATUS:
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_WO_ACTIVE_ROAM, 1);
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_STATUS_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_STATUS_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_STATUS_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_STATUS_INVALID, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_STATUS_INVALID, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_STATUS_INVALID, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_STATUS_INVALID, 1);
+                                }
                                 break;
                         }
                     }
@@ -1181,8 +1227,34 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                 case DB_RETR_USURF_INVALID_COEX:
                     request.status = TXN_STATUS_ERROR;
                     if (! request.silent) {
-                        send_system_msg(request.customer_type, request.tran_type, request.id,
-                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_INVALID_COEX, 1);
+                        switch (request.tran_type) {
+                            case TRAN_TYPE_ROAM_USURF_ON:
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_ON_INVALID_COEX, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_ON_INVALID_COEX, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_ON_INVALID_COEX, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_ON_INVALID_COEX, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_ON_INVALID_COEX, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_ON_INVALID_COEX, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_ON_INVALID_COEX, 1);
+                                }
+                                break;
+                        }
                     }
                     break;
                 case DB_RETR_USURF_OK:
@@ -1193,17 +1265,82 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                     if (! request.silent) {
                         switch (request.tran_type) {
                             case TRAN_TYPE_ROAM_USURF_ON:
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_ON_PRE_ACT_SUCCESSFUL, 1,
-                                        request.promo_code, request.promo_value);
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_ON_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_ON_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_ON_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_ON_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_ON_SUCCESSFUL, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_ON_SUCCESSFUL, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_ON_SUCCESSFUL, 1);
+                                }
                                 break;
                             case TRAN_TYPE_ROAM_USURF_OFF:
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_OFF_PRE_ACT_SUCCESSFUL, 1);
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_OFF_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_OFF_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_OFF_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_OFF_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_OFF_SUCCESSFUL, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_OFF_SUCCESSFUL, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_OFF_SUCCESSFUL, 1);
+                                }
                                 break;
                             case TRAN_TYPE_ROAM_USURF_STATUS:
-                                send_system_msg(request.customer_type, request.tran_type, request.id,
-                                        Config::getAccessCode(), request.a_no, SYSMSG_ROAM_USURF_STATUS_PRE_ACT_SUCCESSFUL, 1);
+                                if (! strcasecmp(request.promo_code, "SURF")) {
+                                    if (! strcasecmp(request.promo_value, "1D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF1D_STATUS_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "3D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF3D_STATUS_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "5D")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF5D_STATUS_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "299")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF299_STATUS_SUCCESSFUL, 1);
+                                    } else if (! strcasecmp(request.promo_value, "499")) {
+                                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                Config::getAccessCode(), request.a_no, SYSMSG_ROAM_SURF499_STATUS_SUCCESSFUL, 1);
+                                    }
+                                } else if (! strcasecmp(request.promo_code, "VIBER")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_VIBER_STATUS_SUCCESSFUL, 1);
+                                } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
+                                    send_system_msg(request.customer_type, request.tran_type, request.id,
+                                            Config::getAccessCode(), request.a_no, SYSMSG_ROAM_FACEBOOK_STATUS_SUCCESSFUL, 1);
+                                }
                                 break;
                         }
                     }
