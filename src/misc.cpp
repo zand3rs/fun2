@@ -288,12 +288,21 @@ int csp_charge (const char* msisdn)
 
 int do_nf (int operation, const char* msisdn, const char* service_id, int param)
 {
+    char paramStr[32];
+    snprintf(paramStr, sizeof(paramStr), "%d", param);
+    return do_nf(operation, msisdn, service_id, paramStr);
+}
+
+/*----------------------------------------------------------------------------*/
+
+int do_nf (int operation, const char* msisdn, const char* service_id, const char* param)
+{
     char url[1024];
     char Origin[64];
 
     url_encode(Config::getNfOrigin(), Origin, sizeof(Origin));
 
-    snprintf(url, sizeof(url), "%s?Operation=%d&Origin=%s&ServiceID=%s&Param=%d&Silent=%d&SUB_Mobtel=%s&ReturnExpiryDate=1&ReturnVN=1",
+    snprintf(url, sizeof(url), "%s?Operation=%d&Origin=%s&ServiceID=%s&Param=%s&Silent=%d&SUB_Mobtel=%s&ReturnExpiryDate=1&ReturnVN=1",
             Config::getNfUrl(), operation, Origin, service_id, param, Config::getNfSilent(), msisdn);
 
     HttpClient hc;

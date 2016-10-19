@@ -39,7 +39,9 @@ int csp_charge (const char* msisdn);
 #define NF_OP_ON     1
 #define NF_OP_OFF    2
 #define NF_OP_STATUS 3
+
 int do_nf (int operation, const char* msisdn, const char* service_id, int param);
+int do_nf (int operation, const char* msisdn, const char* service_id, const char* param);
 
 #endif
 

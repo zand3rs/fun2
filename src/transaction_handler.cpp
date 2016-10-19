@@ -2188,18 +2188,15 @@ void* conditioner_handler (void* arg)
 
             switch (request.tran_type) {
                 case TRAN_TYPE_ROAM_USURF_ON:
-                    request.duration = strtol(request.promo_value, NULL, 10);
-                    request.result_code = do_nf(NF_OP_ON, request.msisdn, request.service_id, request.duration);
+                    request.result_code = do_nf(NF_OP_ON, request.msisdn, request.service_id, request.promo_value);
                     LOG_DEBUG("%s: NF_OP_ON: %d", __func__, request.result_code);
                     break;
                 case TRAN_TYPE_ROAM_USURF_OFF:
-                    request.duration = strtol(request.promo_value, NULL, 10);
-                    request.result_code = do_nf(NF_OP_OFF, request.msisdn, request.service_id, request.duration);
+                    request.result_code = do_nf(NF_OP_OFF, request.msisdn, request.service_id, request.promo_value);
                     LOG_DEBUG("%s: NF_OP_OFF: %d", __func__, request.result_code);
                     break;
                 case TRAN_TYPE_ROAM_USURF_STATUS:
-                    request.duration = strtol(request.promo_value, NULL, 10);
-                    request.result_code = do_nf(NF_OP_STATUS, request.msisdn, request.service_id, request.duration);
+                    request.result_code = do_nf(NF_OP_STATUS, request.msisdn, request.service_id, request.promo_value);
                     LOG_DEBUG("%s: NF_OP_STATUS: %d", __func__, request.result_code);
                     break;
                 default:
