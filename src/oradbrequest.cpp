@@ -570,10 +570,11 @@ int OraDBRequest::processTran(request_t* request)
     switch (request->tran_type) {
         case TRAN_TYPE_GROAM_ON:
             snprintf(request->activation_date, sizeof(request->activation_date), "%s", _var_extra_o_1);
+            snprintf(request->promo_name, sizeof(request->promo_name), "%s", _var_extra_o_2);
             LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
-                    ", activation_date: %s, deactivation_date: %s, duration: %d", __func__
+                    ", activation_date: %s, deactivation_date: %s, duration: %d, promo_name: %s", __func__
                     , request->db_retr, request->tran_type, request->a_no, request->id, request->ref_id
-                    , request->activation_date, request->deactivation_date, request->duration);
+                    , request->activation_date, request->deactivation_date, request->duration, request->promo_name);
             break;
         case TRAN_TYPE_GROAM_OFF:
             snprintf(request->service_id, sizeof(request->service_id), "%s", _var_extra_o_1);

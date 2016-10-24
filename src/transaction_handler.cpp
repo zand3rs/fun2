@@ -80,9 +80,15 @@ static void process_tran (OraDBRequest& conn, request_t& request)
 
                                 if (! request.silent) {
                                     if (! strcasecmp(request.request_origin, "ARDS")) {
-                                        //-- ARDS activation
-                                        send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_ARDS_ROAM_ACTIVATED, 1);
+                                        if (! strcasecmp(request.promo_name, "USURF")) {
+                                            //-- ARDS activation with USURF promo
+                                            send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                    Config::getAccessCode(), request.a_no, SYSMSG_ARDS_USURF_ACTIVATED, 1);
+                                        } else {
+                                            //-- regular ARDS activation
+                                            send_system_msg(request.customer_type, request.tran_type, request.id,
+                                                    Config::getAccessCode(), request.a_no, SYSMSG_ARDS_ROAM_ACTIVATED, 1);
+                                        }
                                     } else {
                                         //-- regular activation
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
