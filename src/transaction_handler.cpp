@@ -2196,6 +2196,11 @@ void* conditioner_handler (void* arg)
                 case TRAN_TYPE_ROAM_USURF_ON:
                     request.result_code = do_nf(NF_OP_ON, request.msisdn, request.service_id, request.promo_value);
                     LOG_DEBUG("%s: NF_OP_ON: %d", __func__, request.result_code);
+                    if (request.result_code == -2) {
+                        LOG_DEBUG("%s: NF_OP_ON: insufficient balance", __func__);
+                        send_system_msg(request.customer_type, request.tran_type, request.id,
+                                Config::getAccessCode(), request.msisdn, SYSMSG_ROAM_USURF_ON_INSUFF_BAL, 1);
+                    }
                     break;
                 case TRAN_TYPE_ROAM_USURF_OFF:
                     request.result_code = do_nf(NF_OP_OFF, request.msisdn, request.service_id, request.promo_value);
