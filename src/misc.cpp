@@ -322,8 +322,8 @@ int do_nf (int operation, const char* msisdn, const char* service_id, const char
                 done = true;
                 break;
             case 403:
-                if (strstr(hc.getResponseBody(), "2104")) {
-                    LOG_DEBUG("%s: Got error 2104 (insuff bal), setting status to -2...", __func__);
+                if (strstr(hc.getResponseBody(), "132014")) {
+                    LOG_DEBUG("%s: Got error 132014 (insuff bal), setting status to -2...", __func__);
                     status = -2;
                 }
                 done = true;
