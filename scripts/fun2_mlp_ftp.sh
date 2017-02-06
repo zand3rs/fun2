@@ -1,9 +1,8 @@
 #!/bin/bash
 
-FTP_HOST="10.225.12.45"
+FTP_HOST="10.226.203.8"
 FTP_USER="isoladm"
 FTP_PASS="isoladm123$$"
-#REMOTE_DIR="/archive_initload3/infa_shared_ph1/SrcFiles/Landing/NON_BSS/FUN2"
 REMOTE_DIR="/appl/mlp/FUN2_MLP"
 LOCAL_DIR="/appl/mlp"
 # do not show getopts errors...
@@ -35,7 +34,7 @@ FILE_PATTERN="FUN2.MLP*"
 /usr/bin/expect -f - <<EOFEXPECT
     set timeout 60
     spawn sftp $FTP_USER@$FTP_HOST
-    expect "sftp>"
+    expect "Successfulsftp>"
     send "lcd $BASE_DIR\r";
     expect "sftp>"
     send "lcd $LOCAL_DIR\r";

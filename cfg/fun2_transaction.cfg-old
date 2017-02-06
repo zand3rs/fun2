@@ -19,8 +19,8 @@ access_code = 2884
 
 # database
 db_host = orcl
-db_user = fun2
-db_pass = fun2
+db_user = trigger_owner
+db_pass = triggerowner123
 db_fetch_limit = 150
 
 thread_count = 2

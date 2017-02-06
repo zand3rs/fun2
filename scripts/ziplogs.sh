@@ -15,7 +15,7 @@ fi
 count=`ps -ef | grep ziplogs.sh | wc -l`
 echo `date +'%c'`
 echo "No. Runnning Processes: ${count}"
-if [ ${count} -gt 5 ]
+if [ ${count} -gt 6 ]
 then
   echo  "Still running.."
   echo ${count}
@@ -29,5 +29,4 @@ fi
 echo `date +'%c'`
 
 exit
-
 

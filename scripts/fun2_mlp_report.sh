@@ -1,11 +1,11 @@
 #!/bin/sh
 
 pid=trigger_owner
-pidpw=triggerowner123
-ORACLE_SID=trgdev
+pidpw=trgown123
+ORACLE_SID=trgprd
 ORACLE_HOME=/u01/app/oracle/product/10.2.0
 FUN2_SCRIPT=/appl/fun2/scripts
-FILEDIR='/appl/mlp'
+FILEDIR=/appl/mlp
 
 export ORACLE_SID ORACLE_HOME FUN2_SCRIPT FILEDIR pid pidpw
 
