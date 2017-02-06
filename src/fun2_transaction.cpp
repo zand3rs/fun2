@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
     }
 
     /* -- load services from db -- */
-    if (0 != Global::loadRC(Config::getOraAuth(), Config::getLibraryPath())) {
+    if (0 != Global::loadRC(Config::getOraAuth(), Config::getLibraryPath(), Config::getBrand())) {
         LOG_CRITICAL("%s: Unable to load services from db (%s).", app_name, Config::getOraAuth());
         exit(-1);
     }

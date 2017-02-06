@@ -1478,7 +1478,7 @@ void* raw_fetcher (void* arg)
         //-- clear vector...
         requests.clear();
 
-        if (conn.getRequests(&requests, Config::getClusterNode(), TXN_STEP_INITIAL, TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
+        if (conn.getRequests(&requests, Config::getBrand(), Config::getClusterNode(), TXN_STEP_INITIAL, TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
             sys_msleep(1000);
             continue;
         }
@@ -1598,7 +1598,7 @@ void* request_fetcher (void* arg)
         //-- clear vector...
         requests.clear();
 
-        if (conn.getRequests(&requests, Config::getClusterNode(), TXN_STEP_INITIAL, TXN_STATUS_CONFIRMED, Config::getOraFetchLimit()) < 0) {
+        if (conn.getRequests(&requests, Config::getBrand(), Config::getClusterNode(), TXN_STEP_INITIAL, TXN_STATUS_CONFIRMED, Config::getOraFetchLimit()) < 0) {
             sys_msleep(1000);
             continue;
         }
@@ -1740,7 +1740,7 @@ void* transaction_fetcher (void* arg)
         int step_no = rc->step_no;
         int status = TXN_STATUS_SUCCESSFUL;
 
-        if (conn.getRequests(&requests, Config::getClusterNode(), step_no, status, Config::getOraFetchLimit()) < 0) {
+        if (conn.getRequests(&requests, Config::getBrand(), Config::getClusterNode(), step_no, status, Config::getOraFetchLimit()) < 0) {
             sys_msleep(1000);
             continue;
         }

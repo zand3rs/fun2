@@ -33,6 +33,7 @@ int Config::_loglevel = 0;
 std::string Config::_logfile = "";
 int Config::_cluster_node = 0;
 std::string Config::_access_code = "";
+std::string Config::_brand = "";
 std::string Config::_ora_auth = "";
 int Config::_ora_fetch_limit = 100;
 int Config::_thread_count = 0;
@@ -123,6 +124,9 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "access_code", buf, sizeof(buf));
         _access_code = buf;
+
+        cfg_getval(&cfg, "", "brand", buf, sizeof(buf));
+        _brand = buf;
 
         cfg_getval(&cfg, "", "db_host", buf, sizeof(buf));
         std::string db_host = buf;

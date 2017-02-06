@@ -71,8 +71,9 @@ int OraDBRequest::initialize(const char* ora_auth)
     return res;
 }
 
-int OraDBRequest::getRequests(std::vector<request_t>* requests, int cluster_node, int step_no, int status, int limit)
+int OraDBRequest::getRequests(std::vector<request_t>* requests, const char* brand, int cluster_node, int step_no, int status, int limit)
 {
+    snprintf(_var_brand, sizeof(_var_brand), "%s", brand);
     _var_cluster_node = cluster_node;
     _var_step_no = step_no;
     _var_status = status;
@@ -186,8 +187,8 @@ int OraDBRequest::selectBind()
     const char sql_stmt[] = "select id, msg, a_no, b_no, step_no, last_step_no"
         ", tran_type, cluster_node, customer_type, request_origin, ref_id, imsi"
         ", activation_date, deactivation_date, duration, gsm_num, result_code, silent"
-        ", nsn_flag from request_log"
-        " where tran_dt > trunc(sysdate-3) and cluster_node = :cluster_node and step_no = :step_no and status = :status"
+        ", nsn_flag, brand from request_log"
+        " where tran_dt > trunc(sysdate-3) and brand = :brand and cluster_node = :cluster_node and step_no = :step_no and status = :status"
         " and rownum < :limit order by id";
 
     _sth_select = SQLO_STH_INIT;
@@ -198,7 +199,8 @@ int OraDBRequest::selectBind()
     }
 
     if (SQLO_SUCCESS != (
-                sqlo_bind_by_name(_sth_select, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
+                   sqlo_bind_by_name(_sth_select, ":brand", SQLOT_STR, &_var_brand, sizeof(_var_brand), 0, 0)
+                || sqlo_bind_by_name(_sth_select, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
                 || sqlo_bind_by_name(_sth_select, ":step_no", SQLOT_INT, &_var_step_no, sizeof(_var_step_no), 0, 0)
                 || sqlo_bind_by_name(_sth_select, ":status", SQLOT_INT, &_var_status, sizeof(_var_status), 0, 0)
                 || sqlo_bind_by_name(_sth_select, ":limit", SQLOT_INT, &_var_limit, sizeof(_var_limit), 0, 0)
@@ -221,6 +223,7 @@ int OraDBRequest::selectBind()
                 || sqlo_define_by_pos(_sth_select, 17, SQLOT_INT, &_request.result_code, sizeof(_request.result_code), &_ind_result_code, 0, 0)
                 || sqlo_define_by_pos(_sth_select, 18, SQLOT_INT, &_request.silent, sizeof(_request.silent), &_ind_silent, 0, 0)
                 || sqlo_define_by_pos(_sth_select, 19, SQLOT_INT, &_request.nsn_flag, sizeof(_request.nsn_flag), &_ind_nsn_flag, 0, 0)
+                || sqlo_define_by_pos(_sth_select, 20, SQLOT_STR, &_request.brand, sizeof(_request.brand), &_ind_brand, 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SELECT_REQUEST statement handle.", __func__);
         return -2;

@@ -373,6 +373,7 @@ typedef struct request_t {
     int status;
     int cluster_node;
     int tran_type;
+    char brand[16];
     char customer_type[32];
     char request_origin[32];
     char gsm_num[16];

@@ -57,6 +57,9 @@ class Config {
         static const char* getAccessCode() {
             return _access_code.c_str();
         }
+        static const char* getBrand() {
+            return _brand.empty() ? "PREPAID" : _brand.c_str();
+        }
         static const char* getOraAuth() {
             return _ora_auth.c_str();
         }
@@ -227,6 +230,7 @@ class Config {
         static std::string _logfile;
         static int _cluster_node;
         static std::string _access_code;
+        static std::string _brand;
         static std::string _ora_auth;
         static int _ora_fetch_limit;
         static int _thread_count;

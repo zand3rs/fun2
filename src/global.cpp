@@ -47,7 +47,7 @@ C2q_t Global::_conditioner_q;
 
 /*============================================================================*/
 
-int Global::loadRC(const char* ora_auth, const char* lib_path)
+int Global::loadRC(const char* ora_auth, const char* lib_path, const char* brand)
 {
     if (OraDBSimple::init_lib() < 0) {
         return -1;
@@ -61,14 +61,14 @@ int Global::loadRC(const char* ora_auth, const char* lib_path)
     OraDBSimple::stmt_handle_t res = OraDBSimple::STH_INIT;
     const char** row;
 
-    string q = "select priority, service_desc, svc_url, svc_host, svc_port, svc_user, svc_pass"
-        ", db_host, db_user, db_pass, timeout_sec, thread_count, max_retry, app_lib"
-        ", svc_name, expiry"
-        " from services where status='ACTIVE'"
-        " order by priority";
+    char q[512];
+    snprintf(q, sizeof(q), "select priority, service_desc, svc_url, svc_host, svc_port, svc_user, svc_pass"
+        ", db_host, db_user, db_pass, timeout_sec, thread_count, max_retry, app_lib, svc_name, expiry"
+        " from services where brand='%s' and status='ACTIVE'"
+        " order by priority", brand);
 
     int i = 1;
-    conn.query(&res, q.c_str());
+    conn.query(&res, q);
     while((row = conn.fetchRow(res)) != NULL) {
         int step_no = strtol(row[0], NULL, 10);
         string description = row[1];

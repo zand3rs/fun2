@@ -14,7 +14,7 @@ class OraDBRequest : public OraDB
         virtual int initialize(const char* ora_auth = "");
 
     public:
-        int getRequests(std::vector<request_t>* requests, int cluster_node, int step_no, int status, int limit=100);
+        int getRequests(std::vector<request_t>* requests, const char* brand, int cluster_node, int step_no, int status, int limit=100);
         int insertRequest(const request_t* request);
         int updateRequest(const request_t* request);
 
@@ -75,6 +75,8 @@ class OraDBRequest : public OraDB
         sqlo_stmt_handle_t _sth_select_conditioner;
         sqlo_stmt_handle_t _sth_update_conditioner;
 
+        char _var_brand[16];
+
         int _var_id;
         int _var_cluster_node;
         int _var_step_no;
@@ -121,6 +123,7 @@ class OraDBRequest : public OraDB
         short _ind_promo_value;
         short _ind_promo_name;
         short _ind_service_id;
+        short _ind_brand;
 
         short _ind_extra_1;
         short _ind_extra_2;

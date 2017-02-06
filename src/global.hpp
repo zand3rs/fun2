@@ -43,7 +43,7 @@ class Global {
         //static const size_t thr_stack_size = 0x00040000;
         static const size_t thr_stack_size = 0x00100000;
 
-        static int loadRC(const char* ora_auth, const char* lib_path);
+        static int loadRC(const char* ora_auth, const char* lib_path, const char* brand);
         static rc_t* getRC(const int step_no);
         static rc_t* getNextRC(const int step_no);
         static int getNextStepNo(const int step_no);
