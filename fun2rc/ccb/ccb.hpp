@@ -6,7 +6,6 @@
 #include <string>
 
 #include "fun2rc.hpp"
-#include "oradbsimple.hpp"
 
 /*============================================================================*/
 
@@ -33,8 +32,6 @@ class CCB : public Fun2RC {
 
     private:
         std::string _svc_url;
-        std::string _ora_auth;
-        OraDBSimple _conn;
 };
 
 /*============================================================================*/

@@ -14,11 +14,11 @@ LLIBS      = ../../libfuc/lib/libfuc.a
 LIBPATH    = ../lib
 CINCLUDES  = -I../include -I../../libfuc/include
 CDEFINES   = -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS @DEFS@
-CXXFLAGS   = -fPIC @CXXFLAGS@ $(CDEFINES) $(CINCLUDES) @LIBSQLORA8_CFLAGS@
+CXXFLAGS   = -fPIC @CXXFLAGS@ $(CDEFINES) $(CINCLUDES)
 LFLAGS     = -fPIC -shared -Wl,-soname,$(LIB).$(VERSION)
 
 # target files...
-LIBO = ccb.o oradb.o oradbsimple.o
+LIBO = ccb.o
 
 all: $(LIB)
 

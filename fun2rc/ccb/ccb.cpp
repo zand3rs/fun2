@@ -15,19 +15,6 @@
 
 int CCB::initialize()
 {
-    if (OraDB::init_lib() < 0) {
-        fprintf(stdout, "Unable to initialize OCI!!!\n");
-        LOG_CRITICAL("%s::%s: Unable to initialize OCI!!!", __class__, __func__);
-        return -1;
-    }
-
-    _ora_auth = "fun2/fun2@orcl";
-    if (_conn.initialize(_ora_auth.c_str()) < 0) {
-        fprintf(stdout, "Unable to connect to oracle: ora_auth: %s\n", _ora_auth.c_str());
-        LOG_ERROR("%s::%s: Unable to connect to oracle: ora_auth: %s", __class__, __func__, _ora_auth.c_str());
-        return -1;
-    }
-
     if (_param.logh) {
         LOG_SET_HANDLE(_param.logh);
     }
@@ -43,7 +30,6 @@ int CCB::initialize()
 
 int CCB::deinitialize()
 {
-    _conn.destroy_db();
     fprintf(stdout, "Deinitialize...\n");
     LOG_INFO("CCB::deinitialize: url: %s", _svc_url.c_str());
     return 0;
