@@ -127,6 +127,23 @@ Content-Length: 157
      <IMSI>515xxxxxxxxxx</IMSI>
   </LST_NSUB>
 </SOAP-ENV:Body>
+
+<-- Query MSISDN given IMSI response --/>
+</SOAP-ENV:Envelope>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<LST_NSUBResponse>
+   <Result>
+      <ResultCode>0</ResultCode>
+      <ResultDesc>Operation is successful</ResultDesc>
+      <ResultData>
+         <ISDN>63xxxxxxx</ISDN>
+      </ResultData>
+   </Result>
+</LST_NSUBResponse>
+</SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 <-- Query IMSI given MSISDN --/>
@@ -136,6 +153,24 @@ Content-Length: 157
   <LST_NSUB>
      <ISDN>639171234567</ISDN>
   </LST_NSUB>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+<-- Query IMSI given MSISDN response --/>
+</SOAP-ENV:Envelope>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<LST_NSUBResponse>
+   <Result>
+      <ResultCode>0</ResultCode>
+      <ResultDesc>Operation is successful</ResultDesc>
+      <ResultData>
+         <IMSI>515xxxxxxxxxx</IMSI>
+      </ResultData>
+   </Result>
+</LST_NSUBResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
