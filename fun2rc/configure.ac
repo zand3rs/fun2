@@ -4,10 +4,10 @@ dnl
 dnl $Id$
 dnl
 
-AC_INIT([fun2rc], [0.3.0], [zand3rs@gmail.com])
+AC_INIT([fun2rc], [0.4.0], [zand3rs@gmail.com])
 
-RELEASE_DATE="06/2012"
-COPYRIGHT="2009-2012"
+RELEASE_DATE="02/2017"
+COPYRIGHT="2009-2017"
 
 MAINDIR="`cd ${0%/*}; pwd`"
 SUBDIRS="`cd ${0%/*}; cat subdirs`"
