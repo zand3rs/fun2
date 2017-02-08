@@ -37,8 +37,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = fun2_request$(EXEEXT) fun2_response$(EXEEXT) \
 	fun2_notification$(EXEEXT) fun2_transaction$(EXEEXT) \
-	fun2_broadcast$(EXEEXT) fun2_geoprobe$(EXEEXT) \
-	fun2_ods$(EXEEXT) fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT) \
+	fun2_transaction_tm$(EXEEXT) fun2_broadcast$(EXEEXT) \
+	fun2_geoprobe$(EXEEXT) fun2_ods$(EXEEXT) \
+	fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT) \
 	fun2_shampoo$(EXEEXT)
 subdir = src
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
@@ -125,6 +126,18 @@ am_fun2_transaction_OBJECTS = fun2_transaction.$(OBJEXT) \
 	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
 fun2_transaction_OBJECTS = $(am_fun2_transaction_OBJECTS)
 fun2_transaction_DEPENDENCIES = ../libfuc/lib/libfuc.a
+am_fun2_transaction_tm_OBJECTS = fun2_transaction.$(OBJEXT) \
+	config.$(OBJEXT) ccb_handler.$(OBJEXT) \
+	geoprobe_handler.$(OBJEXT) global.$(OBJEXT) hlr.$(OBJEXT) \
+	base64.$(OBJEXT) httpclient.$(OBJEXT) httputils.$(OBJEXT) \
+	misc.$(OBJEXT) nsn.$(OBJEXT) ods_handler.$(OBJEXT) \
+	oradb.$(OBJEXT) oradbccb.$(OBJEXT) oradbgeoprobe.$(OBJEXT) \
+	oradbods.$(OBJEXT) oradbrequest.$(OBJEXT) \
+	oradbresponse.$(OBJEXT) oradbnotification.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) transaction_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
+fun2_transaction_tm_OBJECTS = $(am_fun2_transaction_tm_OBJECTS)
+fun2_transaction_tm_DEPENDENCIES = ../libfuc/lib/libfuc.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -141,12 +154,14 @@ SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
 	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
 	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
 	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES)
+	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES) \
+	$(fun2_transaction_tm_SOURCES)
 DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
 	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
 	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
 	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES)
+	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES) \
+	$(fun2_transaction_tm_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -320,6 +335,37 @@ fun2_transaction_SOURCES = \
                        sysmsg.cpp sysmsg.hpp
 
 fun2_transaction_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             @LIBSQLORA8_LIBS@ \
+             @LIBCURL@
+
+fun2_transaction_tm_SOURCES = \
+                       data_struct.hpp \
+                       fun2_transaction.cpp \
+                       config.cpp config.hpp \
+                       ccb_handler.cpp ccb_handler.hpp \
+                       geoprobe_handler.cpp geoprobe_handler.hpp \
+                       global.cpp global.hpp \
+                       hlr.cpp hlr.hpp \
+                       base64.cpp base64.hpp \
+                       httpclient.cpp httpclient.hpp \
+                       httputils.cpp httputils.hpp \
+                       misc.cpp misc.hpp \
+                       nsn.cpp nsn.hpp \
+                       ods_handler.cpp ods_handler.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbccb.cpp oradbccb.hpp \
+                       oradbgeoprobe.cpp oradbgeoprobe.hpp \
+                       oradbods.cpp oradbods.hpp \
+                       oradbrequest.cpp oradbrequest.hpp \
+                       oradbresponse.cpp oradbresponse.hpp \
+                       oradbnotification.cpp oradbnotification.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       transaction_handler.cpp transaction_handler.hpp \
+                       signal_handler.cpp signal_handler.hpp \
+                       sysmsg.cpp sysmsg.hpp
+
+fun2_transaction_tm_LDADD = \
              ../libfuc/lib/libfuc.a \
              @LIBSQLORA8_LIBS@ \
              @LIBCURL@
@@ -515,6 +561,9 @@ fun2_shampoo$(EXEEXT): $(fun2_shampoo_OBJECTS) $(fun2_shampoo_DEPENDENCIES)
 fun2_transaction$(EXEEXT): $(fun2_transaction_OBJECTS) $(fun2_transaction_DEPENDENCIES) 
 	@rm -f fun2_transaction$(EXEEXT)
 	$(CXXLINK) $(fun2_transaction_LDFLAGS) $(fun2_transaction_OBJECTS) $(fun2_transaction_LDADD) $(LIBS)
+fun2_transaction_tm$(EXEEXT): $(fun2_transaction_tm_OBJECTS) $(fun2_transaction_tm_DEPENDENCIES) 
+	@rm -f fun2_transaction_tm$(EXEEXT)
+	$(CXXLINK) $(fun2_transaction_tm_LDFLAGS) $(fun2_transaction_tm_OBJECTS) $(fun2_transaction_tm_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

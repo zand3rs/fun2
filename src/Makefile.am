@@ -1,7 +1,7 @@
 AM_CXXFLAGS = @CXXFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
 AM_CFLAGS = @CFLAGS@ @LIBSQLORA8_CFLAGS@ -I../ -I../fun2rc/include -I../libfuc/include -I../mxml
 
-bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli fun2_mlp fun2_shampoo
+bin_PROGRAMS = fun2_request fun2_response fun2_notification fun2_transaction fun2_transaction_tm fun2_broadcast fun2_geoprobe fun2_ods fun2_default_unli fun2_mlp fun2_shampoo
 
 fun2_request_SOURCES = \
                        data_struct.hpp \
@@ -89,6 +89,37 @@ fun2_transaction_SOURCES = \
                        sysmsg.cpp sysmsg.hpp
 
 fun2_transaction_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             @LIBSQLORA8_LIBS@ \
+             @LIBCURL@
+
+fun2_transaction_tm_SOURCES = \
+                       data_struct.hpp \
+                       fun2_transaction.cpp \
+                       config.cpp config.hpp \
+                       ccb_handler.cpp ccb_handler.hpp \
+                       geoprobe_handler.cpp geoprobe_handler.hpp \
+                       global.cpp global.hpp \
+                       hlr.cpp hlr.hpp \
+                       base64.cpp base64.hpp \
+                       httpclient.cpp httpclient.hpp \
+                       httputils.cpp httputils.hpp \
+                       misc.cpp misc.hpp \
+                       nsn.cpp nsn.hpp \
+                       ods_handler.cpp ods_handler.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbccb.cpp oradbccb.hpp \
+                       oradbgeoprobe.cpp oradbgeoprobe.hpp \
+                       oradbods.cpp oradbods.hpp \
+                       oradbrequest.cpp oradbrequest.hpp \
+                       oradbresponse.cpp oradbresponse.hpp \
+                       oradbnotification.cpp oradbnotification.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       transaction_handler.cpp transaction_handler.hpp \
+                       signal_handler.cpp signal_handler.hpp \
+                       sysmsg.cpp sysmsg.hpp
+
+fun2_transaction_tm_LDADD = \
              ../libfuc/lib/libfuc.a \
              @LIBSQLORA8_LIBS@ \
              @LIBCURL@

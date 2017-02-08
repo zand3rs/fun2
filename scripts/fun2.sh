@@ -11,11 +11,12 @@ APP_NAME="fun2"
 REQUEST_BIN="fun2_request"
 RESPONSE_BIN="fun2_response"
 TRANSACTION_BIN="fun2_transaction"
+TRANSACTION_TM_BIN="fun2_transaction_tm"
 BROADCAST_BIN="fun2_broadcast"
 DEFAULT_UNLI_BIN="fun2_default_unli"
 MLP_BIN="fun2_mlp"
 SHAMPOO_BIN="fun2_shampoo"
-APP_BIN_LIST="$REQUEST_BIN $RESPONSE_BIN $TRANSACTION_BIN $BROADCAST_BIN $DEFAULT_UNLI_BIN $MLP_BIN $SHAMPOO_BIN"
+APP_BIN_LIST="$REQUEST_BIN $RESPONSE_BIN $TRANSACTION_BIN $TRANSACTION_TM_BIN $BROADCAST_BIN $DEFAULT_UNLI_BIN $MLP_BIN $SHAMPOO_BIN"
 
 ##---------------------------------------------------------------------------
 
