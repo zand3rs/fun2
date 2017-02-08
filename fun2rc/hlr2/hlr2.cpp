@@ -16,12 +16,13 @@ int HLR2::initialize()
     }
 
     timeout = _param.timeout;
-    snprintf(url, sizeof(url), "%s", _param.svc_url);
-    snprintf(username, sizeof(username), "%s", _param.svc_user);
-    snprintf(password, sizeof(password), "%s", _param.svc_pass);
+    url = _param.svc_url;
+    username = _param.svc_user;
+    password = _param.svc_pass;
+    location.clear();
 
     LOG_INFO("%s::%s: url: %s, timeout: %d, username: %s, password: %s", __class__, __func__,
-            url, timeout, username, password);
+            url.c_str(), timeout, username.c_str(), password.c_str());
 
     return 0;
 }
@@ -38,49 +39,13 @@ int HLR2::deinitialize()
 
 int HLR2::activate(const char *msisdn)
 {
-    char location[256];
-    char buf[512];
-
-    char* token;
-    char* pbuf;
-
     HttpClient hc;
     std::string req;
     int status;
 
     LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
 
-    //-- login
-    memset(location, 0, sizeof(location));
-    req = "<?xml version=\"1.0\" ?>\n"
-          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-          "<soapenv:Body>\n"
-          "  <LGI>\n"
-          "    <OPNAME>" + std::string(username) + "</OPNAME>\n"
-          "    <PWD>" + std::string(password) + "</PWD>\n"
-          "  </LGI>\n"
-          "</soapenv:Body>\n"
-          "</soapenv:Envelope>\n";
-    status = hc.httpPost(url, req.c_str(), "text/xml", timeout);
-    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            url, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
-
-    if (307 == status) {
-        snprintf(buf, sizeof(buf), "%s", hc.getResponseHeaders());
-        pbuf = strstr(buf, "Location");
-        if (pbuf) {
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            if (token) {
-                snprintf(location, sizeof(location), "%s", token);
-            }
-        }
-    }
-
-    if (200 == status) {
-    }
-
-    if (!*location) {
+    if (0 != _login()) {
         return -1;
     }
     
@@ -102,9 +67,9 @@ int HLR2::activate(const char *msisdn)
           "  </ERA_CFNRY>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Activate Barring Service for Outgoing Call outside HPLMN
     req = "<?xml version=\"1.0\" ?>\n"
@@ -124,9 +89,9 @@ int HLR2::activate(const char *msisdn)
           "  </ACT_BORO>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Activate Barring Service for Incoming  when roaming
     req = "<?xml version=\"1.0\" ?>\n"
@@ -142,9 +107,9 @@ int HLR2::activate(const char *msisdn)
           "  </ACT_BICROM>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Deactivation of Multiparty/Conference Call
     req = "<?xml version=\"1.0\" ?>\n"
@@ -160,9 +125,9 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_BARPWD>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Disable Roaming Data
     //-- if encountered ERR3810 mapped to SUCCESS
@@ -186,9 +151,9 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_DIAMRRS>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Enabling Outgoing Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -215,9 +180,9 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_LCK>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- SSET Remove Ring Back Tone (RBT) [NRBT=1600]
     req = "<?xml version=\"1.0\" ?>\n"
@@ -229,9 +194,9 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_NRBT>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Enable Incoming Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -244,9 +209,9 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_TCSI>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Suppression of SMS CSI to avoid double charging for TM
     req = "<?xml version=\"1.0\" ?>\n"
@@ -259,20 +224,11 @@ int HLR2::activate(const char *msisdn)
           "  </MOD_SMSCSI>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
-    //-- logout
-    req = "<?xml version=\"1.0\" ?>\n"
-          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-          "<soapenv:Body>\n"
-          "  <LGO></LGO>\n"
-          "</soapenv:Body>\n"
-          "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
-    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+    _logout();
 
     return 0;
 }
@@ -281,49 +237,13 @@ int HLR2::activate(const char *msisdn)
 
 int HLR2::deactivate(const char *msisdn)
 {
-    char location[256];
-    char buf[512];
-
-    char* token;
-    char* pbuf;
-
     HttpClient hc;
     std::string req;
     int status;
 
     LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
 
-    //-- login
-    memset(location, 0, sizeof(location));
-    req = "<?xml version=\"1.0\" ?>\n"
-          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-          "<soapenv:Body>\n"
-          "  <LGI>\n"
-          "    <OPNAME>" + std::string(username) + "</OPNAME>\n"
-          "    <PWD>" + std::string(password) + "</PWD>\n"
-          "  </LGI>\n"
-          "</soapenv:Body>\n"
-          "</soapenv:Envelope>\n";
-    status = hc.httpPost(url, req.c_str(), "text/xml", timeout);
-    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            url, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
-
-    if (307 == status) {
-        snprintf(buf, sizeof(buf), "%s", hc.getResponseHeaders());
-        pbuf = strstr(buf, "Location");
-        if (pbuf) {
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            if (token) {
-                snprintf(location, sizeof(location), "%s", token);
-            }
-        }
-    }
-
-    if (200 == status) {
-    }
-
-    if (!*location) {
+    if (0 != _login()) {
         return -1;
     }
 
@@ -345,9 +265,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </DEA_BORO>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Barring of Incoming  when roaming
     req = "<?xml version=\"1.0\" ?>\n"
@@ -363,9 +283,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </DEA_BICROM>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Multiparty
     req = "<?xml version=\"1.0\" ?>\n"
@@ -381,9 +301,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_MPTY>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Data
     req = "<?xml version=\"1.0\" ?>\n"
@@ -399,9 +319,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_DIAMRRS>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Outgoing Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -428,9 +348,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_LCK>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Remove Incoming Voice Trigger for charging
     req = "<?xml version=\"1.0\" ?>\n"
@@ -442,9 +362,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_TCSI>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Automatic activation of RBT (if applicable) [NRBT=1600]
     req = "<?xml version=\"1.0\" ?>\n"
@@ -457,9 +377,9 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_NRBT>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     //-- Enabling SMS CSI to avoid double charging for TM
     req = "<?xml version=\"1.0\" ?>\n"
@@ -473,20 +393,11 @@ int HLR2::deactivate(const char *msisdn)
           "  </MOD_SMSCSI>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
-    //-- logout
-    req = "<?xml version=\"1.0\" ?>\n"
-          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-          "<soapenv:Body>\n"
-          "  <LGO></LGO>\n"
-          "</soapenv:Body>\n"
-          "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
-    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+    _logout();
 
     return 0;
 }
@@ -495,49 +406,13 @@ int HLR2::deactivate(const char *msisdn)
 
 int HLR2::getIMSI(const char *msisdn, char *imsi, int imsi_size)
 {
-    char location[256];
-    char buf[512];
-
-    char* token;
-    char* pbuf;
-
     HttpClient hc;
     std::string req;
     int status;
 
     LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
 
-    //-- login
-    memset(location, 0, sizeof(location));
-    req = "<?xml version=\"1.0\" ?>\n"
-          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-          "<soapenv:Body>\n"
-          "  <LGI>\n"
-          "    <OPNAME>" + std::string(username) + "</OPNAME>\n"
-          "    <PWD>" + std::string(password) + "</PWD>\n"
-          "  </LGI>\n"
-          "</soapenv:Body>\n"
-          "</soapenv:Envelope>\n";
-    status = hc.httpPost(url, req.c_str(), "text/xml", timeout);
-    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            url, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
-
-    if (307 == status) {
-        snprintf(buf, sizeof(buf), "%s", hc.getResponseHeaders());
-        pbuf = strstr(buf, "Location");
-        if (pbuf) {
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            token = strtok_r(NULL, ":\r\n", &pbuf);
-            if (token) {
-                snprintf(location, sizeof(location), "%s", token);
-            }
-        }
-    }
-
-    if (200 == status) {
-    }
-
-    if (!*location) {
+    if (0 != _login()) {
         return -1;
     }
 
@@ -550,20 +425,88 @@ int HLR2::getIMSI(const char *msisdn, char *imsi, int imsi_size)
           "  </LST_NSUB>\n"
           "</SOAP-ENV:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+    status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
-    //-- logout
+    _logout();
+
+    return 0;
+}
+
+/*============================================================================*/
+
+int HLR2::_login()
+{
+    HttpClient hc;
+    std::string req;
+
+    LOG_INFO("%s::%s: url: %s, timeout: %d, username: %s, password: %s", __class__, __func__,
+            url.c_str(), timeout, username.c_str(), password.c_str());
+
+    req = "<?xml version=\"1.0\" ?>\n"
+          "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+          "<soapenv:Body>\n"
+          "  <LGI>\n"
+          "    <OPNAME>" + username + "</OPNAME>\n"
+          "    <PWD>" + password + "</PWD>\n"
+          "  </LGI>\n"
+          "</soapenv:Body>\n"
+          "</soapenv:Envelope>\n";
+
+    int status = hc.httpPost(url.c_str(), req.c_str(), "text/xml", timeout);
+
+    LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
+            url.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+
+    //-- initialize location...
+    location.clear();
+
+    if (307 != status) {
+        return -1;
+    }
+
+    char buf[512];
+    snprintf(buf, sizeof(buf), "%s", hc.getResponseHeaders());
+
+    char* pbuf = strstr(buf, "Location");
+    if (pbuf && strchr(pbuf, ':')) {
+        char* token;
+        token = strtok_r(NULL, ":\r\n", &pbuf);
+        token = strtok_r(NULL, ":\r\n", &pbuf);
+        if (token) {
+            location = token;
+        }
+    }
+
+    return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+int HLR2::_logout()
+{
+    HttpClient hc;
+    std::string req;
+
+    LOG_INFO("%s::%s: url: %s, timeout: %d", __class__, __func__,
+            location.c_str(), timeout);
+
+    if (location.empty()) {
+        return -1;
+    }
+
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
           "<soapenv:Body>\n"
           "  <LGO></LGO>\n"
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
-    status = hc.httpPost(location, req.c_str(), "text/xml", timeout);
+
+    int status = hc.httpPost(location.c_str(), req.c_str(), "text/xml", timeout);
+
     LOG_INFO("%s::%s: url: %s, timeout: %d, payload: %s, status: %d, headers: %s, body: %s", __class__, __func__,
-            location, timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
+            location.c_str(), timeout, req.c_str(), status, hc.getResponseHeaders(), hc.getResponseBody());
 
     return 0;
 }

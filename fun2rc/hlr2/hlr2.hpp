@@ -18,9 +18,13 @@ class HLR2 : public Fun2RC {
 
     private:
         int timeout;
-        char url[1024];
-        char username[64];
-        char password[64];
+        std::string url;
+        std::string location;
+        std::string username;
+        std::string password;
+
+        int _login();
+        int _logout();
 
     public:
         HLR2() {};
