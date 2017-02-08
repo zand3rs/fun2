@@ -89,7 +89,7 @@ int main (int argc, char *argv[])
     }
 
     /* -- load system messages from db -- */
-    if (0 != Sysmsg::load(Config::getOraAuth())) {
+    if (0 != Sysmsg::load(Config::getOraAuth(), Config::getBrand())) {
         LOG_CRITICAL("%s: Unable to load system messages from db (%s).", app_name, Config::getOraAuth());
         exit(-1);
     }

@@ -31,7 +31,7 @@ class Sysmsg {
     public:
         static const int MAX_MSG_PART = 3;
 
-        static int load(const char* ora_auth);
+        static int load(const char* ora_auth, const char* brand);
         static string* getMessage(const char* key, const int part);
 
     private:

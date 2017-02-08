@@ -31,7 +31,7 @@ Sysmsg::message_map_t Sysmsg::_msg_map;
 
 /*============================================================================*/
 
-int Sysmsg::load(const char* ora_auth)
+int Sysmsg::load(const char* ora_auth, const char* brand)
 {
     if (OraDBSimple::init_lib() < 0) {
         return -1;
@@ -45,10 +45,11 @@ int Sysmsg::load(const char* ora_auth)
     OraDBSimple::stmt_handle_t res = OraDBSimple::STH_INIT;
     const char** row;
 
-    string q = "select keyword, sub_keyword, customer_type, message_type,"
-        "message_id, msg_1, msg_2, msg_3 from keyword_msg where upper(status)='ACTIVE'";
+    char q[512];
+    snprintf(q, sizeof(q), "select keyword, sub_keyword, customer_type, message_type,"
+        "message_id, msg_1, msg_2, msg_3 from keyword_msg where brand='%s' and upper(status)='ACTIVE'", brand);
 
-    conn.query(&res, q.c_str());
+    conn.query(&res, q);
     while((row = conn.fetchRow(res)) != NULL) {
         key_pair_t map_key;
 
