@@ -728,9 +728,12 @@ int HLR2::_login()
     if (pbuf && strchr(pbuf, ':')) {
         char* token;
         token = strtok_r(NULL, ":\r\n", &pbuf);
-        token = strtok_r(NULL, ":\r\n", &pbuf);
+        token = strtok_r(NULL, "\r\n", &pbuf);
         if (token) {
-            location = token;
+            char loc[256];
+            snprintf(loc, sizeof(loc), "%s", token);
+            str_trim(loc);
+            location = loc;
         }
     }
 
