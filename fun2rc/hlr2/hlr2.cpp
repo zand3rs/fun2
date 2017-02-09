@@ -42,6 +42,7 @@ int HLR2::activate(const char *msisdn)
 {
     std::string req;
     int status;
+    char imsi[32];
 
     LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
 
@@ -50,8 +51,10 @@ int HLR2::activate(const char *msisdn)
     }
 
     //-- get msisdn's imsi...
-    char imsi[32];
-    _getIMSI(msisdn, imsi, sizeof(imsi));
+    status = _getIMSI(msisdn, imsi, sizeof(imsi));
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Deactivation of CallForwarding Services
     req = "<?xml version=\"1.0\" ?>\n"
@@ -65,6 +68,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -77,6 +83,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -89,6 +98,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -101,6 +113,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Activate Barring Service for Outgoing Call outside HPLMN
     req = "<?xml version=\"1.0\" ?>\n"
@@ -115,6 +130,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -128,6 +146,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -141,6 +162,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Activate Barring Service for Incoming  when roaming
     req = "<?xml version=\"1.0\" ?>\n"
@@ -155,6 +179,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -168,6 +195,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Deactivation of Multiparty/Conference Call
     req = "<?xml version=\"1.0\" ?>\n"
@@ -182,6 +212,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -195,6 +228,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Disable Roaming Data
     //-- if encountered ERR3810 mapped to SUCCESS
@@ -210,6 +246,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -225,6 +264,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -239,6 +281,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Enabling Outgoing Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -253,6 +298,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -268,6 +316,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -286,6 +337,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- SSET Remove Ring Back Tone (RBT) [NRBT=1600]
     req = "<?xml version=\"1.0\" ?>\n"
@@ -300,6 +354,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Enable Incoming Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -315,6 +372,9 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Suppression of SMS CSI to avoid double charging for TM
     req = "<?xml version=\"1.0\" ?>\n"
@@ -330,10 +390,14 @@ int HLR2::activate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
+logout:
     _logout();
 
-    return 0;
+    return status;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -342,6 +406,7 @@ int HLR2::deactivate(const char *msisdn)
 {
     std::string req;
     int status;
+    char imsi[32];
 
     LOG_INFO("%s::%s: msisdn: %s", __class__, __func__, msisdn);
 
@@ -350,8 +415,10 @@ int HLR2::deactivate(const char *msisdn)
     }
 
     //-- get msisdn's imsi...
-    char imsi[32];
-    _getIMSI(msisdn, imsi, sizeof(imsi));
+    status = _getIMSI(msisdn, imsi, sizeof(imsi));
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Barring of Outgoing Call outside HPLMN
     req = "<?xml version=\"1.0\" ?>\n"
@@ -366,6 +433,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -379,6 +449,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -392,6 +465,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Barring of Incoming  when roaming
     req = "<?xml version=\"1.0\" ?>\n"
@@ -406,6 +482,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -419,6 +498,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Multiparty
     req = "<?xml version=\"1.0\" ?>\n"
@@ -433,6 +515,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -446,6 +531,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Data
     req = "<?xml version=\"1.0\" ?>\n"
@@ -460,6 +548,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -473,6 +564,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Outgoing Voice
     req = "<?xml version=\"1.0\" ?>\n"
@@ -487,6 +581,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -502,6 +599,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
@@ -520,6 +620,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Remove Incoming Voice Trigger for charging
     req = "<?xml version=\"1.0\" ?>\n"
@@ -534,6 +637,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Automatic activation of RBT (if applicable) [NRBT=1600]
     req = "<?xml version=\"1.0\" ?>\n"
@@ -549,6 +655,9 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
     //-- Enabling SMS CSI to avoid double charging for TM
     req = "<?xml version=\"1.0\" ?>\n"
@@ -565,10 +674,14 @@ int HLR2::deactivate(const char *msisdn)
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
     status = _exec(_location.c_str(), req.c_str(), _timeout);
+    if (0 != status) {
+        goto logout;
+    }
 
+logout:
     _logout();
 
-    return 0;
+    return status;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -672,7 +785,9 @@ int HLR2::_getIMSI(const char *msisdn, char *imsi, int imsi_size)
           "</soapenv:Envelope>\n";
 
     pugi::xml_document doc;
-    int status = _exec(_location.c_str(), req.c_str(), _timeout, doc);
+    if (0 != _exec(_location.c_str(), req.c_str(), _timeout, doc)) {
+        return -1;
+    }
 
     pugi::xml_node result = doc
         .child("SOAP-ENV:Envelope")
@@ -771,7 +886,7 @@ int HLR2::_exec(const char *url, const char *payload, unsigned short timeout, pu
         sys_msleep(1000);
     }
 
-    return 0;
+    return -1;
 }
 
 /******************************************************************************/
