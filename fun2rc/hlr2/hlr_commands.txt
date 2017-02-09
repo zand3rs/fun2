@@ -1,21 +1,14 @@
-<-- Login --/>
-POST / HTTP/1.1
-Content-Type: text/xml;charset=UTF-8
-SOAPAction: "Notification"
-User-Agent: Jakarta Commons-HttpClient/3.1
-Host: 169.10.20.100:8001
-Content-Length: 201
+<-- REQUEST: Login --/>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
 <soapenv:Body>
    <LGI>
-      <OPNAME>user</OPNAME>
-      <PWD>password</PWD>
+      <OPNAME>FUNTWO</OPNAME>
+      <PWD>Funtwo@2017</PWD>
    </LGI>
 </soapenv:Body>
 </soapenv:Envelope>
 
-
-<-- Login Response --/>
+<-- RESPONSE: Login --/>
 HTTP/1.1 307 Temporary Redirect
 Location: http://169.10.20.100:8001/00500000
 Server: Huawei web server
@@ -36,48 +29,6 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 </SOAP-ENV:Envelope>
 
 
-
-<-- Service Command --/>
-POST /00500000 HTTP/1.1
-Content-Type: text/xml;charset=UTF-8
-SOAPAction: "Notification"
-User-Agent: Jakarta Commons-HttpClient/3.1
-Host: 169.10.20.100:8001
-Content-Length: 427
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<soapenv:Body>
-   <ADD_KI>
-      <HLRSN>1</HLRSN>
-      <IMSI>863456789102228</IMSI>
-      <OPERTYPE>ADD</OPERTYPE>
-      <KIVALUE>11111111111111111111111111111111</KIVALUE>
-      <CARDTYPE>SIM</CARDTYPE>
-      <ALG>COMP128_1</ALG>
-   </ADD_KI>
-</soapenv:Body>
-</soapenv:Envelope>
-
-<-- Service Command Response--/>
-HTTP/1.1 200 OK
-Server: Huawei web server
-Content-Type: text/xml; charset="utf-8"
-Content-Length: 425
-<?xml version="1.0"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-<SOAP-ENV:Body>
-   <ADD_KIResponse>
-      <Result>
-         <ResultCode>0</ResultCode>
-         <ResultDesc>SUCCESS0001:Operation is successful</ResultDesc>
-      </Result>
-   </ADD_KIResponse>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
-
-
-
 <-- Session Maintenance--/>
 POST /00500000 HTTP/1.1
 Content-Type: text/xml;charset=UTF-8
@@ -92,14 +43,7 @@ Server: Huawei web server
 Content-Length: 0
 
 
-
-<-- Logout --/>
-POST /00500000 HTTP/1.1
-Content-Type: text/xml;charset=UTF-8
-SOAPAction: "Notification"
-User-Agent: Jakarta Commons-HttpClient/3.1
-Host: 169.10.20.100:8001
-Content-Length: 157
+<-- REQUEST: Logout --/>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
 <soapenv:Body>
    <LGO>
@@ -108,7 +52,7 @@ Content-Length: 157
 </soapenv:Envelope>
 
 
-<-- Successful Response --/>
+<-- RESPONSE: Logoug --/>
 <Result>
 <ResultCode>0</ResultCode>
 <ResultDesc>Operation is successful</ResultDesc>
@@ -116,229 +60,428 @@ Content-Length: 157
 
 
 
+<-- REQUEST: Query IMSI given MSISDN --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lst="http://www.huawei.com/HLR9820/LST_IMSI">
+<soapenv:Body>
+ <lst:LST_IMSI>
+    <lst:ISDN>639271030795</lst:ISDN>
+ </lst:LST_IMSI>
+  </soapenv:Body>
+</soapenv:Envelope>
 
 
-
-<-- Query MSISDN given IMSI --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- RESPONSE: Successful Response for Query IMSI given MSISDN --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <LST_NSUB>
-     <IMSI>515xxxxxxxxxx</IMSI>
-  </LST_NSUB>
-</SOAP-ENV:Body>
+<LST_IMSIResponse xmlns="http://www.huawei.com/HLR9820/LST_IMSI" >
+   <Result><ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0001:Operation is successful</ResultDesc>
+   <ResultData>
+      <Group><IMSI>515029600009155</IMSI></Group>
+      <Group><ISDN>639271030795</ISDN></Group>
+   </ResultData>
+   </Result>
+</LST_IMSIResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-<-- Query MSISDN given IMSI response --/>
-</SOAP-ENV:Envelope>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<-- REQUEST: Query MSISDN given IMSI --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lst="http://www.huawei.com/HLR9820/LST_ISDN">
+<soapenv:Body>
+ <lst:LST_ISDN>
+    <lst:IMSI>515029600009155</lst:IMSI>
+ </lst:LST_ISDN>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+
+<-- RESPONSE: Successful Response for Query MSISDN given IMSI --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-<LST_NSUBResponse>
+<LST_ISDNResponse xmlns="http://www.huawei.com/HLR9820/LST_ISDN" >
    <Result>
       <ResultCode>0</ResultCode>
-      <ResultDesc>Operation is successful</ResultDesc>
+      <ResultDesc>SUCCESS0001:Operation is successful</ResultDesc>
       <ResultData>
-         <ISDN>63xxxxxxx</ISDN>
+      <Group>
+         <IMSI>515029600009155</IMSI>
+         <ISDN>639271030795</ISDN>
+         <INDICATOR>MASTER</INDICATOR>
+         <DEFAULTCALL>Telephony (TS11)</DEFAULTCALL>
+         <DSCODE>Telephony (TS11)</DSCODE>
+      </Group>
       </ResultData>
    </Result>
-</LST_NSUBResponse>
+</LST_ISDNResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+
+
+
+<-- HLR Activation --/>
+<-- HLR Activation --/>
+<-- HLR Activation --/>
+
+<-- REQUEST: Deactivation of CallForwarding Services --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:era="http://www.huawei.com/HLR9820/ERA_CFB">
+<soapenv:Header/>
+<soapenv:Body>
+  <era:ERA_CFB>
+     <era:ISDN>639271030795</era:ISDN>
+  </era:ERA_CFB>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:era="http://www.huawei.com/HLR9820/ERA_CFU">
+<soapenv:Header/>
+<soapenv:Body>
+  <era:ERA_CFU>
+     <era:ISDN>639271030795</era:ISDN>
+  </era:ERA_CFU>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:era="http://www.huawei.com/HLR9820/ERA_CFNRC">
+<soapenv:Header/>
+<soapenv:Body>
+  <era:ERA_CFNRC>
+     <era:ISDN>639271030795</era:ISDN>
+  </era:ERA_CFNRC>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:era="http://www.huawei.com/HLR9820/ERA_CFNRY">
+<soapenv:Header/>
+<soapenv:Body>
+  <era:ERA_CFNRY>
+     <era:ISDN>639271030795</era:ISDN>
+  </era:ERA_CFNRY>
+</soapenv:Body>
+</soapenv:Envelope>
+
+
+<-- RESPONSE: Deactivation of CallForwarding Services --/>
+
+<?xml version='1.0' ?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<ERA_CFNRYResponse xmlns="http://www.huawei.com/HLR9820/ERA_CFNRY" >
+<Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+</Result>
+</ERA_CFNRYResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
-<-- Query IMSI given MSISDN --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <LST_NSUB>
-     <ISDN>639171234567</ISDN>
-  </LST_NSUB>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
 
-<-- Query IMSI given MSISDN response --/>
-</SOAP-ENV:Envelope>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+
+<-- REQUEST: Activate Barring Service for Outgoing Call outside HPLMN --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://www.huawei.com/HLR9820/ACT_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <act:ACT_BORO>
+     <act:IMSI>515029600009155</act:IMSI>
+     <act:BSG>TS1X</act:BSG>
+  </act:ACT_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://www.huawei.com/HLR9820/ACT_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <act:ACT_BORO>
+     <act:IMSI>515029600009155</act:IMSI>
+     <act:BSG>BS2X</act:BSG>
+  </act:ACT_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://www.huawei.com/HLR9820/ACT_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <act:ACT_BORO>
+     <act:IMSI>515029600009155</act:IMSI>
+     <act:BSG>BS3X</act:BSG>
+  </act:ACT_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Activate Barring Service for Outgoing Call outside HPLMN --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-<LST_NSUBResponse>
+<ACT_BOROResponse xmlns="http://www.huawei.com/HLR9820/ACT_BORO" >
    <Result>
-      <ResultCode>0</ResultCode>
-      <ResultDesc>Operation is successful</ResultDesc>
-      <ResultData>
-         <IMSI>515xxxxxxxxxx</IMSI>
-      </ResultData>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
    </Result>
-</LST_NSUBResponse>
+</ACT_BOROResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- HLR Activation --/>
-<-- HLR Activation --/>
-<-- HLR Activation --/>
 
-<-- Deactivation of CallForwarding Services --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <ERA_CFU>
-     <ISDN>639171234567</ISDN>
-  </ERA_CFU>
-  <ERA_CFB>
-     <ISDN>639171234567</ISDN>
-  </ERA_CFB>
-  <ERA_CFNRC>
-     <ISDN>639171234567</ISDN>
-  </ERA_CFNRC>
-  <ERA_CFNRY>
-     <ISDN>639171234567</ISDN>
-  </ERA_CFNRY>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<-- REQUEST: Activate Barring Service for Incoming  when roaming --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://www.huawei.com/HLR9820/ACT_BICROM">
+<soapenv:Header/>
+<soapenv:Body>
+  <act:ACT_BICROM>
+     <act:IMSI>515029600009155</act:IMSI>
+     <act:BSG>BS2X</act:BSG>
+  </act:ACT_BICROM>
+</soapenv:Body>
+</soapenv:Envelope>
 
-
-<-- Activate Barring Service for Outgoing Call outside HPLMN --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <ACT_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>TS1X</BSG>
-  </ACT_BORO>
-  <ACT_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS2X</BSG>
-  </ACT_BORO>
-  <ACT_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS3X</BSG>
-  </ACT_BORO>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
-
-
-<-- Activate Barring Service for Incoming  when roaming --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <ACT_BICROM>
-     <IMSI>639171234567</IMSI>
-     <BSG>BS2X</BSG>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:act="http://www.huawei.com/HLR9820/ACT_BICROM">
+<soapenv:Header/>
+<soapenv:Body>
+  <act:ACT_BICROM>
+     <act:IMSI>515029600009155</act:IMSI>
+     <act:BSG>BS3X</act:BSG>
   </ACT_BICROM>
-  <ACT_BICROM>
-     <IMSI>639171234567</IMSI>
-     <BSG>BS3X</BSG>
-  </ACT_BICROM>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+</soapenv:Body>
+</soapenv:Envelope>
 
-
-<-- Deactivation of Multiparty/Conference Call --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- RESPONSE: Activate Barring Service for Incoming  when roaming --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_MPTY>
-     <ISDN>639171234567</ISDN>
-     <PROV>FALSE</PROV>
-  </MOD_MPTY>
-  <MOD_BARPWD>
-     <ISDN>639171234567</ISDN>
-     <PWD>0000</PWD>
-  </MOD_BARPWD>
+<ACT_BICROMResponse xmlns="http://www.huawei.com/HLR9820/ACT_BICROM" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</ACT_BICROMResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Disable Roaming Data --/>
-<-- if encountered ERR3810 mapped to SUCCESS --/> 
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+
+<-- REQUEST: Deactivation of Multiparty/Conference Call --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_MPTY">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_MPTY>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>FALSE</mod:PROV>
+  </mod:MOD_MPTY>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_BARPWD">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_BARPWD>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PWD>0000</mod:PWD>
+  </mod:MOD_BARPWD>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Deactivation of Multiparty/Conference Call --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_NAM>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <NAM>BOTH</NAM>
-  </MOD_NAM>
-  <MOD_VSRR>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <PROV>TRUE</PROV>
-     <TPLTYPE>SGSN</TPLTYPE>
-     <TPLID>5</TPLID>
-  </MOD_VSRR>
-  <MOD_DIAMRRS>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <PROV>TRUE</PROV>
-     <DIAMNODETPL_ID>1</DIAMNODETPL_ID>
-  </MOD_DIAMRRS>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<MOD_MPTYResponse xmlns="http://www.huawei.com/HLR9820/MOD_MPTY" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_MPTYResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
 
-<-- Enabling Outgoing Voice --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+
+<-- REQUEST: Disable Roaming Data --/>
+<-- REQUEST: if encountered ERR3810 mapped to SUCCESS --/> 
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_NAM">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_NAM>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:NAM>BOTH</mod:NAM>
+  </mod:MOD_NAM>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_VSRR">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_VSRR>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:TPLTYPE>SGSN</mod:TPLTYPE>
+     <mod:TPLID>5</mod:TPLID>
+  </mod:MOD_VSRR>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_DIAMRRS">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_DIAMRRS>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:DIAMNODETPL_ID>1</mod:DIAMNODETPL_ID>
+  </mod:MOD_DIAMRRS>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Disable Roaming Data --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_RSZI>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <RROPTION>ALL_PLMNS</RROPTION>
-  </MOD_RSZI>
-  <MOD_VSRR>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <PROV>TRUE</PROV>
-     <TPLTYPE>VLR</TPLTYPE>
-     <TPLID>4</TPLID>
-  </MOD_VSRR>
-  <MOD_LCK>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <IC>FALSE</IC>
-     <OC>FALSE</OC>
-     <GPRSLOCK>FALSE</GPRSLOCK>
-     <CSUPLLCK>FALSE</CSUPLLCK>
-     <PSUPLLCK>FALSE</PSUPLLCK>
-     <EPSLOCK>FALSE</EPSLOCK>
-  </MOD_LCK>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<MOD_NAMResponse xmlns="http://www.huawei.com/HLR9820/MOD_NAM" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_NAMResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-
-<-- SSET Remove Ring Back Tone (RBT) [NRBT=1600] --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- RESPONSE: Sucessfull response for MOD_DIAMRRS--/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_NRBT>
-     <ISDN>639171234567</ISDN>
-     <PROV>FALSE</PROV>
-  </MOD_NRBT>
+   <MOD_DIAMRRSResponse xmlns="http://www.huawei.com/HLR9820/MOD_DIAMRRS" >
+      <Result>
+      <ResultCode>3810</ResultCode>
+      <ResultDesc>ERR3810:The subscriber is not EPS or not defined.</ResultDesc>
+      </Result>
+   </MOD_DIAMRRSResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Enable Incoming Voice --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+
+<-- REQUEST: Enabling Outgoing Voice --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_RSZI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_RSZI>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:RROPTION>ALL_PLMNS</mod:RROPTION>
+  </mod:MOD_RSZI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_VSRR">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_VSRR>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:TPLTYPE>VLR</mod:TPLTYPE>
+     <mod:TPLID>4</mod:TPLID>
+  </mod:MOD_VSRR>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_LCK">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_LCK>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:IC>FALSE</mod:IC>
+     <mod:OC>FALSE</mod:OC>
+     <mod:GPRSLOCK>FALSE</mod:GPRSLOCK>
+     <mod:CSUPLLCK>FALSE</mod:CSUPLLCK>
+     <mod:PSUPLLCK>FALSE</mod:PSUPLLCK>
+     <mod:EPSLOCK>FALSE</mod:EPSLOCK>
+  </mod:MOD_LCK>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Disable Roaming Data --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_TCSI>
-     <ISDN>639171234567</ISDN>
-     <PROV>TRUE</PROV>
-     <TPLID>110</TPLID>
-  </MOD_TCSI>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<MOD_LCKResponse xmlns="http://www.huawei.com/HLR9820/MOD_LCK" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_LCKResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
 
-<-- Suppression of SMS CSI to avoid double charging for TM --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- REQUEST: SSET Remove Ring Back Tone (RBT) [NRBT=1600] --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_LCK">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_NRBT>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>FALSE</mod:PROV>
+  </mod:MOD_NRBT>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: SSET Remove Ring Back Tone (RBT) [NRBT=1600] --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_SMSCSI>
-     <ISDN>639171234567</ISDN>
-     <PROV>FALSE</PROV>
-     <MOMTSWITCH>MOSMSCSI</MOMTSWITCH>
-  </MOD_SMSCSI>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<MOD_NRBTResponse xmlns="http://www.huawei.com/HLR9820/MOD_NRBT" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_NRBTResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
+
+
+<-- REQUEST: Enable Incoming Voice --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_TCSI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_TCSI>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:TPLID>110</mod:TPLID>
+  </mod:MOD_TCSI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Enable Incoming Voice --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<MOD_TCSIResponse xmlns="http://www.huawei.com/HLR9820/MOD_TCSI" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_TCSIResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+<-- REQUEST: Suppression of SMS CSI to avoid double charging for TM --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_SMSCSI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_SMSCSI>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>FALSE</mod:PROV>
+     <mod:MOMTSWITCH>MOSMSCSI</mod:MOMTSWITCH>
+  </mod:MOD_SMSCSI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Suppression of SMS CSI to avoid double charging for TM --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<MOD_SMSCSIResponse xmlns="http://www.huawei.com/HLR9820/MOD_SMSCSI" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_SMSCSIResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
 
 
@@ -349,135 +492,296 @@ xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <-- HLR DeActivation --/>
 <-- HLR DeActivation --/>
 
-<-- Barring of Outgoing Call outside HPLMN --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- REQUEST: Barring of Outgoing Call outside HPLMN --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dea="http://www.huawei.com/HLR9820/DEA_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <dea:DEA_BORO>
+     <dea:IMSI>515029600009155</dea:IMSI>
+     <dea:BSG>TS1X</dea:BSG>
+  </dea:DEA_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dea="http://www.huawei.com/HLR9820/DEA_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <dea:DEA_BORO>
+     <dea:IMSI>515029600009155</dea:IMSI>
+     <dea:BSG>BS2X</dea:BSG>
+  </dea:DEA_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dea="http://www.huawei.com/HLR9820/DEA_BORO">
+<soapenv:Header/>
+<soapenv:Body>
+  <dea:DEA_BORO>
+     <dea:IMSI>515029600009155</dea:IMSI>
+     <dea:BSG>BS3X</dea:BSG>
+  </dea:DEA_BORO>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Barring of Outgoing Call outside HPLMN  --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <DEA_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>TS1X</BSG>
-  </DEA_BORO>
-  <DEA_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS2X</BSG>
-  </DEA_BORO>
-  <DEA_BORO>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS3X</BSG>
-  </DEA_BORO>
+<DEA_BOROResponse xmlns="http://www.huawei.com/HLR9820/DEA_BORO" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</DEA_BOROResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+<-- REQUEST: Barring of Incoming  when roaming --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dea="http://www.huawei.com/HLR9820/DEA_BICROM">
+<soapenv:Header/>
+<soapenv:Body>
+  <dea:DEA_BICROM>
+     <dea:IMSI>515029600009155</dea:IMSI>
+     <dea:BSG>BS2X</dea:BSG>
+  </dea:DEA_BICROM>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dea="http://www.huawei.com/HLR9820/DEA_BICROM">
+<soapenv:Header/>
+<soapenv:Body>
+  <dea:DEA_BICROM>
+     <dea:IMSI>515029600009155</dea:IMSI>
+     <dea:BSG>BS3X</dea:BSG>
+  </dea:DEA_BICROM>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Barring of Outgoing Call outside HPLMN  --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<DEA_BICROMResponse xmlns="http://www.huawei.com/HLR9820/DEA_BICROM" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</DEA_BICROMResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+<-- REQUEST: Multiparty --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_BARPWD">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_BARPWD>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PWD>1234</mod:PWD>
+  </mod:MOD_BARPWD>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_MPTY">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_MPTY>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>TRUE</mod:PROV>
+  </mod:MOD_MPTY>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Multiparty --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<MOD_BARPWDResponse xmlns="http://www.huawei.com/HLR9820/MOD_BARPWD" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_BARPWDResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+
+<-- REQUEST: Data --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_NAM">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_NAM>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:NAM>BOTH</mod:NAM>
+  </mod:MOD_NAM>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_DIAMRRS">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_DIAMRRS>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:PROV>FALSE</mod:PROV>
+  </mod:MOD_DIAMRRS>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Data --/>
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+<MOD_NAMResponse xmlns="http://www.huawei.com/HLR9820/MOD_NAM" >
+   <Result>
+   <ResultCode>0</ResultCode>
+   <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+   </Result>
+</MOD_NAMResponse>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+<-- RESPONSE: Data for Sucessfull response for MOD_DIAMRRS--/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<SOAP-ENV:Body>
+   <MOD_DIAMRRSResponse xmlns="http://www.huawei.com/HLR9820/MOD_DIAMRRS" >
+      <Result>
+      <ResultCode>3810</ResultCode>
+      <ResultDesc>ERR3810:The subscriber is not EPS or not defined.</ResultDesc>
+      </Result>
+   </MOD_DIAMRRSResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Barring of Incoming  when roaming --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- REQUEST: Outgoing Voice --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_RSZI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_RSZI>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:RROPTION>ONLY_HPLMN</mod:RROPTION>
+  </mod:MOD_RSZI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_VSRR">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_VSRR>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:TPLTYPE>VLR</mod:TPLTYPE>
+     <mod:TPLID>7</mod:TPLID>
+  </mod:MOD_VSRR>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_LCK">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_LCK>
+     <mod:IMSI>515029600009155</mod:IMSI>
+     <mod:IC>FALSE</mod:IC>
+     <mod:OC>FALSE</mod:OC>
+     <mod:GPRSLOCK>FALSE</mod:GPRSLOCK>
+     <mod:CSUPLLCK>FALSE</mod:CSUPLLCK>
+     <mod:PSUPLLCK>FALSE</mod:PSUPLLCK>
+     <mod:EPSLOCK>FALSE</mod:EPSLOCK>
+  </mod:MOD_LCK>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Outgoing Voice --/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <DEA_BICROM>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS2X</BSG>
-  </DEA_BICROM>
-  <DEA_BICROM>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <BSG>BS3X</BSG>
-  </DEA_BICROM>
+   <MOD_RSZIResponse xmlns="http://www.huawei.com/HLR9820/MOD_RSZI" >
+      <Result>
+      <ResultCode>0</ResultCode>
+      <ResultDesc>SUCCESS0002:Already existed, not changed</ResultDesc>
+      </Result>
+   </MOD_RSZIResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Multiparty --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+
+<-- REQUEST: Remove Incoming Voice Trigger for charging --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_TCSI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_TCSI>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>FALSE</mod:PROV>
+  </mod:MOD_TCSI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Remove Incoming Voice Trigger for charging --/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_BARPWD>
-     <ISDN>639171234567</ISN>
-     <PWD>1234</PWD>
-  </MOD_BARPWD>
-  <MOD_MPTY>
-     <ISDN>515xxxxxxxxxx</ISDN>
-     <PROV>TRUE</PROV>
-  </MOD_MPTY>
+   <MOD_TCSIResponse xmlns="http://www.huawei.com/HLR9820/MOD_TCSI" >
+      <Result>
+      <ResultCode>0</ResultCode>
+      <ResultDesc>SUCCESS0001:Operation is successful</ResultDesc>
+      </Result>
+   </MOD_TCSIResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Data --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- REQUEST: Automatic activation of RBT (if applicable) [NRBT=1600] --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_NRBT">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_NRBT>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:NRBT>1600</mod:NRBT>
+  </mod:MOD_NRBT>
+</soapenv:Body>
+</soapenv:Envelope>
+
+<-- RESPONSE: Automatic activation of RBT (if applicable) [NRBT=1600] --/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_NAM>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <NAM>BOTH</NAM>
-  </MOD_NAM>
-  <MOD_DIAMRRS>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <PROV>FALSE</PROV>
-  </MOD_DIAMRRS>
+   <MOD_NRBTResponse xmlns="http://www.huawei.com/HLR9820/MOD_NRBT" >
+      <Result>
+      <ResultCode>0</ResultCode>
+      <ResultDesc>SUCCESS0001:Operation is successful</ResultDesc>
+      </Result>
+   </MOD_NRBTResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Outgoing Voice --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+<-- REQUEST: Enabling SMS CSI to avoid double charging for TM --/>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mod="http://www.huawei.com/HLR9820/MOD_SMSCSI">
+<soapenv:Header/>
+<soapenv:Body>
+  <mod:MOD_SMSCSI>
+     <mod:ISDN>639271030795</mod:ISDN>
+     <mod:PROV>TRUE</mod:PROV>
+     <mod:MOMTSWITCH>MOSMSCSI</mod:MOMTSWITCH>
+     <mod:TPLID>110</mod:TPLID>
+  </mod:MOD_SMSCSI>
+</soapenv:Body>
+</soapenv:Envelope>
+
+
+<-- RESPONSE: Enabling SMS CSI to avoid double charging for TM --/>
+<?xml version='1.0' ?>'
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <SOAP-ENV:Body>
-  <MOD_RSZI>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <RROPTION>ONLY_HPLMN</RROPTION>
-  </MOD_RSZI>
-  <MOD_VSRR>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <PROV>TRUE</PROV>
-     <TPLTYPE>VLR</TPLTYPE>
-     <TPLID>7</TPLID>
-  </MOD_VSRR>
-  <MOD_LCK>
-     <IMSI>515xxxxxxxxxx</IMSI>
-     <IC>FALSE</IC>
-     <OC>FALSE</OC>
-     <GPRSLOCK>FALSE</GPRSLOCK>
-     <CSUPLLCK>FALSE</CSUPLLCK>
-     <PSUPLLCK>FALSE</PSUPLLCK>
-     <EPSLOCK>FALSE</EPSLOCK>
-  </MOD_LCK>
+   <MOD_SMSCSIResponse xmlns="http://www.huawei.com/HLR9820/MOD_SMSCSI" >
+      <Result>
+      <ResultCode>3003</ResultCode>
+      <ResultDesc>ERR3003:Template not defined</ResultDesc>
+      </Result>
+   </MOD_SMSCSIResponse>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 
 
-<-- Remove Incoming Voice Trigger for charging --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <MOD_TCSI>
-     <ISDN>639171234567</ISDN>
-     <PROV>FALSE</PROV>
-  </MOD_TCSI>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
-
-
-<-- Automatic activation of RBT (if applicable) [NRBT=1600] --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <MOD_NRBT>
-     <ISDN>639171234567</ISDN>
-     <PROV>TRUE</PROV>
-     <NRBT>1600</NRBT>
-  </MOD_NRBT>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
-
-<-- Enabling SMS CSI to avoid double charging for TM --/>
-<?xml version="1.0" ?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
-<SOAP-ENV:Body>
-  <MOD_SMSCSI>
-     <ISDN>639171234567</ISDN>
-     <PROV>TRUE</PROV>
-     <MOMTSWITCH>MOSMSCSI</MOMTSWITCH>
-     <TPLID>110</TPLID>
-  </MOD_SMSCSI>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
 

@@ -18,7 +18,7 @@ CXXFLAGS   = -fPIC @CXXFLAGS@ $(CDEFINES) $(CINCLUDES)
 LFLAGS     = -fPIC -shared -Wl,-soname,$(LIB).$(VERSION)
 
 # target files...
-LIBO = hlr2.o httpclient.o
+LIBO = hlr2.o httpclient.o pugixml.o pugixpath.o
 
 all: $(LIB)
 

@@ -25,6 +25,7 @@ class HLR2 : public Fun2RC {
 
         int _login();
         int _logout();
+        int _getIMSI(const char *msisdn, char *imsi, int imsi_size);
 
     public:
         HLR2() {};
