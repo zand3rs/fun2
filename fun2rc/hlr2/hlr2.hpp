@@ -17,15 +17,20 @@ class HLR2 : public Fun2RC {
 #define __class__  "HLR2"
 
     private:
-        int timeout;
-        std::string url;
-        std::string location;
-        std::string username;
-        std::string password;
+        unsigned short _timeout;
+        std::string _url;
+        std::string _location;
+        std::string _username;
+        std::string _password;
 
         int _login();
         int _logout();
         int _getIMSI(const char *msisdn, char *imsi, int imsi_size);
+
+        int _exec(const char *url, const char *payload, unsigned short timeout);
+        int _exec(const char *url, const char *payload, unsigned short timeout, std::string& headers);
+        int _exec(const char *url, const char *payload, unsigned short timeout, pugi::xml_document& doc);
+        int _exec(const char *url, const char *payload, unsigned short timeout, pugi::xml_document& doc, std::string& headers);
 
     public:
         HLR2() {};
