@@ -705,6 +705,9 @@ int HLR2::getIMSI(const char *msisdn, char *imsi, int imsi_size)
 
 int HLR2::_login()
 {
+    //-- initialize http client...
+    _hc.init();
+
     std::string headers;
     std::string req;
 
@@ -762,6 +765,9 @@ int HLR2::_logout()
 
     //-- clear location...
     _location.clear();
+
+    //-- deinitialize http client...
+    _hc.deinit();
 
     return status;
 }
@@ -837,7 +843,6 @@ int HLR2::_exec(const char *url, const char *payload, unsigned short timeout, pu
 
 int HLR2::_exec(const char *url, const char *payload, unsigned short timeout, pugi::xml_document& doc, std::string& headers)
 {
-    HttpClient hc;
     const short maxTry = 3;
     short retry = 0;
 
@@ -847,16 +852,16 @@ int HLR2::_exec(const char *url, const char *payload, unsigned short timeout, pu
     }
 
     while (maxTry >= ++retry) {
-        short status = hc.httpPost(url, payload, "text/xml", timeout);
+        short status = _hc.httpPost(url, payload, "text/xml", timeout);
         LOG_INFO("%s::%s: url: %s, payload: %s, timeout: %d, status: %d, headers: %s, body: %s", __class__, __func__,
-                url, payload, timeout, status, hc.getResponseHeaders(), hc.getResponseBody());
+                url, payload, timeout, status, _hc.getResponseHeaders(), _hc.getResponseBody());
 
         if (200 != status && 307 != status) {
             return -1;
         }
 
-        headers = hc.getResponseHeaders();
-        std::string body = hc.getResponseBody();
+        headers = _hc.getResponseHeaders();
+        std::string body = _hc.getResponseBody();
 
         if (!doc.load(body.c_str())) {
             LOG_ERROR("%s::%s: Malformed XML response!: %s", __class__, __func__, body.c_str());

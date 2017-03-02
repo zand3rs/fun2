@@ -22,6 +22,7 @@ class HLR2 : public Fun2RC {
         std::string _location;
         std::string _username;
         std::string _password;
+        HttpClient _hc;
 
         int _login();
         int _logout();
