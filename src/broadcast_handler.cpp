@@ -201,7 +201,7 @@ void* broadcast_fetcher (void* arg)
         //-- clear vector...
         broadcasts.clear();
 
-        if (conn.getBroadcasts(&broadcasts, Config::getClusterNode(), TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
+        if (conn.getBroadcasts(&broadcasts, Config::getBrand(), Config::getClusterNode(), TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
             sys_msleep(1000);
             continue;
         }

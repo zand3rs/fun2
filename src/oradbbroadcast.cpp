@@ -26,8 +26,9 @@ int OraDBBroadcast::initialize(const char* ora_auth)
     return res;
 }
 
-int OraDBBroadcast::getBroadcasts(std::vector<broadcast_t>* broadcasts, int cluster_node, int status, int limit)
+int OraDBBroadcast::getBroadcasts(std::vector<broadcast_t>* broadcasts, const char* brand, int cluster_node, int status, int limit)
 {
+    snprintf(_var_brand, sizeof(_var_brand), "%s", brand);
     _var_cluster_node = cluster_node;
     _var_status = status;
     _var_limit = limit;
@@ -86,7 +87,7 @@ int OraDBBroadcast::selectBind()
 {
     const char sql_stmt[] = "select id, msisdn, message_id, msg"
         " from broadcast_log"
-        " where cluster_node = :cluster_node and status = :status"
+        " where dt_created > trunc(sysdate-3) and brand = :brand and cluster_node = :cluster_node and status = :status"
         " and rownum < :limit order by id";
 
     _sth_select = SQLO_STH_INIT;
@@ -97,7 +98,8 @@ int OraDBBroadcast::selectBind()
     }
 
     if (SQLO_SUCCESS != (
-                sqlo_bind_by_name(_sth_select, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
+                   sqlo_bind_by_name(_sth_select, ":brand", SQLOT_STR, &_var_brand, sizeof(_var_brand), 0, 0)
+                || sqlo_bind_by_name(_sth_select, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
                 || sqlo_bind_by_name(_sth_select, ":status", SQLOT_INT, &_var_status, sizeof(_var_status), 0, 0)
                 || sqlo_bind_by_name(_sth_select, ":limit", SQLOT_INT, &_var_limit, sizeof(_var_limit), 0, 0)
                 || sqlo_define_by_pos(_sth_select, 1, SQLOT_INT, &_broadcast.id, sizeof(_broadcast.id), 0, 0, 0)

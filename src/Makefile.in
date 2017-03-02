@@ -38,8 +38,8 @@ POST_UNINSTALL = :
 bin_PROGRAMS = fun2_request$(EXEEXT) fun2_response$(EXEEXT) \
 	fun2_notification$(EXEEXT) fun2_transaction$(EXEEXT) \
 	fun2_transaction_tm$(EXEEXT) fun2_broadcast$(EXEEXT) \
-	fun2_geoprobe$(EXEEXT) fun2_ods$(EXEEXT) \
-	fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT) \
+	fun2_broadcast_tm$(EXEEXT) fun2_geoprobe$(EXEEXT) \
+	fun2_ods$(EXEEXT) fun2_default_unli$(EXEEXT) fun2_mlp$(EXEEXT) \
 	fun2_shampoo$(EXEEXT)
 subdir = src
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
@@ -63,6 +63,15 @@ am_fun2_broadcast_OBJECTS = fun2_broadcast.$(OBJEXT) config.$(OBJEXT) \
 	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
 fun2_broadcast_OBJECTS = $(am_fun2_broadcast_OBJECTS)
 fun2_broadcast_DEPENDENCIES = ../libfuc/lib/libfuc.a
+am_fun2_broadcast_tm_OBJECTS = fun2_broadcast.$(OBJEXT) \
+	config.$(OBJEXT) global.$(OBJEXT) base64.$(OBJEXT) \
+	httpclient.$(OBJEXT) httputils.$(OBJEXT) misc.$(OBJEXT) \
+	nsn.$(OBJEXT) oradb.$(OBJEXT) oradbdailybal.$(OBJEXT) \
+	oradbbroadcast.$(OBJEXT) oradbresponse.$(OBJEXT) \
+	oradbsimple.$(OBJEXT) broadcast_handler.$(OBJEXT) \
+	signal_handler.$(OBJEXT) sysmsg.$(OBJEXT)
+fun2_broadcast_tm_OBJECTS = $(am_fun2_broadcast_tm_OBJECTS)
+fun2_broadcast_tm_DEPENDENCIES = ../libfuc/lib/libfuc.a
 am_fun2_default_unli_OBJECTS = fun2_default_unli.$(OBJEXT) \
 	ecsv.$(OBJEXT) config.$(OBJEXT) global.$(OBJEXT) \
 	httpclient.$(OBJEXT) httputils.$(OBJEXT) oradb.$(OBJEXT) \
@@ -150,18 +159,18 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
-	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
-	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
-	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES) \
-	$(fun2_transaction_tm_SOURCES)
-DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_default_unli_SOURCES) \
-	$(fun2_geoprobe_SOURCES) $(fun2_mlp_SOURCES) \
-	$(fun2_notification_SOURCES) $(fun2_ods_SOURCES) \
-	$(fun2_request_SOURCES) $(fun2_response_SOURCES) \
-	$(fun2_shampoo_SOURCES) $(fun2_transaction_SOURCES) \
-	$(fun2_transaction_tm_SOURCES)
+SOURCES = $(fun2_broadcast_SOURCES) $(fun2_broadcast_tm_SOURCES) \
+	$(fun2_default_unli_SOURCES) $(fun2_geoprobe_SOURCES) \
+	$(fun2_mlp_SOURCES) $(fun2_notification_SOURCES) \
+	$(fun2_ods_SOURCES) $(fun2_request_SOURCES) \
+	$(fun2_response_SOURCES) $(fun2_shampoo_SOURCES) \
+	$(fun2_transaction_SOURCES) $(fun2_transaction_tm_SOURCES)
+DIST_SOURCES = $(fun2_broadcast_SOURCES) $(fun2_broadcast_tm_SOURCES) \
+	$(fun2_default_unli_SOURCES) $(fun2_geoprobe_SOURCES) \
+	$(fun2_mlp_SOURCES) $(fun2_notification_SOURCES) \
+	$(fun2_ods_SOURCES) $(fun2_request_SOURCES) \
+	$(fun2_response_SOURCES) $(fun2_shampoo_SOURCES) \
+	$(fun2_transaction_SOURCES) $(fun2_transaction_tm_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -394,6 +403,30 @@ fun2_broadcast_LDADD = \
              @LIBSQLORA8_LIBS@ \
              @LIBCURL@
 
+fun2_broadcast_tm_SOURCES = \
+                       data_struct.hpp \
+                       fun2_broadcast.cpp \
+                       config.cpp config.hpp \
+                       global.cpp global.hpp \
+                       base64.cpp base64.hpp \
+                       httpclient.cpp httpclient.hpp \
+                       httputils.cpp httputils.hpp \
+                       misc.cpp misc.hpp \
+                       nsn.cpp nsn.hpp \
+                       oradb.cpp oradb.hpp \
+                       oradbdailybal.cpp oradbdailybal.hpp \
+                       oradbbroadcast.cpp oradbbroadcast.hpp \
+                       oradbresponse.cpp oradbresponse.hpp \
+                       oradbsimple.cpp oradbsimple.hpp \
+                       broadcast_handler.cpp broadcast_handler.hpp \
+                       signal_handler.cpp signal_handler.hpp \
+                       sysmsg.cpp sysmsg.hpp
+
+fun2_broadcast_tm_LDADD = \
+             ../libfuc/lib/libfuc.a \
+             @LIBSQLORA8_LIBS@ \
+             @LIBCURL@
+
 fun2_geoprobe_SOURCES = \
                        data_struct.hpp \
                        fun2_geoprobe.cpp \
@@ -534,6 +567,9 @@ clean-binPROGRAMS:
 fun2_broadcast$(EXEEXT): $(fun2_broadcast_OBJECTS) $(fun2_broadcast_DEPENDENCIES) 
 	@rm -f fun2_broadcast$(EXEEXT)
 	$(CXXLINK) $(fun2_broadcast_LDFLAGS) $(fun2_broadcast_OBJECTS) $(fun2_broadcast_LDADD) $(LIBS)
+fun2_broadcast_tm$(EXEEXT): $(fun2_broadcast_tm_OBJECTS) $(fun2_broadcast_tm_DEPENDENCIES) 
+	@rm -f fun2_broadcast_tm$(EXEEXT)
+	$(CXXLINK) $(fun2_broadcast_tm_LDFLAGS) $(fun2_broadcast_tm_OBJECTS) $(fun2_broadcast_tm_LDADD) $(LIBS)
 fun2_default_unli$(EXEEXT): $(fun2_default_unli_OBJECTS) $(fun2_default_unli_DEPENDENCIES) 
 	@rm -f fun2_default_unli$(EXEEXT)
 	$(CXXLINK) $(fun2_default_unli_LDFLAGS) $(fun2_default_unli_OBJECTS) $(fun2_default_unli_LDADD) $(LIBS)

@@ -14,7 +14,7 @@ class OraDBBroadcast : public OraDB
         virtual int initialize(const char* ora_auth = "");
 
     public:
-        int getBroadcasts(std::vector<broadcast_t>* broadcasts, int cluster_node, int status, int limit=100);
+        int getBroadcasts(std::vector<broadcast_t>* broadcasts, const char* brand, int cluster_node, int status, int limit=100);
         int updateBroadcast(broadcast_t* broadcast);
 
     private:
@@ -23,6 +23,8 @@ class OraDBBroadcast : public OraDB
 
         sqlo_stmt_handle_t _sth_select;
         sqlo_stmt_handle_t _sth_update;
+
+        char _var_brand[16];
 
         int _var_retr;
         int _var_cluster_node;
