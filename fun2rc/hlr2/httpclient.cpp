@@ -2,7 +2,7 @@
  *    ____  |
  *         /     Author  : Alexander A. Magtipon
  *       /       Created : 2009-07-27
- *     /         Updated : 2010-10-23
+ *     /         Updated : 2017-03-10
  *  _______|     Remarks : boy - zand3rs@gmail.com
  *
  *
@@ -14,7 +14,6 @@
 
 /******************************************************************************/
 
-#include <curl/curl.h>
 #include "httpclient.hpp"
 
 /*============================================================================*/
@@ -25,83 +24,43 @@ bool HttpClient::_global_init = (0 == curl_global_init(CURL_GLOBAL_ALL))
 /*============================================================================*/
 
 HttpClient::HttpClient(char const* key, char const* cert, char const* cacert, bool ignore_cert) :
-    _hdr_buf(""), _out_buf(""), _err_buf(""), _key(key), _cert(cert), _cacert(cacert), _ignore_cert(ignore_cert)
+    _conn(NULL), _hdr_buf(""), _out_buf(""), _err_buf(""),
+    _key(key), _cert(cert), _cacert(cacert), _ignore_cert(ignore_cert)
 {
+    init();
 }
 
 /*----------------------------------------------------------------------------*/
 
 HttpClient::~HttpClient()
 {
+    deinit();
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HttpClient::init()
+{
+    if (HttpClient::_global_init && !_conn) {
+        _conn = curl_easy_init();
+    }
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HttpClient::deinit()
+{
+    if (HttpClient::_global_init && _conn) {
+        curl_easy_cleanup(_conn);
+        _conn = NULL;
+    }
 }
 
 /*----------------------------------------------------------------------------*/
 
 short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
 {
-    CURL *conn;
-    CURLcode res;
-    std::string hdr_buf;
-    std::string out_buf;
-    char err_buf[CURL_ERROR_SIZE];
-    short retr = -1;
-
-    _hdr_buf.clear();
-    _out_buf.clear();
-    _err_buf.clear();
-
-    if (! HttpClient::_global_init) {
-        _err_buf = "System Error";
-        return retr;
-    }
-
-    conn = curl_easy_init();
-    if (conn) {
-        curl_easy_setopt(conn, CURLOPT_URL, url);
-
-        if (timeout_sec > 0) {
-            curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
-            curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
-        }
-
-        if (strncasecmp(url, "https", 5) == 0) {
-            if (_key.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            }
-            if (_cert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            }
-            if (_cacert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-            }
-            if (_ignore_cert) {
-                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
-            }
-        }
-
-        curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(conn, CURLOPT_ERRORBUFFER, err_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEDATA, &out_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
-        curl_easy_setopt(conn, CURLOPT_WRITEHEADER, &hdr_buf);
-        curl_easy_setopt(conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
-
-        res = curl_easy_perform(conn);
-        if (CURLE_OK == res) {
-            long resp_code;
-            curl_easy_getinfo(conn, CURLINFO_RESPONSE_CODE, &resp_code);
-            retr = (short) resp_code;
-        } else {
-            _err_buf = err_buf;
-        }
-        _hdr_buf = hdr_buf;
-        _out_buf = out_buf;
-
-        /* cleanup */
-        curl_easy_cleanup(conn);
-    }
-
-    return retr;
+    return _perform(url, timeout_sec);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -109,71 +68,12 @@ short HttpClient::httpGet(char const* url, unsigned short timeout_sec)
 short HttpClient::httpPost(char const* url, char const* fields,
         unsigned short timeout_sec)
 {
-    CURL *conn;
-    CURLcode res;
-    std::string hdr_buf;
-    std::string out_buf;
-    char err_buf[CURL_ERROR_SIZE];
-    short retr = -1;
-
-    _hdr_buf.clear();
-    _out_buf.clear();
-    _err_buf.clear();
-
-    if (! HttpClient::_global_init) {
-        _err_buf = "System Error";
-        return retr;
+    if (HttpClient::_global_init && _conn) {
+        curl_easy_setopt(_conn, CURLOPT_POST, 1L);
+        curl_easy_setopt(_conn, CURLOPT_POSTFIELDS, fields);
     }
 
-    conn = curl_easy_init();
-    if (conn) {
-        curl_easy_setopt(conn, CURLOPT_URL, url);
-        curl_easy_setopt(conn, CURLOPT_POST, 1L);
-        curl_easy_setopt(conn, CURLOPT_POSTFIELDS, fields);
-
-        if (timeout_sec > 0) {
-            curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
-            curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
-        }
-
-        if (strncasecmp(url, "https", 5) == 0) {
-            if (_key.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            }
-            if (_cert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            }
-            if (_cacert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-            }
-            if (_ignore_cert) {
-                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
-            }
-        }
-
-        curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(conn, CURLOPT_ERRORBUFFER, err_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEDATA, &out_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
-        curl_easy_setopt(conn, CURLOPT_WRITEHEADER, &hdr_buf);
-        curl_easy_setopt(conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
-
-        res = curl_easy_perform(conn);
-        if (CURLE_OK == res) {
-            long resp_code;
-            curl_easy_getinfo(conn, CURLINFO_RESPONSE_CODE, &resp_code);
-            retr = (short) resp_code;
-        } else {
-            _err_buf = err_buf;
-        }
-        _hdr_buf = hdr_buf;
-        _out_buf = out_buf;
-
-        /* cleanup */
-        curl_easy_cleanup(conn);
-    }
-
-    return retr;
+    return _perform(url, timeout_sec);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -181,77 +81,21 @@ short HttpClient::httpPost(char const* url, char const* fields,
 short HttpClient::httpPost(char const* url, char const* content,
         char const* content_type, unsigned short timeout_sec)
 {
-    CURL *conn;
-    CURLcode res;
-    std::string hdr_buf;
-    std::string out_buf;
-    char err_buf[CURL_ERROR_SIZE];
-    short retr = -1;
+    struct curl_slist* headerlist = NULL;
 
-    _hdr_buf.clear();
-    _out_buf.clear();
-    _err_buf.clear();
-
-    if (! HttpClient::_global_init) {
-        _err_buf = "System Error";
-        return retr;
-    }
-
-    conn = curl_easy_init();
-    if (conn) {
-        struct curl_slist* headerlist = NULL;
+    if (HttpClient::_global_init && _conn) {
         std::string header(std::string("Content-Type: ") + std::string(content_type));
-
         headerlist = curl_slist_append(headerlist, header.c_str());
 
-        curl_easy_setopt(conn, CURLOPT_URL, url);
-        curl_easy_setopt(conn, CURLOPT_POST, 1L);
-        curl_easy_setopt(conn, CURLOPT_POSTFIELDS, content);
-        curl_easy_setopt(conn, CURLOPT_HTTPHEADER, headerlist);
+        curl_easy_setopt(_conn, CURLOPT_POST, 1L);
+        curl_easy_setopt(_conn, CURLOPT_POSTFIELDS, content);
+        curl_easy_setopt(_conn, CURLOPT_HTTPHEADER, headerlist);
+    }
 
-        if (timeout_sec > 0) {
-            curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
-            curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
-        }
+    short retr = _perform(url, timeout_sec);
 
-        if (strncasecmp(url, "https", 5) == 0) {
-            if (_key.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            }
-            if (_cert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            }
-            if (_cacert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-            }
-            if (_ignore_cert) {
-                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
-            }
-        }
-
-        curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(conn, CURLOPT_ERRORBUFFER, err_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEDATA, &out_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
-        curl_easy_setopt(conn, CURLOPT_WRITEHEADER, &hdr_buf);
-        curl_easy_setopt(conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
-
-        res = curl_easy_perform(conn);
-        if (CURLE_OK == res) {
-            long resp_code;
-            curl_easy_getinfo(conn, CURLINFO_RESPONSE_CODE, &resp_code);
-            retr = (short) resp_code;
-        } else {
-            _err_buf = err_buf;
-        }
-        _hdr_buf = hdr_buf;
-        _out_buf = out_buf;
-
-        /* free header list */
+    if (headerlist) {
         curl_slist_free_all(headerlist);
-
-        /* cleanup */
-        curl_easy_cleanup(conn);
     }
 
     return retr;
@@ -262,79 +106,24 @@ short HttpClient::httpPost(char const* url, char const* content,
 short HttpClient::httpPost(char const* url, char const* content,
         char const* headers[], unsigned short timeout_sec)
 {
-    CURL *conn;
-    CURLcode res;
-    std::string hdr_buf;
-    std::string out_buf;
-    char err_buf[CURL_ERROR_SIZE];
-    short retr = -1;
+    struct curl_slist* headerlist = NULL;
 
-    _hdr_buf.clear();
-    _out_buf.clear();
-    _err_buf.clear();
-
-    if (! HttpClient::_global_init) {
-        _err_buf = "System Error";
-        return retr;
-    }
-
-    conn = curl_easy_init();
-    if (conn) {
-        struct curl_slist* headerlist = NULL;
+    if (HttpClient::_global_init && _conn) {
         int header_len = sizeof(headers) / sizeof(headers[0]);
 
         for (int i = 0; i < header_len; ++i) {
             headerlist = curl_slist_append(headerlist, headers[i]);
         }
 
-        curl_easy_setopt(conn, CURLOPT_URL, url);
-        curl_easy_setopt(conn, CURLOPT_POST, 1L);
-        curl_easy_setopt(conn, CURLOPT_POSTFIELDS, content);
-        curl_easy_setopt(conn, CURLOPT_HTTPHEADER, headerlist);
+        curl_easy_setopt(_conn, CURLOPT_POST, 1L);
+        curl_easy_setopt(_conn, CURLOPT_POSTFIELDS, content);
+        curl_easy_setopt(_conn, CURLOPT_HTTPHEADER, headerlist);
+    }
 
-        if (timeout_sec > 0) {
-            curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
-            curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
-        }
+    short retr = _perform(url, timeout_sec);
 
-        if (strncasecmp(url, "https", 5) == 0) {
-            if (_key.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            }
-            if (_cert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            }
-            if (_cacert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-            }
-            if (_ignore_cert) {
-                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
-            }
-        }
-
-        curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(conn, CURLOPT_ERRORBUFFER, err_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEDATA, &out_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
-        curl_easy_setopt(conn, CURLOPT_WRITEHEADER, &hdr_buf);
-        curl_easy_setopt(conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
-
-        res = curl_easy_perform(conn);
-        if (CURLE_OK == res) {
-            long resp_code;
-            curl_easy_getinfo(conn, CURLINFO_RESPONSE_CODE, &resp_code);
-            retr = (short) resp_code;
-        } else {
-            _err_buf = err_buf;
-        }
-        _hdr_buf = hdr_buf;
-        _out_buf = out_buf;
-
-        /* free header list */
+    if (headerlist) {
         curl_slist_free_all(headerlist);
-
-        /* cleanup */
-        curl_easy_cleanup(conn);
     }
 
     return retr;
@@ -345,77 +134,22 @@ short HttpClient::httpPost(char const* url, char const* content,
 short HttpClient::httpPost(char const* url, char const* content,
         std::vector<std::string>& headers, unsigned short timeout_sec)
 {
-    CURL *conn;
-    CURLcode res;
-    std::string hdr_buf;
-    std::string out_buf;
-    char err_buf[CURL_ERROR_SIZE];
-    short retr = -1;
+    struct curl_slist* headerlist = NULL;
 
-    _hdr_buf.clear();
-    _out_buf.clear();
-    _err_buf.clear();
-
-    if (! HttpClient::_global_init) {
-        _err_buf = "System Error";
-        return retr;
-    }
-
-    conn = curl_easy_init();
-    if (conn) {
-        struct curl_slist* headerlist = NULL;
+    if (HttpClient::_global_init && _conn) {
         for (std::vector<std::string>::iterator it = headers.begin(); it != headers.end(); ++it) {
             headerlist = curl_slist_append(headerlist, ((std::string)*it).c_str());
         }
 
-        curl_easy_setopt(conn, CURLOPT_URL, url);
-        curl_easy_setopt(conn, CURLOPT_POST, 1L);
-        curl_easy_setopt(conn, CURLOPT_POSTFIELDS, content);
-        curl_easy_setopt(conn, CURLOPT_HTTPHEADER, headerlist);
+        curl_easy_setopt(_conn, CURLOPT_POST, 1L);
+        curl_easy_setopt(_conn, CURLOPT_POSTFIELDS, content);
+        curl_easy_setopt(_conn, CURLOPT_HTTPHEADER, headerlist);
+    }
 
-        if (timeout_sec > 0) {
-            curl_easy_setopt(conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
-            curl_easy_setopt(conn, CURLOPT_TIMEOUT, (long) timeout_sec);
-        }
+    short retr = _perform(url, timeout_sec);
 
-        if (strncasecmp(url, "https", 5) == 0) {
-            if (_key.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLKEY, _key.c_str());
-            }
-            if (_cert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_SSLCERT, _cert.c_str());
-            }
-            if (_cacert.length() > 0) {
-                curl_easy_setopt(conn, CURLOPT_CAINFO, _cacert.c_str());
-            }
-            if (_ignore_cert) {
-                curl_easy_setopt(conn, CURLOPT_SSL_VERIFYPEER, 0L);
-            }
-        }
-
-        curl_easy_setopt(conn, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(conn, CURLOPT_ERRORBUFFER, err_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEDATA, &out_buf);
-        curl_easy_setopt(conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
-        curl_easy_setopt(conn, CURLOPT_WRITEHEADER, &hdr_buf);
-        curl_easy_setopt(conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
-
-        res = curl_easy_perform(conn);
-        if (CURLE_OK == res) {
-            long resp_code;
-            curl_easy_getinfo(conn, CURLINFO_RESPONSE_CODE, &resp_code);
-            retr = (short) resp_code;
-        } else {
-            _err_buf = err_buf;
-        }
-        _hdr_buf = hdr_buf;
-        _out_buf = out_buf;
-
-        /* free header list */
+    if (headerlist) {
         curl_slist_free_all(headerlist);
-
-        /* cleanup */
-        curl_easy_cleanup(conn);
     }
 
     return retr;
@@ -423,7 +157,68 @@ short HttpClient::httpPost(char const* url, char const* content,
 
 /*============================================================================*/
 
-size_t HttpClient::_writer(void *ptr, size_t size, size_t nmemb, void *stream)
+short HttpClient::_perform(char const* url, unsigned short timeout_sec)
+{
+    short retr = -1;
+
+    std::string hdr_buf;
+    std::string out_buf;
+    char err_buf[CURL_ERROR_SIZE];
+
+    _hdr_buf.clear();
+    _out_buf.clear();
+    _err_buf.clear();
+
+    if (!HttpClient::_global_init || !_conn) {
+        _err_buf = "System Error";
+        return retr;
+    }
+
+    if (timeout_sec > 0) {
+        curl_easy_setopt(_conn, CURLOPT_CONNECTTIMEOUT, (long) timeout_sec);
+        curl_easy_setopt(_conn, CURLOPT_TIMEOUT, (long) timeout_sec);
+    }
+
+    if (strncasecmp(url, "https", 5) == 0) {
+        if (_key.length() > 0) {
+            curl_easy_setopt(_conn, CURLOPT_SSLKEY, _key.c_str());
+        }
+        if (_cert.length() > 0) {
+            curl_easy_setopt(_conn, CURLOPT_SSLCERT, _cert.c_str());
+        }
+        if (_cacert.length() > 0) {
+            curl_easy_setopt(_conn, CURLOPT_CAINFO, _cacert.c_str());
+        }
+        if (_ignore_cert) {
+            curl_easy_setopt(_conn, CURLOPT_SSL_VERIFYPEER, 0L);
+        }
+    }
+
+    curl_easy_setopt(_conn, CURLOPT_URL, url);
+    curl_easy_setopt(_conn, CURLOPT_NOPROGRESS, 1L);
+    curl_easy_setopt(_conn, CURLOPT_ERRORBUFFER, err_buf);
+    curl_easy_setopt(_conn, CURLOPT_WRITEDATA, &out_buf);
+    curl_easy_setopt(_conn, CURLOPT_WRITEFUNCTION, &(HttpClient::_writer));
+    curl_easy_setopt(_conn, CURLOPT_WRITEHEADER, &hdr_buf);
+    curl_easy_setopt(_conn, CURLOPT_HEADERFUNCTION, &(HttpClient::_writer));
+
+    CURLcode res = curl_easy_perform(_conn);
+    if (CURLE_OK == res) {
+        long resp_code;
+        curl_easy_getinfo(_conn, CURLINFO_RESPONSE_CODE, &resp_code);
+        retr = (short) resp_code;
+    } else {
+        _err_buf = err_buf;
+    }
+    _hdr_buf = hdr_buf;
+    _out_buf = out_buf;
+
+    return retr;
+}
+
+/*============================================================================*/
+
+size_t HttpClient::_writer(void* ptr, size_t size, size_t nmemb, void* stream)
 {
     if (! stream) {
         return 0;

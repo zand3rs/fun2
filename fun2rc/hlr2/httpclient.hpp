@@ -2,7 +2,7 @@
  *    ____  |
  *         /     Author  : Alexander A. Magtipon
  *       /       Created : 2009-07-27
- *     /         Updated : 2010-10-23
+ *     /         Updated : 2017-03-10
  *  _______|     Remarks : boy - zand3rs@gmail.com
  *
  *
@@ -17,6 +17,7 @@
 #ifndef _HTTPCLIENT_HPP_
 #define _HTTPCLIENT_HPP_
 
+#include <curl/curl.h>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,9 @@ class HttpClient {
     public:
         HttpClient(char const* key = "", char const* cert = "", char const* cacert = "", bool ignore_cert = false);
         ~HttpClient();
+
+        void init();
+        void deinit();
 
         //----------------------------------------------------------------------
 
@@ -53,6 +57,7 @@ class HttpClient {
         }
 
     private:
+        CURL* _conn;
         std::string _hdr_buf;
         std::string _out_buf;
         std::string _err_buf;
@@ -62,8 +67,9 @@ class HttpClient {
         bool _ignore_cert;
 
         static bool _global_init;
-        static size_t _writer(void *ptr, size_t size, size_t nmemb, void *stream);
+        static size_t _writer(void* ptr, size_t size, size_t nmemb, void* stream);
 
+        short _perform(char const* url, unsigned short timeout_sec);
 };
 
 #endif
