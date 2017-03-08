@@ -223,7 +223,7 @@ int HLR2::activate(const char *msisdn)
           "<soapenv:Body>\n"
           "  <mod:MOD_BARPWD>\n"
           "     <mod:ISDN>" + std::string(msisdn) + "</mod:ISDN>\n"
-          "     <mod:PWD>FALSE</mod:PWD>\n"
+          "     <mod:PWD>0000</mod:PWD>\n"
           "  </mod:MOD_BARPWD>\n"
           "</soapenv:Body>\n"
           "</soapenv:Envelope>\n";
@@ -384,7 +384,7 @@ int HLR2::activate(const char *msisdn)
           "<soapenv:Body>\n"
           "  <mod:MOD_SMSCSI>\n"
           "     <mod:ISDN>" + std::string(msisdn) + "</mod:ISDN>\n"
-          "     <mod:PROV>TRUE</mod:PROV>\n"
+          "     <mod:PROV>FALSE</mod:PROV>\n"
           "     <mod:MOMTSWITCH>MOSMSCSI</mod:MOMTSWITCH>\n"
           "  </mod:MOD_SMSCSI>\n"
           "</soapenv:Body>\n"
@@ -660,6 +660,7 @@ int HLR2::deactivate(const char *msisdn)
     }
 
     //-- Enabling SMS CSI to avoid double charging for TM
+    //-- TPLID 15 for testbed 110 for prod
     req = "<?xml version=\"1.0\" ?>\n"
           "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
           " xmlns:mod=\"http://www.huawei.com/HLR9820/MOD_SMSCSI\">\n"
