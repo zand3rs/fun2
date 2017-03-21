@@ -929,8 +929,8 @@ int OraDBRequest::processShampooBind()
 
 int OraDBRequest::selectConditionerBind()
 {
-    const char sql_stmt[] = "select id, tran_type, msisdn, promo_code, promo_value, promo_name, service_id, cluster_node"
-        " from conditioner_log where cluster_node = :cluster_node and status = :status"
+    const char sql_stmt[] = "select id, tran_type, msisdn, promo_code, promo_value, promo_name, service_id, cluster_node, brand"
+        " from conditioner_log where brand = :brand and cluster_node = :cluster_node and status = :status"
         " and rownum < :limit order by id";
 
     _sth_select_conditioner = SQLO_STH_INIT;
@@ -941,7 +941,8 @@ int OraDBRequest::selectConditionerBind()
     }
 
     if (SQLO_SUCCESS != (
-                sqlo_bind_by_name(_sth_select_conditioner, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
+                   sqlo_bind_by_name(_sth_select_conditioner, ":brand", SQLOT_STR, &_var_brand, sizeof(_var_brand), 0, 0)
+                || sqlo_bind_by_name(_sth_select_conditioner, ":cluster_node", SQLOT_INT, &_var_cluster_node, sizeof(_var_cluster_node), 0, 0)
                 || sqlo_bind_by_name(_sth_select_conditioner, ":status", SQLOT_INT, &_var_status, sizeof(_var_status), 0, 0)
                 || sqlo_bind_by_name(_sth_select_conditioner, ":limit", SQLOT_INT, &_var_limit, sizeof(_var_limit), 0, 0)
                 || sqlo_define_by_pos(_sth_select_conditioner, 1, SQLOT_INT, &_request.id, sizeof(_request.id), 0, 0, 0)
@@ -952,6 +953,7 @@ int OraDBRequest::selectConditionerBind()
                 || sqlo_define_by_pos(_sth_select_conditioner, 6, SQLOT_STR, &_request.promo_name, sizeof(_request.promo_name), &_ind_promo_name, 0, 0)
                 || sqlo_define_by_pos(_sth_select_conditioner, 7, SQLOT_STR, &_request.service_id, sizeof(_request.service_id), &_ind_service_id, 0, 0)
                 || sqlo_define_by_pos(_sth_select_conditioner, 8, SQLOT_INT, &_request.cluster_node, sizeof(_request.cluster_node), 0, 0, 0)
+                || sqlo_define_by_pos(_sth_select_conditioner, 9, SQLOT_STR, &_request.brand, sizeof(_request.brand), &_ind_brand, 0, 0)
                 )) {
         LOG_CRITICAL("%s: Failed to bind variables for SELECT_CONDITIONER statement handle.", __func__);
         return -2;
@@ -960,8 +962,9 @@ int OraDBRequest::selectConditionerBind()
     return 0;
 }
 
-int OraDBRequest::getConditionerRequests(std::vector<request_t>* requests, int cluster_node, int status, int limit)
+int OraDBRequest::getConditionerRequests(std::vector<request_t>* requests, const char* brand, int cluster_node, int status, int limit)
 {
+    snprintf(_var_brand, sizeof(_var_brand), "%s", brand);
     _var_cluster_node = cluster_node;
     _var_status = status;
     _var_limit = limit;

@@ -31,7 +31,7 @@ class OraDBRequest : public OraDB
         int processMlp(request_t* request);
         int processShampoo(request_t* request);
 
-        int getConditionerRequests(std::vector<request_t>* requests, int cluster_node, int status, int limit=100);
+        int getConditionerRequests(std::vector<request_t>* requests, const char* brand, int cluster_node, int status, int limit=100);
         int updateConditionerRequest(const request_t* request);
 
     private:

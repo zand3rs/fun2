@@ -2129,7 +2129,7 @@ void* conditioner_fetcher (void* arg)
         //-- clear vector...
         requests.clear();
 
-        if (conn.getConditionerRequests(&requests, Config::getClusterNode(), TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
+        if (conn.getConditionerRequests(&requests, Config::getBrand(), Config::getClusterNode(), TXN_STATUS_UNPROCESSED, Config::getOraFetchLimit()) < 0) {
             sys_msleep(1000);
             continue;
         }
