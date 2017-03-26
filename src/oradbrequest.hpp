@@ -34,6 +34,13 @@ class OraDBRequest : public OraDB
         int getConditionerRequests(std::vector<request_t>* requests, const char* brand, int cluster_node, int status, int limit=100);
         int updateConditionerRequest(const request_t* request);
 
+        int getVoyagerRequests(std::vector<request_t>* requests, int cluster_node, int status, int limit=100) {
+            return getConditionerRequests(requests, "POSTPAID", cluster_node, status, limit);
+        }
+        int updateVoyagerRequest(const request_t* request) {
+            return updateConditionerRequest(request);
+        }
+
     private:
         int _do_bind();
 

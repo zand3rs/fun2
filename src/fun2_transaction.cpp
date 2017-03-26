@@ -167,6 +167,12 @@ int main (int argc, char *argv[])
         exit(-1);
     }
 
+    /* -- initialize voyager queue -- */
+    if (0 != c2q_init(Global::getVoyagerQ())) {
+        LOG_CRITICAL("%s: Unable to initialize voyager queue!", app_name);
+        exit(-1);
+    }
+
 
     /* -- run in background -- */
     sys_daemon();
@@ -329,6 +335,24 @@ int main (int argc, char *argv[])
         thrs.push_back(conditioner_thr);
     }
 
+    // voyager fetcher
+    pthread_t voyager_fetcher_thr;
+    if (0 != pthread_create(&voyager_fetcher_thr, &pthread_attr_norm, voyager_fetcher, NULL)) {
+        LOG_CRITICAL("%s: Unable to create voyager_fetcher thread!!!", app_name);
+        abort();
+    }
+    thrs.push_back(voyager_fetcher_thr);
+
+    // voyager handler
+    for (int i=0; i<Config::getThreadCount(); ++i) {
+        pthread_t voyager_thr;
+        if (0 != pthread_create(&voyager_thr, &pthread_attr_norm, voyager_handler, (void*)i)) {
+            LOG_CRITICAL("%s: Unable to create voyager_handler thread (%d)!!!", app_name, i);
+            abort();
+        }
+        thrs.push_back(voyager_thr);
+    }
+
     LOG_INFO("%s: Started.", app_name);
 
     if (Config::bypassARDS()) {
@@ -365,6 +389,7 @@ int main (int argc, char *argv[])
     c2q_deinit(Global::getODSQ());
     c2q_deinit(Global::getCCBQ());
     c2q_deinit(Global::getConditionerQ());
+    c2q_deinit(Global::getVoyagerQ());
 
     /* -- deinitialize log -- */
     LOG_DEINIT();

@@ -38,6 +38,9 @@ void* notification_handler (void* arg);
 void* conditioner_fetcher (void* arg);
 void* conditioner_handler (void* arg);
 
+void* voyager_fetcher (void* arg);
+void* voyager_handler (void* arg);
+
 #endif
 
 /******************************************************************************/
