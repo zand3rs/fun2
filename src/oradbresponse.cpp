@@ -102,7 +102,7 @@ int OraDBResponse::updateResponse(const response_t* response)
 int OraDBResponse::selectBind()
 {
     const char sql_stmt[] = "select id, msg, a_no, b_no, cluster_node, txid from response_log"
-        " where cluster_node = :cluster_node and status = :status"
+        " where tran_dt >= trunc(sysdate-3) and cluster_node = :cluster_node and status = :status"
         " and rownum < :limit order by id";
 
     _sth_select = SQLO_STH_INIT;
