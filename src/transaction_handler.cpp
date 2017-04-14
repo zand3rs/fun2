@@ -1635,43 +1635,55 @@ static void init_tran (OraDBRequest& conn, request_t& request)
                                 if (! strcasecmp(request.promo_code, "SURF")) {
                                     if (! strcasecmp(request.promo_value, "1D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF1D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF1D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "3D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF3D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF3D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "5D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF5D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF5D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "7D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF7D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF7D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "15D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF15D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF15D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "30D")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF30D_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF30D_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF299_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF299_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "399")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF399_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF399_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     } else if (! strcasecmp(request.promo_value, "499")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF499_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SURF499_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     }
                                 } else if (! strcasecmp(request.promo_code, "SSAVER")) {
                                     if (! strcasecmp(request.promo_value, "299")) {
                                         send_system_msg(request.customer_type, request.tran_type, request.id,
-                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SSAVER299_STATUS_SUCCESSFUL, 1);
+                                                Config::getAccessCode(), request.a_no, SYSMSG_VROAM_SSAVER299_STATUS_SUCCESSFUL, 1,
+                                                request.expdate);
                                     }
                                 } else if (! strcasecmp(request.promo_code, "VIBER")) {
                                     send_system_msg(request.customer_type, request.tran_type, request.id,
-                                            Config::getAccessCode(), request.a_no, SYSMSG_VROAM_VIBER_STATUS_SUCCESSFUL, 1);
+                                            Config::getAccessCode(), request.a_no, SYSMSG_VROAM_VIBER_STATUS_SUCCESSFUL, 1,
+                                            request.expdate);
                                 } else if (! strcasecmp(request.promo_code, "FACEBOOK")) {
                                     send_system_msg(request.customer_type, request.tran_type, request.id,
-                                            Config::getAccessCode(), request.a_no, SYSMSG_VROAM_FACEBOOK_STATUS_SUCCESSFUL, 1);
+                                            Config::getAccessCode(), request.a_no, SYSMSG_VROAM_FACEBOOK_STATUS_SUCCESSFUL, 1,
+                                            request.expdate);
                                 }
                                 break;
                         }

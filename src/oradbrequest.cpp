@@ -468,9 +468,16 @@ int OraDBRequest::initTran(request_t* request)
         return -1;
     }
 
-    request->min_bal = strtol(_var_extra_o_1, NULL, 10);
-    snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
-    request->nsn_flag = strtol(_var_extra_o_3, NULL, 10);
+    switch (request->tran_type) {
+        case TRAN_TYPE_ROAM_USURF_STATUS:
+            snprintf(request->expdate, sizeof(request->expdate), "%s", _var_extra_o_1);
+            break;
+        default:
+            request->min_bal = strtol(_var_extra_o_1, NULL, 10);
+            snprintf(request->others, sizeof(request->others), "%s", _var_extra_o_2);
+            request->nsn_flag = strtol(_var_extra_o_3, NULL, 10);
+    }
+
 
     LOG_DEBUG("%s: retr: %d, trantype: %d, msisdn: %s, req_id: %d, ref_id: %d"
             ", min_bal: %d, nsn_flag: %d, activation_date: %s, deactivation_date: %s"
