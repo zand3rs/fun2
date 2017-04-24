@@ -43,6 +43,11 @@ int csp_charge (const char* msisdn);
 int do_nf (int operation, const char* msisdn, const char* service_id, int param);
 int do_nf (int operation, const char* msisdn, const char* service_id, const char* param);
 
+#define VOYAGER_OP_ON     1
+#define VOYAGER_OP_OFF    2
+
+int do_voyager (int operation, const char* msisdn, const char* service_id);
+
 #endif
 
 /******************************************************************************/

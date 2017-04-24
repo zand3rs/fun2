@@ -388,4 +388,43 @@ float nsn_getBalance(const char *msisdn)
     return balance;
 }
 
+/*============================================================================*/
+
+int do_voyager (int operation, const char* msisdn, const char* service_id)
+{
+    HttpClient hc;
+    char op_id[8];
+    snprintf(op_id, sizeof(op_id), "%d", operation);
+    std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                      "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:web=\"http://voyager.metr.com.ph/webtool_api/\">\n"
+                      "<soapenv:Header/>\n"
+                      "<soapenv:Body>\n"
+                      "  <web:ProvisionServiceRequest>\n"
+                      "    <msisdn>" + std::string(msisdn) + "</msisdn>\n"
+                      "    <service_id>" + std::string(service_id) + "</service_id>\n"
+                      "    <op_id>" + std::string(op_id) + "</op_id>\n"
+                      "    <silent>true</silent>\n"
+                      "  </web:ProvisionServiceRequest>\n"
+                      "</soapenv:Body>\n"
+                      "</soapenv:Envelope>\n";
+    std::vector<string> headers;
+                        headers.push_back("Content-Type: application/soap+xml; charset=utf-8");
+
+    int status = -1;
+    int res_code = hc.httpPost(Config::getVoyagerUrl(), req.c_str(), headers, Config::getVoyagerTimeoutSec());
+
+    if (200 == res_code) {
+        const char* body = hc.getResponseBody();
+        char elem[32] = "<rejectCode>";
+        char* found = strstr(body, elem);
+        if (found) {
+            status = strtol(found + strlen(elem), NULL, 10);
+        }
+    }
+
+    LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s", __func__,
+            Config::getVoyagerUrl(), res_code, hc.getResponseBody(), hc.getError());
+
+    return status;
+}
 /******************************************************************************/

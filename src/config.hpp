@@ -114,6 +114,13 @@ class Config {
             return _nf_param.c_str();
         }
 
+        static const char* getVoyagerUrl() {
+            return _voyager_url.c_str();
+        }
+        static int getVoyagerTimeoutSec() {
+            return _voyager_timeout_sec;
+        }
+
         static const char* getCartUrl() {
             return _cart_url.c_str();
         }
@@ -250,6 +257,9 @@ class Config {
         static std::string _nf_origin;
         static std::string _nf_service_id;
         static std::string _nf_param;
+
+        static std::string _voyager_url;
+        static int _voyager_timeout_sec;
         
         static std::string _cart_url;
         static int _cart_timeout_sec;

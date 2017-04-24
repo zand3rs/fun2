@@ -54,6 +54,9 @@ std::string Config::_nf_origin = "";
 std::string Config::_nf_service_id = "";
 std::string Config::_nf_param = "";
 
+std::string Config::_voyager_url = "";
+int Config::_voyager_timeout_sec = 0;
+
 std::string Config::_cart_url = "";
 int Config::_cart_timeout_sec = 0;
 std::string Config::_cart_userid = "";
@@ -189,6 +192,12 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "nf_param", buf, sizeof(buf));
         _nf_param = buf;
+
+        cfg_getval(&cfg, "", "voyager_url", buf, sizeof(buf));
+        _voyager_url = buf;
+
+        cfg_getval(&cfg, "", "voyager_timeout_sec", buf, sizeof(buf));
+        _voyager_timeout_sec = strtol(buf, NULL, 10);
 
         cfg_getval(&cfg, "", "cart_url", buf, sizeof(buf));
         _cart_url = buf;

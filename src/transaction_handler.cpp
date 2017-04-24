@@ -2719,11 +2719,11 @@ void* voyager_handler (void* arg)
 
             switch (request.tran_type) {
                 case TRAN_TYPE_ROAM_USURF_ON:
-                    request.result_code = 0;
+                    request.result_code = do_voyager(VOYAGER_OP_ON, request.msisdn, request.service_id);
                     LOG_DEBUG("%s: %d: VYGR_OP_ON: %d", __func__, proc_id, request.result_code);
                     break;
                 case TRAN_TYPE_ROAM_USURF_OFF:
-                    request.result_code = 0;
+                    request.result_code = do_voyager(VOYAGER_OP_OFF, request.msisdn, request.service_id);
                     LOG_DEBUG("%s: %d: VYGR_OP_OFF: %d", __func__, proc_id, request.result_code);
                     break;
                 default:
