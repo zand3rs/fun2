@@ -422,8 +422,8 @@ int do_voyager (int operation, const char* msisdn, const char* service_id)
         }
     }
 
-    LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s", __func__,
-            Config::getVoyagerUrl(), res_code, hc.getResponseBody(), hc.getError());
+    LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s, status: %d", __func__,
+            Config::getVoyagerUrl(), res_code, hc.getResponseBody(), hc.getError(), status);
 
     return status;
 }
