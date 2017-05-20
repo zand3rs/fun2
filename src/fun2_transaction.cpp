@@ -317,40 +317,42 @@ int main (int argc, char *argv[])
         thrs.push_back(ccb_thr);
     }
 
-    // conditioner fetcher
-    pthread_t conditioner_fetcher_thr;
-    if (0 != pthread_create(&conditioner_fetcher_thr, &pthread_attr_norm, conditioner_fetcher, NULL)) {
-        LOG_CRITICAL("%s: Unable to create conditioner_fetcher thread!!!", app_name);
-        abort();
-    }
-    thrs.push_back(conditioner_fetcher_thr);
-
-    // conditioner handler
-    for (int i=0; i<Config::getThreadCount(); ++i) {
-        pthread_t conditioner_thr;
-        if (0 != pthread_create(&conditioner_thr, &pthread_attr_norm, conditioner_handler, (void*)i)) {
-            LOG_CRITICAL("%s: Unable to create conditioner_handler thread (%d)!!!", app_name, i);
+    if (! strncasecmp(Config::getBrand(), "PREPAID", 7)) {
+        // conditioner fetcher
+        pthread_t conditioner_fetcher_thr;
+        if (0 != pthread_create(&conditioner_fetcher_thr, &pthread_attr_norm, conditioner_fetcher, NULL)) {
+            LOG_CRITICAL("%s: Unable to create conditioner_fetcher thread!!!", app_name);
             abort();
         }
-        thrs.push_back(conditioner_thr);
-    }
+        thrs.push_back(conditioner_fetcher_thr);
 
-    // voyager fetcher
-    pthread_t voyager_fetcher_thr;
-    if (0 != pthread_create(&voyager_fetcher_thr, &pthread_attr_norm, voyager_fetcher, NULL)) {
-        LOG_CRITICAL("%s: Unable to create voyager_fetcher thread!!!", app_name);
-        abort();
-    }
-    thrs.push_back(voyager_fetcher_thr);
+        // conditioner handler
+        for (int i=0; i<Config::getThreadCount(); ++i) {
+            pthread_t conditioner_thr;
+            if (0 != pthread_create(&conditioner_thr, &pthread_attr_norm, conditioner_handler, (void*)i)) {
+                LOG_CRITICAL("%s: Unable to create conditioner_handler thread (%d)!!!", app_name, i);
+                abort();
+            }
+            thrs.push_back(conditioner_thr);
+        }
 
-    // voyager handler
-    for (int i=0; i<Config::getThreadCount(); ++i) {
-        pthread_t voyager_thr;
-        if (0 != pthread_create(&voyager_thr, &pthread_attr_norm, voyager_handler, (void*)i)) {
-            LOG_CRITICAL("%s: Unable to create voyager_handler thread (%d)!!!", app_name, i);
+        // voyager fetcher
+        pthread_t voyager_fetcher_thr;
+        if (0 != pthread_create(&voyager_fetcher_thr, &pthread_attr_norm, voyager_fetcher, NULL)) {
+            LOG_CRITICAL("%s: Unable to create voyager_fetcher thread!!!", app_name);
             abort();
         }
-        thrs.push_back(voyager_thr);
+        thrs.push_back(voyager_fetcher_thr);
+
+        // voyager handler
+        for (int i=0; i<Config::getThreadCount(); ++i) {
+            pthread_t voyager_thr;
+            if (0 != pthread_create(&voyager_thr, &pthread_attr_norm, voyager_handler, (void*)i)) {
+                LOG_CRITICAL("%s: Unable to create voyager_handler thread (%d)!!!", app_name, i);
+                abort();
+            }
+            thrs.push_back(voyager_thr);
+        }
     }
 
     LOG_INFO("%s: Started.", app_name);
