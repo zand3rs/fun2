@@ -194,6 +194,13 @@ class Config {
             return _matrix_ignore_cert;
         }
 
+        static const char* getNfBusUrl() {
+            return _nfbus_url.c_str();
+        }
+        static int getNfBusTimeoutSec() {
+            return _nfbus_timeout_sec;
+        }
+
         static int bypassARDS() {
             return _bypass_ards;
         }
@@ -288,6 +295,9 @@ class Config {
         static std::string _matrix_cert;
         static std::string _matrix_cacert;
         static bool _matrix_ignore_cert;
+
+        static std::string _nfbus_url;
+        static int _nfbus_timeout_sec;
 
         static int _bypass_ards;
 

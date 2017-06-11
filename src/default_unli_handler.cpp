@@ -137,7 +137,7 @@ static int load_default_unli(std::vector<default_unli_t>& default_unlis, const s
 
 /*----------------------------------------------------------------------------*/
 
-float doMatrix(default_unli_t* default_unli)
+int doMatrix(default_unli_t* default_unli)
 {
     HttpClient hc(Config::getMatrixKey(), Config::getMatrixCert(), Config::getMatrixCacert(), Config::getMatrixIgnoreCert());
     std::string req = "{"
@@ -163,6 +163,17 @@ float doMatrix(default_unli_t* default_unli)
 
     return 0;
 }
+
+/*----------------------------------------------------------------------------*/
+
+int doNfBus(default_unli_t* default_unli)
+{
+    LOG_INFO("%s: url: %s, msisdn: %s, startDate: %s, endDate: %s, country: %s, roamingPartner: %s", __func__,
+            Config::getNfBusUrl(), default_unli->msisdn, default_unli->start_date, default_unli->end_date, default_unli->mcc, default_unli->mnc);
+
+    return 0;
+}
+
 /*============================================================================*/
 
 void* default_unli_fetcher (void* arg)
@@ -316,6 +327,9 @@ void* default_unli_handler (void* arg)
             } else {
                 //-- call matrix api...
                 doMatrix(&default_unli);
+
+                //-- call NF Bus...
+                doNfBus(&default_unli);
             }
         }
 

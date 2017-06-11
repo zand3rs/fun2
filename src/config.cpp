@@ -85,6 +85,9 @@ std::string Config::_matrix_cert = "";
 std::string Config::_matrix_cacert = "";
 bool Config::_matrix_ignore_cert = false;
 
+std::string Config::_nfbus_url = "";
+int Config::_nfbus_timeout_sec = 0;
+
 int Config::_bypass_ards = 0;
 
 std::string Config::_ftp_host = "";
@@ -270,6 +273,12 @@ int Config::load(const char *fpath)
 
         cfg_getval(&cfg, "", "matrix_ignore_cert", buf, sizeof(buf));
         _matrix_ignore_cert = (!strcasecmp(buf, "true") || !strcasecmp(buf, "1")) ? true : false;
+
+        cfg_getval(&cfg, "", "nfbus_url", buf, sizeof(buf));
+        _nfbus_url = buf;
+
+        cfg_getval(&cfg, "", "nfbus_timeout_sec", buf, sizeof(buf));
+        _nfbus_timeout_sec = strtol(buf, NULL, 10);
 
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);
