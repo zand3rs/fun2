@@ -326,6 +326,10 @@ void* default_unli_handler (void* arg)
             //-- process default unli transaction...
             conn.processDefaultUnli(&default_unli);
 
+            LOG_DEBUG("%s: %d: db_retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
+                    , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip
+                    , default_unli.date, default_unli.filename);
+
             switch (default_unli.db_retr) {
                 case DB_RETR_NF_BUS:
                     //-- call NF Bus...
