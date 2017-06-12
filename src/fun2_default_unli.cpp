@@ -33,6 +33,7 @@
 #include "global.hpp"
 #include "config.hpp"
 #include "oradb.hpp"
+#include "sysmsg.hpp"
 #include "signal_handler.hpp"
 #include "default_unli_handler.hpp"
 
@@ -89,6 +90,12 @@ int main (int argc, char *argv[])
     /* -- initialize libsqlora8 -- */
     if (OraDB::init_lib(true) < 0) {
         LOG_CRITICAL("%s: Unable to initialize libsqlora8!", app_name);
+        exit(-1);
+    }
+
+    /* -- load system messages from db -- */
+    if (0 != Sysmsg::load(Config::getOraAuth(), Config::getBrand())) {
+        LOG_CRITICAL("%s: Unable to load system messages from db (%s).", app_name, Config::getOraAuth());
         exit(-1);
     }
 
