@@ -33,6 +33,8 @@
 
 #include "global.hpp"
 #include "config.hpp"
+#include "sysmsg.hpp"
+#include "misc.hpp"
 #include "ecsv.hpp"
 #include "oradbdefaultunli.hpp"
 #include "default_unli_handler.hpp"
@@ -320,16 +322,26 @@ void* default_unli_handler (void* arg)
                         , default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.date, default_unli.filename);
                 continue;
             }
-            if (conn.processDefaultUnli(&default_unli) < 0 || default_unli.db_retr > 1) {
-                LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
-                        , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc
-                        , default_unli.sgsn_ip, default_unli.date, default_unli.filename);
-            } else {
-                //-- call matrix api...
-                doMatrix(&default_unli);
 
-                //-- call NF Bus...
-                doNfBus(&default_unli);
+            //-- process default unli transaction...
+            conn.processDefaultUnli(&default_unli);
+
+            switch (default_unli.db_retr) {
+                case DB_RETR_NF_BUS:
+                    //-- call NF Bus...
+                    if (0 == doNfBus(&default_unli)) {
+                        send_system_msg("TRIGGER", TRAN_TYPE_BROADCAST, 0,
+                                Config::getAccessCode(), default_unli.msisdn, SYSMSG_BROADCAST_ROAM_FREE_CT, 1);
+                    }
+                    //-- continue...
+                case DB_RETR_OK:
+                    //-- call matrix api...
+                    doMatrix(&default_unli);
+                    break;
+                default:
+                    LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
+                            , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc
+                            , default_unli.sgsn_ip, default_unli.date, default_unli.filename);
             }
         }
 

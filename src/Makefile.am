@@ -197,16 +197,20 @@ fun2_ods_LDADD = \
 fun2_default_unli_SOURCES = \
                        data_struct.hpp \
                        fun2_default_unli.cpp \
+                       base64.cpp base64.hpp \
                        ecsv.cpp ecsv.hpp \
                        config.cpp config.hpp \
                        global.cpp global.hpp \
                        httpclient.cpp httpclient.hpp \
                        httputils.cpp httputils.hpp \
+                       misc.cpp misc.hpp \
+                       nsn.cpp nsn.hpp \
                        oradb.cpp oradb.hpp \
                        oradbdefaultunli.cpp oradbdefaultunli.hpp \
                        oradbsimple.cpp oradbsimple.hpp \
                        default_unli_handler.cpp default_unli_handler.hpp \
-                       signal_handler.cpp signal_handler.hpp
+                       signal_handler.cpp signal_handler.hpp \
+                       sysmsg.cpp sysmsg.hpp
 
 fun2_default_unli_LDADD = \
              ../libfuc/lib/libfuc.a \
