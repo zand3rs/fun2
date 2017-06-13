@@ -333,11 +333,10 @@ void* default_unli_handler (void* arg)
             switch (default_unli.db_retr) {
                 case DB_RETR_NF_BUS:
                     //-- call NF Bus...
-                    doNfBus(&default_unli);
-                    //-- if (0 == doNfBus(&default_unli)) {
-                    //--    send_system_msg("TRIGGER", TRAN_TYPE_BROADCAST, 0,
-                    //--            Config::getAccessCode(), default_unli.msisdn, SYSMSG_BROADCAST_ROAM_FREE_CT, 1);
-                    //-- }
+                    if (0 == doNfBus(&default_unli)) {
+                        // send_system_msg("TRIGGER", TRAN_TYPE_BROADCAST, 0,
+                        //        Config::getAccessCode(), default_unli.msisdn, SYSMSG_BROADCAST_ROAM_FREE_CT, 1);
+                    }
                     //-- continue...
                 case DB_RETR_OK:
                     //-- call matrix api...
