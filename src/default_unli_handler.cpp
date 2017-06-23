@@ -180,6 +180,13 @@ int doNfBus(default_unli_t* default_unli)
     char _tran_id[32];
     snprintf(_tran_id, sizeof(_tran_id), "%d", default_unli->id);
 
+    struct tm t;
+    strptime(default_unli->end_date, "%Y-%m-%dT%H:%M:%S%Z", &t);
+
+    time_t _epoch = mktime(&t);
+    char _expiry[32];
+    snprintf(_expiry, sizeof(_expiry), "%lu", _epoch);
+
     std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:prod=\"http://bus.metr.com.ph/soap/producer\">\n"
         " <soapenv:Header/>\n"
@@ -203,7 +210,7 @@ int doNfBus(default_unli_t* default_unli)
         "                </param>\n"
         "                <param>\n"
         "                   <name>expiry</name>\n"
-        "                   <value>" + std::string(default_unli->end_date) + "</value>\n"
+        "                   <value>" + std::string(_expiry) + "</value>\n"
         "                </param>\n"
         "                <param>\n"
         "                   <name>trans_id</name>\n"
