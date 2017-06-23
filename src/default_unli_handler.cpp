@@ -173,8 +173,12 @@ int doNfBus(default_unli_t* default_unli)
     HttpClient hc;
     std::string _nfbus_user = Config::getNfBusUser();
     std::string _nfbus_pass = Config::getNfBusPass();
-    char _nfbus_service_id[20];
+
+    char _nfbus_service_id[32];
     snprintf(_nfbus_service_id, sizeof(_nfbus_service_id), "%d", Config::getNfBusServiceId());
+
+    char _tran_id[32];
+    snprintf(_tran_id, sizeof(_tran_id), "%d", default_unli->id);
 
     std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:prod=\"http://bus.metr.com.ph/soap/producer\">\n"
@@ -188,7 +192,7 @@ int doNfBus(default_unli_t* default_unli)
         "          </credential>\n"
         "          <NewElement>\n"
         "             <event-type-id>fun2</event-type-id>\n"
-        "             <event-id>1</event-id>\n"
+        "             <event-id>" + std::string(_tran_id) + "</event-id>\n"
         "             <service>" + std::string(_nfbus_service_id) + "</service>\n"
         "             <reason></reason>\n"
         "             <origin></origin>\n"

@@ -307,6 +307,9 @@ class Config {
 
         static std::string _nfbus_url;
         static int _nfbus_timeout_sec;
+        static std::string _nfbus_user;
+        static std::string _nfbus_pass;
+        static int _nfbus_service_id;
 
         static int _bypass_ards;
 

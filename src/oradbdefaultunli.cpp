@@ -57,7 +57,7 @@ int OraDBDefaultUnli::processDefaultUnli(default_unli_t* default_unli)
 int OraDBDefaultUnli::defaultUnliBind()
 {
     const char sql_stmt[] = "BEGIN"
-        " SP_PROCESS_DEFAULT_UNLI(:p_retr, :p_sta_dt, :p_end_dt, :p_msisdn, :p_mnc, :p_mcc, :p_sgsn_ip, :p_date, :p_filename);"
+        " SP_PROCESS_DEFAULT_UNLI(:p_retr, :p_sta_dt, :p_end_dt, :p_tran_id, :p_msisdn, :p_mnc, :p_mcc, :p_sgsn_ip, :p_date, :p_filename);"
         " END;";
 
     _sth_pdu = SQLO_STH_INIT;
@@ -71,6 +71,7 @@ int OraDBDefaultUnli::defaultUnliBind()
                 sqlo_bind_by_name(_sth_pdu, ":p_retr", SQLOT_INT, &_default_unli.db_retr, sizeof(_default_unli.db_retr), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_sta_dt", SQLOT_STR, &_default_unli.start_date, sizeof(_default_unli.start_date), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_end_dt", SQLOT_STR, &_default_unli.end_date, sizeof(_default_unli.end_date), 0, 0)
+                || sqlo_bind_by_name(_sth_pdu, ":p_tran_id", SQLOT_INT, &_default_unli.id, sizeof(_default_unli.id), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_msisdn", SQLOT_STR, &_default_unli.msisdn, sizeof(_default_unli.msisdn), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_mnc", SQLOT_STR, &_default_unli.mnc, sizeof(_default_unli.mnc), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_mcc", SQLOT_STR, &_default_unli.mcc, sizeof(_default_unli.mcc), 0, 0)
