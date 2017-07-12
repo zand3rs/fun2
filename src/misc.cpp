@@ -403,7 +403,7 @@ int do_voyager (int operation, const char* msisdn, const char* service_id)
                       "    <msisdn>" + std::string(msisdn) + "</msisdn>\n"
                       "    <service_id>" + std::string(service_id) + "</service_id>\n"
                       "    <op_id>" + std::string(op_id) + "</op_id>\n"
-                      "    <silent>true</silent>\n"
+                      "    <silent>false</silent>\n"
                       "  </web:ProvisionServiceRequest>\n"
                       "</soapenv:Body>\n"
                       "</soapenv:Envelope>\n";
