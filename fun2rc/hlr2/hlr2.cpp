@@ -32,7 +32,7 @@ void HLR2::_init_steps()
         {&HLR2::_enableOutgoingVoice3, &HLR2::_disableOutgoingVoice3, "enableOutgoingVoice3", "disableOutgoingVoice3"},
         {&HLR2::_disableRingBackTone, &HLR2::_enableRingBackTone, "disableRingBackTone", "enableRingBackTone"},
         {&HLR2::_enableIncomingVoice, &HLR2::_disableIncomingVoice, "enableIncomingVoice", "disableIncomingVoice"},
-        {&HLR2::_disableSmsCsi, &HLR2::_enableSmsCsi, "disableSmsCsi", "enableSmsCsi"}
+        {&HLR2::_noop, &HLR2::_enableSmsCsi, "", "enableSmsCsi"}
     };
 
     Step_t d_steps[] = {
@@ -55,7 +55,7 @@ void HLR2::_init_steps()
         {&HLR2::_disableOutgoingVoice3, &HLR2::_enableOutgoingVoice3, "disableOutgoingVoice3", "enableOutgoingVoice3"},
         {&HLR2::_enableRingBackTone, &HLR2::_disableRingBackTone, "enableRingBackTone", "disableRingBackTone"},
         {&HLR2::_disableIncomingVoice, &HLR2::_enableIncomingVoice, "disableIncomingVoice", "enableIncomingVoice"},
-        {&HLR2::_enableSmsCsi, &HLR2::_disableSmsCsi, "enableSmsCsi", "disableSmsCsi"}
+        {&HLR2::_enableSmsCsi, &HLR2::_noop, "enableSmsCsi", ""}
     };
 
     _activate_steps.assign(a_steps, a_steps + (sizeof(a_steps)/sizeof(Step_t)));
