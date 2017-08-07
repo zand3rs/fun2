@@ -200,6 +200,15 @@ class Config {
         static int getNfBusTimeoutSec() {
             return _nfbus_timeout_sec;
         }
+        static const char* getNfBusUser() {
+            return _nfbus_user.c_str();
+        }
+        static const char* getNfBusPass() {
+            return _nfbus_pass.c_str();
+        }
+        static int getNfBusServiceId() {
+            return _nfbus_service_id;
+        }
 
         static int bypassARDS() {
             return _bypass_ards;

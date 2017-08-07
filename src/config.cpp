@@ -87,6 +87,9 @@ bool Config::_matrix_ignore_cert = false;
 
 std::string Config::_nfbus_url = "";
 int Config::_nfbus_timeout_sec = 0;
+std::string Config::_nfbus_user = "";
+std::string Config::_nfbus_pass = "";
+int Config::_nfbus_service_id= 0;
 
 int Config::_bypass_ards = 0;
 

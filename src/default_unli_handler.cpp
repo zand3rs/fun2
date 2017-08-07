@@ -171,6 +171,11 @@ int doMatrix(default_unli_t* default_unli)
 int doNfBus(default_unli_t* default_unli)
 {
     HttpClient hc;
+    std::string _nfbus_user = Config::getNfBusUser();
+    std::string _nfbus_pass = Config::getNfBusPass();
+    char _nfbus_service_id[20];
+    snprintf(_nfbus_service_id, sizeof(_nfbus_service_id), "%d", Config::getNfBusServiceId());
+
     std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:prod=\"http://bus.metr.com.ph/soap/producer\">\n"
         " <soapenv:Header/>\n"
@@ -178,13 +183,13 @@ int doNfBus(default_unli_t* default_unli)
         "    <prod:publishEvent>\n"
         "       <publishEventRequest>\n"
         "          <credential>\n"
-        "             <user>jackhammer_client</user>\n"
-        "             <password>jackhammer_client</password>\n"
+        "             <user>" + std::string(_nfbus_user) + "</user>\n"
+        "             <password>" + std::string(_nfbus_pass) + "</password>\n"
         "          </credential>\n"
         "          <NewElement>\n"
         "             <event-type-id>fun2</event-type-id>\n"
         "             <event-id>1</event-id>\n"
-        "             <service>1</service>\n"
+        "             <service>" + std::string(_nfbus_service_id) + "</service>\n"
         "             <reason></reason>\n"
         "             <origin></origin>\n"
         "             <params>\n"
@@ -198,7 +203,7 @@ int doNfBus(default_unli_t* default_unli)
         "                </param>\n"
         "                <param>\n"
         "                   <name>service_id</name>\n"
-        "                   <value>1</value>\n"
+        "                   <value>" + std::string(_nfbus_service_id) + "</value>\n"
         "                </param>\n"
         "             </params>\n"
         "          </NewElement>\n"
@@ -215,19 +220,19 @@ int doNfBus(default_unli_t* default_unli)
 
     if (200 == res_code) {
         const char* body = hc.getResponseBody();
-        char elem[32] = "<rejectCode>";
+        char elem[32] = "<response-code>";
         char* found = strstr(body, elem);
         if (found) {
             status = strtol(found + strlen(elem), NULL, 10);
         }
     }
 
-    LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s, status: %d", __func__,
-            Config::getNfBusUrl(), res_code, hc.getResponseBody(), hc.getError(), status);
+    LOG_INFO("%s: url: %s, req: %s, res_code: %d, res_body: %s, res_error: %s, status: %d", __func__,
+            Config::getNfBusUrl(), req.c_str(), res_code, hc.getResponseBody(), hc.getError(), status);
 
-    return status;
-
+    return 0;
 }
+
 
 /*============================================================================*/
 
