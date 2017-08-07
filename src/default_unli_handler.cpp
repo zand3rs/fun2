@@ -170,10 +170,63 @@ int doMatrix(default_unli_t* default_unli)
 
 int doNfBus(default_unli_t* default_unli)
 {
-    LOG_INFO("%s: url: %s, msisdn: %s, startDate: %s, endDate: %s, country: %s, roamingPartner: %s", __func__,
-            Config::getNfBusUrl(), default_unli->msisdn, default_unli->start_date, default_unli->end_date, default_unli->mcc, default_unli->mnc);
+    HttpClient hc;
+    std::string req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:prod=\"http://bus.metr.com.ph/soap/producer\">\n"
+        " <soapenv:Header/>\n"
+        " <soapenv:Body>\n"
+        "    <prod:publishEvent>\n"
+        "       <publishEventRequest>\n"
+        "          <credential>\n"
+        "             <user>jackhammer_client</user>\n"
+        "             <password>jackhammer_client</password>\n"
+        "          </credential>\n"
+        "          <NewElement>\n"
+        "             <event-type-id>fun2</event-type-id>\n"
+        "             <event-id>1</event-id>\n"
+        "             <service>1</service>\n"
+        "             <reason></reason>\n"
+        "             <origin></origin>\n"
+        "             <params>\n"
+        "                <param>\n"
+        "                   <name>msisdn</name>\n"
+        "                   <value>" + std::string(default_unli->msisdn) + "</value>\n"
+        "                </param>\n"
+        "                <param>\n"
+        "                   <name>expiry</name>\n"
+        "                   <value>" + std::string(default_unli->end_date) + "</value>\n"
+        "                </param>\n"
+        "                <param>\n"
+        "                   <name>service_id</name>\n"
+        "                   <value>1</value>\n"
+        "                </param>\n"
+        "             </params>\n"
+        "          </NewElement>\n"
+        "       </publishEventRequest>\n"
+        "    </prod:publishEvent>\n"
+        "  </soapenv:Body>\n"
+        "</soapenv:Envelope>\n";
 
-    return 0;
+    std::vector<string> headers;
+    headers.push_back("Content-Type: application/soap+xml; charset=utf-8");
+
+    int status = -1;
+    int res_code = hc.httpPost(Config::getNfBusUrl(), req.c_str(), headers, Config::getNfBusTimeoutSec());
+
+    if (200 == res_code) {
+        const char* body = hc.getResponseBody();
+        char elem[32] = "<rejectCode>";
+        char* found = strstr(body, elem);
+        if (found) {
+            status = strtol(found + strlen(elem), NULL, 10);
+        }
+    }
+
+    LOG_INFO("%s: url: %s, res_code: %d, res_body: %s, res_error: %s, status: %d", __func__,
+            Config::getNfBusUrl(), res_code, hc.getResponseBody(), hc.getError(), status);
+
+    return status;
+
 }
 
 /*============================================================================*/
