@@ -39,17 +39,18 @@ int OraDBDefaultUnli::processDefaultUnli(default_unli_t* default_unli)
                 " STATEMENT: \"%s\", LIBSQLORA ERROR: \"%s\"",
                 __func__, sqlo_command(_sth_pdu), sqlo_geterror(_dbh));
 
-        LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
-                , default_unli->msisdn, default_unli->mnc, default_unli->mcc , default_unli->sgsn_ip, default_unli->date, default_unli->filename);
+        LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__
+                , default_unli->msisdn, default_unli->mnc, default_unli->mcc, default_unli->sgsn_ip, default_unli->tac_tai
+                , default_unli->date, default_unli->filename);
 
         //-- try to re-bind...
         defaultUnliBind();
         return -1;
     }
 
-    LOG_DEBUG("%s: retr: %d, start_date: %s, end_date: %s, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
+    LOG_DEBUG("%s: retr: %d, start_date: %s, end_date: %s, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__
             , default_unli->db_retr, default_unli->start_date, default_unli->end_date, default_unli->msisdn, default_unli->mnc, default_unli->mcc
-            , default_unli->sgsn_ip, default_unli->date, default_unli->filename);
+            , default_unli->sgsn_ip, default_unli->tac_tai, default_unli->date, default_unli->filename);
 
     return 0;
 }
@@ -57,7 +58,7 @@ int OraDBDefaultUnli::processDefaultUnli(default_unli_t* default_unli)
 int OraDBDefaultUnli::defaultUnliBind()
 {
     const char sql_stmt[] = "BEGIN"
-        " SP_PROCESS_DEFAULT_UNLI(:p_retr, :p_sta_dt, :p_end_dt, :p_tran_id, :p_msisdn, :p_mnc, :p_mcc, :p_sgsn_ip, :p_date, :p_filename);"
+        " SP_PROCESS_DEFAULT_UNLI(:p_retr, :p_sta_dt, :p_end_dt, :p_tran_id, :p_msisdn, :p_mnc, :p_mcc, :p_sgsn_ip, :p_tac_tai, :p_date, :p_filename);"
         " END;";
 
     _sth_pdu = SQLO_STH_INIT;
@@ -76,6 +77,7 @@ int OraDBDefaultUnli::defaultUnliBind()
                 || sqlo_bind_by_name(_sth_pdu, ":p_mnc", SQLOT_STR, &_default_unli.mnc, sizeof(_default_unli.mnc), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_mcc", SQLOT_STR, &_default_unli.mcc, sizeof(_default_unli.mcc), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_sgsn_ip", SQLOT_STR, &_default_unli.sgsn_ip, sizeof(_default_unli.sgsn_ip), 0, 0)
+                || sqlo_bind_by_name(_sth_pdu, ":p_tac_tai", SQLOT_STR, &_default_unli.tac_tai, sizeof(_default_unli.tac_tai), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_date", SQLOT_STR, &_default_unli.date, sizeof(_default_unli.date), 0, 0)
                 || sqlo_bind_by_name(_sth_pdu, ":p_filename", SQLOT_STR, &_default_unli.filename, sizeof(_default_unli.filename), 0, 0)
                 )) {

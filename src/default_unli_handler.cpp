@@ -124,11 +124,12 @@ static int load_default_unli(std::vector<default_unli_t>& default_unlis, const s
         snprintf(default_unli.mnc, sizeof(default_unli.mnc), "%s", csv->getfield(14));
         snprintf(default_unli.mcc, sizeof(default_unli.mcc), "%s", csv->getfield(15));
         snprintf(default_unli.sgsn_ip, sizeof(default_unli.sgsn_ip), "%s", csv->getfield(18));
+        snprintf(default_unli.tac_tai, sizeof(default_unli.tac_tai), "%s", csv->getfield(20));
         snprintf(default_unli.date, sizeof(default_unli.date), "%s", csv->getfield(3));
 
-        LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__
-                , default_unli.msisdn, default_unli.mnc, default_unli.mcc
-                , default_unli.sgsn_ip, default_unli.date, default_unli.filename);
+        LOG_DEBUG("%s: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__
+                , default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.tac_tai
+                , default_unli.date, default_unli.filename);
 
         default_unlis.push_back(default_unli);
     }
@@ -391,16 +392,16 @@ void* default_unli_handler (void* arg)
 
         while (! c2q_dequeue(Global::getDefaultUnliQ(), &default_unli, sizeof(default_unli_t))) {
             if (! strcmp(default_unli.mcc, "515")) {
-                LOG_DEBUG("%s: %d: Ignoring records with mcc 515: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
-                        , default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.date, default_unli.filename);
+                LOG_DEBUG("%s: %d: Ignoring records with mcc 515: msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__, proc_id
+                        , default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.tac_tai, default_unli.date, default_unli.filename);
                 continue;
             }
 
             //-- process default unli transaction...
             conn.processDefaultUnli(&default_unli);
 
-            LOG_DEBUG("%s: %d: db_retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
-                    , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip
+            LOG_DEBUG("%s: %d: db_retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__, proc_id
+                    , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.tac_tai
                     , default_unli.date, default_unli.filename);
 
             switch (default_unli.db_retr) {
@@ -416,9 +417,9 @@ void* default_unli_handler (void* arg)
                     doMatrix(&default_unli);
                     break;
                 default:
-                    LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, date: %s, filename: %s", __func__, proc_id
-                            , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc
-                            , default_unli.sgsn_ip, default_unli.date, default_unli.filename);
+                    LOG_ERROR("%s: %d: Unable to process default_unli: retr: %d, msisdn: %s, mnc: %s, mcc: %s, sgsn_ip: %s, tac_tai: %s, date: %s, filename: %s", __func__, proc_id
+                            , default_unli.db_retr, default_unli.msisdn, default_unli.mnc, default_unli.mcc, default_unli.sgsn_ip, default_unli.tac_tai
+                            , default_unli.date, default_unli.filename);
             }
         }
 

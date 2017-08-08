@@ -674,6 +674,7 @@ typedef struct default_unli_t {
     char mnc[32];
     char mcc[32];
     char sgsn_ip[32];
+    char tac_tai[32];
     char date[32];
     char start_date[32];
     char end_date[32];
