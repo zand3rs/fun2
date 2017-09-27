@@ -246,7 +246,7 @@ int doNfBus(default_unli_t* default_unli)
     LOG_INFO("%s: url: %s, req: %s, res_code: %d, res_body: %s, res_error: %s, status: %d", __func__,
             Config::getNfBusUrl(), req.c_str(), res_code, hc.getResponseBody(), hc.getError(), status);
 
-    return 0;
+    return status;
 }
 
 
@@ -407,10 +407,11 @@ void* default_unli_handler (void* arg)
             switch (default_unli.db_retr) {
                 case DB_RETR_NF_BUS:
                     //-- call NF Bus...
-                    if (0 == doNfBus(&default_unli)) {
+                    doNfBus(&default_unli);
+                    //if (0 == doNfBus(&default_unli)) {
                         // send_system_msg("TRIGGER", TRAN_TYPE_BROADCAST, 0,
                         //        Config::getAccessCode(), default_unli.msisdn, SYSMSG_BROADCAST_ROAM_FREE_CT, 1);
-                    }
+                    //}
                     //-- continue...
                 case DB_RETR_OK:
                     //-- call matrix api...

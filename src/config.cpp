@@ -283,6 +283,15 @@ int Config::load(const char *fpath)
         cfg_getval(&cfg, "", "nfbus_timeout_sec", buf, sizeof(buf));
         _nfbus_timeout_sec = strtol(buf, NULL, 10);
 
+        cfg_getval(&cfg, "", "nfbus_user", buf, sizeof(buf));
+        _nfbus_user = buf;
+
+        cfg_getval(&cfg, "", "nfbus_pass", buf, sizeof(buf));
+        _nfbus_pass = buf;
+
+        cfg_getval(&cfg, "", "nfbus_service_id", buf, sizeof(buf));
+        _nfbus_service_id = strtol(buf, NULL, 10);
+
         cfg_getval(&cfg, "", "bypass_ards", buf, sizeof(buf));
         _bypass_ards = strtol(buf, NULL, 10);
 
