@@ -18,6 +18,9 @@ class SSET : public Fun2RC {
     private:
         int timeout;
         char *url;
+        char *key;
+        char *cert;
+        char *cacert;
 
     public:
         SSET() {};

@@ -2154,6 +2154,9 @@ void* transaction_handler (void* arg)
     snprintf(param.svc_host, sizeof(param.svc_host), "%s", rc->svc_host);
     snprintf(param.svc_user, sizeof(param.svc_user), "%s", rc->svc_user);
     snprintf(param.svc_pass, sizeof(param.svc_pass), "%s", rc->svc_pass);
+    snprintf(param.svc_key, sizeof(param.svc_key), "%s", rc->svc_key);
+    snprintf(param.svc_cert, sizeof(param.svc_cert), "%s", rc->svc_cert);
+    snprintf(param.svc_cacert, sizeof(param.svc_cacert), "%s", rc->svc_cacert);
     snprintf(param.db_host, sizeof(param.db_host), "%s", rc->db_host);
     snprintf(param.db_user, sizeof(param.db_user), "%s", rc->db_user);
     snprintf(param.db_pass, sizeof(param.db_pass), "%s", rc->db_pass);
@@ -2165,8 +2168,10 @@ void* transaction_handler (void* arg)
     int max_retry = rc->max_retry;
 
     LOG_DEBUG("%s: %d-%d: svc_url: %s, svc_host: %s, svc_port: %d, svc_user: %s, svc_pass: %s"
+            ", svc_key: %s, svc_cert: %s, svc_cacert: %s"
             ", db_host: %s, db_user: %s, db_pass: %s, timeout: %d", __func__, parent_id, proc_id,
             param.svc_url, param.svc_host, param.svc_port, param.svc_user, param.svc_pass,
+            param.svc_key, param.svc_cert, param.svc_cacert,
             param.db_host, param.db_user, param.db_pass, param.timeout);
 
     fun2rc->initialize(&param);

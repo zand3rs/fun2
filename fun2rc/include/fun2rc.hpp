@@ -16,6 +16,9 @@ class Fun2RC {
             int  svc_port;
             char svc_user[32];
             char svc_pass[32];
+            char svc_key[256];
+            char svc_cert[256];
+            char svc_cacert[256];
             char db_host[32];
             char db_user[32];
             char db_pass[32];

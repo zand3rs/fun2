@@ -65,6 +65,7 @@ int Global::loadRC(const char* ora_auth, const char* lib_path, const char* brand
     char q[512];
     snprintf(q, sizeof(q), "select priority, service_desc, svc_url, svc_host, svc_port, svc_user, svc_pass"
         ", db_host, db_user, db_pass, timeout_sec, thread_count, max_retry, app_lib, svc_name, expiry"
+        ", svc_key, svc_cert, svc_cacert"
         " from services where brand='%s' and status='ACTIVE'"
         " order by priority", brand);
 
@@ -87,6 +88,9 @@ int Global::loadRC(const char* ora_auth, const char* lib_path, const char* brand
         string app_lib = row[13];
         string svc_name = row[14];
         string expiry = row[15];
+        string svc_key = row[16];
+        string svc_cert = row[17];
+        string svc_cacert = row[18];
 
         rc_t rc;
         rc.step_no = step_no;
@@ -105,6 +109,9 @@ int Global::loadRC(const char* ora_auth, const char* lib_path, const char* brand
         snprintf(rc.libpath, sizeof(rc.libpath), "%s/%s", lib_path, app_lib.c_str());
         snprintf(rc.svc_name, sizeof(rc.svc_name), "%s", svc_name.c_str());
         snprintf(rc.expiry, sizeof(rc.expiry), "%s", expiry.c_str());
+        snprintf(rc.svc_key, sizeof(rc.svc_key), "%s", svc_key.c_str());
+        snprintf(rc.svc_cert, sizeof(rc.svc_cert), "%s", svc_cert.c_str());
+        snprintf(rc.svc_cacert, sizeof(rc.svc_cacert), "%s", svc_cacert.c_str());
 
         if (_rc_map.find(i) == _rc_map.end()) {
             _rc_map.insert(rc_map_t::value_type(i, rc));

@@ -19,6 +19,10 @@ int SSET::initialize()
     url = _param.svc_url;
     timeout = _param.timeout;
 
+    key = _param.svc_key;
+    cert = _param.svc_cert;
+    cacert = _param.svc_cacert;
+
     LOG_INFO("%s::%s: url: %s, timeout: %d", __class__, __func__, url, timeout);
 
     return 0;
@@ -58,7 +62,7 @@ int SSET::activate(const char *msisdn)
                       "</soapenv:Body>\n"
                       "</soapenv:Envelope>\n";
 
-    HttpClient hc;
+    HttpClient hc(key, cert, cacert);
     int res_code = hc.httpPost(url, req.c_str(), "text/xml", timeout);
     std::string res = hc.getResponseBody();
     int retr = -1;
@@ -132,7 +136,7 @@ int SSET::deactivate(const char *msisdn)
                       "</soapenv:Body>\n"
                       "</soapenv:Envelope>\n";
 
-    HttpClient hc;
+    HttpClient hc(key, cert, cacert);
     int res_code = hc.httpPost(url, req.c_str(), "text/xml", timeout);
     std::string res = hc.getResponseBody();
     int retr = -1;

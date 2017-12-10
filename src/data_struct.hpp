@@ -452,6 +452,9 @@ typedef struct rc_t {
     int  svc_port;
     char svc_user[32];
     char svc_pass[32];
+    char svc_key[255];
+    char svc_cert[255];
+    char svc_cacert[255];
     char db_host[32];
     char db_user[32];
     char db_pass[32];

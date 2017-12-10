@@ -18,6 +18,7 @@
 #define _HTTPCLIENT_HPP_
 
 #include <string>
+#include <vector>
 
 /*-defines--------------------------------------------------------------------*/
 
@@ -26,7 +27,7 @@
 class HttpClient {
 
     public:
-        HttpClient();
+        HttpClient(char const* key = "", char const* cert = "", char const* cacert = "", bool ignore_cert = false);
         ~HttpClient();
 
         //----------------------------------------------------------------------
@@ -36,6 +37,10 @@ class HttpClient {
                 unsigned short timeout_sec = 0);
         short httpPost(char const* url, char const* content,
                 char const* content_type, unsigned short timeout_sec = 0);
+        short httpPost(char const* url, char const* content,
+                char const* headers[], unsigned short timeout_sec = 0);
+        short httpPost(char const* url, char const* content,
+                std::vector<std::string>& headers, unsigned short timeout_sec = 0);
 
         char const* getResponseBody() const {
             return _out_buf.c_str();
@@ -47,6 +52,10 @@ class HttpClient {
     private:
         std::string _out_buf;
         std::string _err_buf;
+        std::string _key;
+        std::string _cert;
+        std::string _cacert;
+        bool _ignore_cert;
 
         static bool _global_init;
         static size_t _writer(void *ptr, size_t size, size_t nmemb, void *stream);
