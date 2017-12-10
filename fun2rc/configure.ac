@@ -4,7 +4,7 @@ dnl
 dnl $Id$
 dnl
 
-AC_INIT([fun2rc], [0.4.0], [zand3rs@gmail.com])
+AC_INIT([fun2rc], [0.5.0], [zand3rs@gmail.com])
 
 RELEASE_DATE="02/2017"
 COPYRIGHT="2009-2017"
