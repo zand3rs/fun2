@@ -72,9 +72,9 @@ int SSET::activate(const char *msisdn)
     if (200 == res_code) {
         if (doc.load(res.c_str())) {
             pugi::xml_node element = doc
-                .child("soapenv:Envelope")
-                .child("soapenv:Body")
-                .child("se:provisionResponse")
+                .child("SOAP-ENV:Envelope")
+                .child("SOAP-ENV:Body")
+                .child("ns1:provisionResponse")
                 .child("response")
                 .child("element");
 
@@ -94,9 +94,9 @@ int SSET::activate(const char *msisdn)
     } else {
         if (doc.load(res.c_str())) {
             pugi::xml_node fault = doc
-                .child("soapenv:Envelope")
-                .child("soapenv:Body")
-                .child("soapenv:Fault");
+                .child("SOAP-ENV:Envelope")
+                .child("SOAP-ENV:Body")
+                .child("SOAP-ENV:Fault");
 
             LOG_INFO("%s::%s: faultcode: %s, faultstring: %s", __class__, __func__,
                     fault.child("faultcode").child_value(),
@@ -146,9 +146,9 @@ int SSET::deactivate(const char *msisdn)
     if (200 == res_code) {
         if (doc.load(res.c_str())) {
             pugi::xml_node element = doc
-                .child("soapenv:Envelope")
-                .child("soapenv:Body")
-                .child("se:provisionResponse")
+                .child("SOAP-ENV:Envelope")
+                .child("SOAP-ENV:Body")
+                .child("ns1:provisionResponse")
                 .child("response")
                 .child("element");
 
@@ -168,9 +168,9 @@ int SSET::deactivate(const char *msisdn)
     } else {
         if (doc.load(res.c_str())) {
             pugi::xml_node fault = doc
-                .child("soapenv:Envelope")
-                .child("soapenv:Body")
-                .child("soapenv:Fault");
+                .child("SOAP-ENV:Envelope")
+                .child("SOAP-ENV:Body")
+                .child("SOAP-ENV:Fault");
 
             LOG_INFO("%s::%s: faultcode: %s, faultstring: %s", __class__, __func__,
                     fault.child("faultcode").child_value(),
